@@ -1,0 +1,371 @@
+components:
+  schemas:
+    certificate:
+      additionalProperties: false
+      description: The SSL certificate used on the HTTPS port
+      properties:
+        expires_at:
+          description: 'Time at which the certificate expires, in Unix epoch seconds
+
+            '
+          type: integer
+        fingerprint:
+          additionalProperties: false
+          description: Certificate fingerprint information
+          properties:
+            algorithm:
+              description: 'The algorithm used to calculate the fingerprint
+
+                '
+              type: string
+            value:
+              description: Fingerprint value
+              type: string
+          required:
+          - algorithm
+          - value
+          type: object
+        issuer:
+          $ref: '#/components/schemas/distingushed_name'
+        key:
+          additionalProperties: false
+          description: Certificate key information
+          properties:
+            algorithm:
+              description: 'The algorithm used to generate the key
+
+                '
+              type: string
+            size:
+              description: 'The size (number of bits) of the key
+
+                '
+              type: integer
+          required:
+          - algorithm
+          - size
+          type: object
+        pem:
+          description: The certificate, in PEM format
+          type: string
+        subject:
+          $ref: '#/components/schemas/distingushed_name'
+        valid_at:
+          description: 'Time at which the certificate becomes valid, in Unix epoch
+            seconds
+
+            '
+          type: integer
+      required:
+      - issuer
+      - subject
+      - valid_at
+      - expires_at
+      - fingerprint
+      - key
+      - pem
+      type: object
+    distingushed_name:
+      additionalProperties: false
+      description: Distinguished name information
+      properties:
+        common_name:
+          description: Common name (CN)
+          maxLength: 64
+          minLength: 0
+          type: string
+        country:
+          description: Country code (C)
+          maxLength: 2
+          minLength: 2
+          type: string
+        email:
+          description: Email address
+          maxLength: 255
+          minLength: 0
+          type: string
+        locality:
+          description: Locality (L)
+          maxLength: 128
+          minLength: 0
+          type: string
+        organization:
+          description: Organization name (O)
+          maxLength: 64
+          minLength: 0
+          type: string
+        organizational_unit:
+          description: Organization unit name (OU)
+          maxLength: 64
+          minLength: 0
+          type: string
+        state:
+          description: State or province name (ST)
+          maxLength: 128
+          minLength: 0
+          type: string
+      type: object
+    http:
+      additionalProperties: false
+      description: HTTP configuration
+      properties:
+        available_ports:
+          description: Port ranges HTTP may be configured to use
+          items:
+            additionalProperties: false
+            description: A contiguous range of port values
+            properties:
+              max:
+                description: Maximum port value in this range
+                type: integer
+              min:
+                description: Minimum port value in this range
+                type: integer
+            required:
+            - min
+            - max
+            type: object
+          readOnly: true
+          type: array
+        mode:
+          description: Mode of the HTTP port
+          enum:
+          - enabled
+          - disabled
+          - redirect_to_https
+          type: string
+        port:
+          description: Port HTTP is listening on (if not disabled)
+          type: integer
+      required:
+      - mode
+      - port
+      type: object
+    https:
+      additionalProperties: false
+      description: HTTPS configuration
+      properties:
+        available_ports:
+          description: Port ranges HTTPS may be configured to use
+          items:
+            additionalProperties: false
+            description: A contiguous range of port values
+            properties:
+              max:
+                description: Maximum port value in this range
+                type: integer
+              min:
+                description: Minimum port value in this range
+                type: integer
+            required:
+            - min
+            - max
+            type: object
+          readOnly: true
+          type: array
+        available_ssl_protocols:
+          description: The SSL protocols available to use
+          items:
+            type: string
+          type: array
+        port:
+          description: Port HTTPS is listening on
+          type: integer
+        ssl_ciphers:
+          description: The SSL cipher string to use
+          type: string
+        ssl_protocols:
+          description: 'The SSL protocols to enable.  Each list item must be one of
+            the values in the available_ssl_protocols list.
+
+            '
+          items:
+            type: string
+          type: array
+      required:
+      - port
+      - ssl_protocols
+      - ssl_ciphers
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  description: Allows configuration of the HTTPS interface
+  title: HTTPS Configuration
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /npm.https/1.0/certificate:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/certificate'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - certificate
+  /npm.https/1.0/certificate/generate:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/types/distingushed_name'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/certificate'
+                type: array
+          description: ''
+      summary: generate
+      tags:
+      - certificate
+  /npm.https/1.0/certificate/import:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              description: Import request format
+              properties:
+                passphrase:
+                  description: 'Optional passphrase to decrypt private key
+
+                    '
+                  type: string
+                pem:
+                  description: 'Certificate and private key to import, in PEM format
+
+                    '
+              required:
+              - pem
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/certificate'
+                type: array
+          description: ''
+      summary: import
+      tags:
+      - certificate
+  /npm.https/1.0/http:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/http'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - http
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/http'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/http'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - http
+  /npm.https/1.0/https:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/https'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - https
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/https'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/https'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - https
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

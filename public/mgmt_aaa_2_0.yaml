@@ -1,0 +1,754 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+defaultAuthorization: none
+description: REST API for the AAA service
+id: http://support.riverbed.com/apis/mgmt.aaa/2.0
+name: mgmt.aaa
+provider: riverbed
+resources:
+  access_tokens:
+    additionalProperties: false
+    description: Access token handling
+    links:
+      request:
+        description: Request a new access token
+        method: POST
+        request:
+          additionalProperties: false
+          description: Access token request details
+          oneOf:
+          - additionalProperties: true
+            required: [user_credentials]
+            type: object
+          - additionalProperties: true
+            properties:
+              generate_refresh_token:
+                enum: [false]
+                type: boolean
+            required: [refresh_token]
+            tags:
+              relint-disable: [C0200]
+            type: object
+          properties:
+            generate_refresh_token: {description: 'If True, a refresh token will also
+                be returned
+
+                ', type: boolean}
+            refresh_token: {$ref: '#/types/refresh_token_assertion'}
+            state: {description: 'Optional opaque value to pass back with the token
+
+                ', type: string}
+            user_credentials: {$ref: '#/types/user_credentials_assertion'}
+          type: object
+        response:
+          additionalProperties: false
+          description: Granted access token details
+          properties:
+            access_token: {description: The new access token, type: string}
+            expires_at: {description: 'The Unix epoch time when the access token will
+                expire
+
+                ', type: integer}
+            refresh_token: {description: 'The new refresh token, if requested.  This
+                token must be stored securely.
+
+                ', type: string}
+            state: {description: 'The value of the state field in the request, if
+                present
+
+                ', type: string}
+            token_type:
+              description: The type of token issued
+              enum: [bearer]
+              type: string
+          required: [access_token, expires_at, token_type]
+          type: object
+      self: {path: $/token}
+    tags:
+      relint-disable: [C0002, C0200]
+    type: object
+  account_policy:
+    additionalProperties: false
+    description: Global account settings
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/account_policy'}
+      self: {path: $/account_policy}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/account_policy'}
+        response: {$ref: '#/resources/account_policy'}
+    properties:
+      login_policy:
+        additionalProperties: false
+        description: Settings related to login attemps
+        properties:
+          count: {description: 'Maximum failed login attempts before temporary account
+              lock.  0 disables this check.
+
+              ', minimum: 0, type: integer}
+          wait_time: {description: 'Length in minutes for temporary account lock.
+              N/A when count is 0.
+
+              ', minimum: 0, type: integer}
+        required: [count, wait_time]
+        type: object
+      password_policy:
+        additionalProperties: false
+        description: 'Password complexity and expiration settings
+
+          '
+        properties:
+          change_frequency: {description: 'Minimum number of days a user must wait
+              between password changes. 0 disables this check.
+
+              ', minimum: 0, type: integer}
+          dictionary_check: {description: Disallow passwords based on common words,
+            type: boolean}
+          difference: {description: 'Minimum number of character differences required
+              between two passwords. 0 disables this check.
+
+              ', minimum: 0, type: integer}
+          digits: {description: 'Minimum number of digits.  0 Disables this check.
+
+              ', minimum: 0, type: integer}
+          expiration:
+            additionalProperties: false
+            description: Password expiration settings
+            properties:
+              inactive:
+                additionalProperties: false
+                description: Account inactivity settings
+                properties:
+                  enabled: {description: 'Whether to mark accounts inactive if their
+                      password remains expired for a period of time
+
+                      ', type: boolean}
+                  value: {description: 'Number of days before an account with an expired
+                      password is marked inactive
+
+                      ', minimum: 0, type: integer}
+                type: object
+              time:
+                additionalProperties: false
+                description: Password expiration settings
+                properties:
+                  enabled: {description: 'Whether to expire passwords after a period
+                      of time
+
+                      ', type: boolean}
+                  value: {description: 'Number of days before a password expires
+
+                      ', minimum: 0, type: integer}
+                type: object
+              warn: {description: 'Number of days before password expiration to start
+                  warning a user
+
+                  ', minimum: 0, type: integer}
+            required: [time, inactive, warn]
+            type: object
+          lower_case: {description: 'Minimum number of lowercase characters. 0 disables
+              this check.
+
+              ', minimum: 0, type: integer}
+          minimum_length: {description: Minimum password length., maximum: 64, minimum: 1,
+            type: integer}
+          permit_empty_passwords: {description: Allow users to have empty passwords.,
+            type: boolean}
+          repeat: {description: 'Maximum times the same character can repeat consecutively.
+              0 disables this check.
+
+              ', minimum: 0, type: integer}
+          reuse_interval: {description: 'Number of previous passwords to save.  When
+              setting a new password, the user cannot use a password that exists in
+              their password history. 0 disables this check.
+
+              ', maximum: 10, minimum: 0, type: integer}
+          symbols: {description: 'Minimum number of symbols. 0 disables this check.
+
+              ', minimum: 0, type: integer}
+          upper_case: {description: 'Minimum number of uppercase characters. 0 disables
+              this check.
+
+              ', minimum: 0, type: integer}
+        required: [permit_empty_passwords, minimum_length, lower_case, upper_case,
+          digits, symbols, repeat, difference, dictionary_check, change_frequency,
+          reuse_interval, expiration]
+        type: object
+    required: [login_policy, password_policy]
+    type: object
+  passwords:
+    additionalProperties: false
+    description: 'Local user password management
+
+      '
+    links:
+      change_password:
+        description: 'Change a local user''s password.  Old password is required when
+          changing your own password.
+
+          '
+        method: POST
+        path: $/users/change_password
+        request:
+          additionalProperties: false
+          properties:
+            new_password: {description: 'New password, in plaintext', type: string}
+            old_password: {description: 'Old password, in plaintext', type: string}
+            user: {description: User account to change password, type: string}
+          required: [user, new_password]
+          type: object
+        response:
+          additionalProperties: false
+          properties:
+            changed: {description: 'Whether the password was successfully changed
+
+                ', type: boolean}
+            user: {description: User account, type: string}
+          required: [user, changed]
+          type: object
+      self: {path: $/passwords}
+    type: object
+  permission_group:
+    additionalProperties: false
+    description: Service resource group used to assign permissions
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/permission_group'}
+      self: {path: '$/permission_groups/{name}'}
+    properties:
+      description: {description: Brief description of group, type: string}
+      name: {description: Unique ID for group, pattern: '[a-zA-Z0-9_]+$', readOnly: true,
+        type: string}
+      pretty_name: {description: Display name for group, type: string}
+      resources:
+        description: List of resources that exist in this group
+        items: {$ref: '#/types/service_resource'}
+        type: array
+    relations:
+      instances: {resource: '#/resources/permission_groups'}
+    required: [name, pretty_name, description, resources]
+    type: object
+  permission_groups:
+    additionalProperties: false
+    description: Collection of service resource groups
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/permission_groups'}
+      self: {path: $/permission_groups}
+    properties:
+      items:
+        description: List of service resource groups
+        items: {$ref: '#/resources/permission_group'}
+        type: array
+    required: [items]
+    type: object
+  radius_server:
+    additionalProperties: false
+    description: A RADIUS authentication server
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/radius_server'}
+      self: {path: '$/radius_servers/items/{id}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/radius_server'}
+        response: {$ref: '#/resources/radius_server'}
+    properties:
+      enabled: {description: 'Whether this RADIUS server is enabled or not.  A server
+          is enabled when it is in the server_order list in the radius_servers resource.
+
+          ', readOnly: true, type: boolean}
+      host: {description: The hostname or IP address of the RADIUS server, minLength: 1,
+        type: string}
+      id: {description: Server ID, readOnly: true, type: integer}
+      new_key: {description: 'The secret key used to encrypt communications.  An empty
+          string indicates no encryption is used.
+
+          ', maxLength: 64, type: string}
+      port: {default: 1812, description: The port of the RADIUS server, maximum: 65535,
+        minimum: 1, type: integer}
+      timeout: {description: 'Max time, in seconds, to wait for the server to respond
+          to an auth request.
+
+          ', maximum: 30, minimum: 1, type: integer}
+    required: [host, port, timeout]
+    type: object
+  radius_servers:
+    additionalProperties: false
+    description: The configured RADIUS servers
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/radius_server'}
+        response: {$ref: '#/resources/radius_server'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/radius_servers'}
+      self: {path: $/radius_servers}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/radius_servers'}
+        response: {$ref: '#/resources/radius_servers'}
+    properties:
+      available_encryption:
+        description: Available encryption protocols
+        items: {type: string}
+        readOnly: true
+        type: array
+      encryption_protocol: {description: 'The encryption protocol to use.  Available
+          protocols are listed under available_encryption.
+
+          ', type: string}
+      server_priority:
+        description: 'The order in which authentication requests are made to the configured
+          servers.  Servers not in this list will be disabled.
+
+          '
+        items:
+          relations:
+            full:
+              resource: '#/resources/radius_server'
+              vars: {id: '0'}
+          type: integer
+        type: array
+      servers:
+        description: The configured RADIUS servers
+        items: {$ref: '#/resources/radius_server'}
+        readOnly: true
+        type: array
+    required: [server_priority, encryption_protocol]
+    type: object
+  refresh_tokens:
+    additionalProperties: false
+    description: 'Active refresh tokens.  Only the first few characters of the token
+      are revealed, enough for the caller to differentiate the tokens they own.
+
+      '
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/refresh_tokens'}
+      revoke:
+        description: Revoke a refresh token
+        method: POST
+        path: $/refresh_tokens/revoke
+        request:
+          additionalProperties: false
+          properties:
+            refresh_token: {description: The refresh token to revoke, type: string}
+          required: [refresh_token]
+          type: object
+      self: {path: $/refresh_tokens}
+    properties:
+      items:
+        items:
+          additionalProperties: false
+          description: A single refresh token
+          properties:
+            issued_at: {description: 'The Unix epoch time that the refresh token was
+                issued
+
+                '}
+            last_redeemed: {description: 'The Unix epoch time that the token was last
+                redeemed.  0 if it has never been used.
+
+                ', minimum: 0, type: integer}
+            partial_token: {description: 'The first few characters of the token
+
+                ', type: string}
+            times_redeemed: {description: 'The number of times the token has been
+                redeeemed
+
+                ', minimum: 0, type: integer}
+            user: {description: 'The user name which owns this token
+
+                ', type: string}
+          required: [user, partial_token, issued_at, last_redeemed, times_redeemed]
+          type: object
+        type: array
+    required: [items]
+    tags:
+      relint-disable: [C0200]
+    type: object
+  remote_authentication:
+    additionalProperties: false
+    description: Remote authentication settings
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/remote_authentication'}
+      self: {path: $/remote_authentication}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/remote_authentication'}
+        response: {$ref: '#/resources/remote_authentication'}
+    properties:
+      auth_methods_available:
+        description: Available authentication methods
+        items: {type: string}
+        readOnly: true
+        type: array
+      auth_sequence:
+        description: 'Authentication methods to use, in priority order of first to
+          last.  Possible values are listed in auth_methods_available.
+
+          '
+        items: {type: string}
+        type: array
+      default_roles:
+        description: 'The roles to assign to a remotely-authenticated user when the
+          authentication server does not specify any.
+
+          '
+        items:
+          relations:
+            full:
+              resource: '#/resources/role'
+              vars: {id: '0'}
+          type: integer
+        type: array
+      next_method_on_reject: {description: 'If True, when a login is rejected, the
+          system will still attempt to authenticate via the next method in auth_sequence.  If
+          False, the login attempt is denied immediately when any auth method rejects
+          the user credentials.
+
+          ', type: boolean}
+    required: [auth_sequence, next_method_on_reject, default_roles]
+    type: object
+  role:
+    additionalProperties: false
+    description: 'A set of permissions that may be assigned to a user
+
+      '
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/role'}
+      self: {path: '$/roles/{id}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/role'}
+        response: {$ref: '#/resources/role'}
+    properties:
+      description: {description: Role description, maxLength: 255, type: string}
+      id: {description: Unique role identifier, readOnly: true, type: integer}
+      member_of:
+        description: Roles that this role is a member of
+        items:
+          description: A role identifier
+          relations:
+            full:
+              resource: '#/resources/role'
+              vars: {name: '0'}
+          type: integer
+        type: array
+      permissions:
+        description: A set of permissions granted to this role
+        items:
+          additionalProperties: false
+          description: 'One permission group and the access rights granted to it
+
+            '
+          properties:
+            operation:
+              description: 'The access rights granted to the permission group
+
+                '
+              enum: [read_only, read_write]
+              type: string
+            permission_group:
+              description: The permission group
+              relations:
+                full:
+                  resource: '#/resources/permission_group'
+                  vars: {name: '0'}
+              type: string
+          type: object
+        type: array
+      pretty_name: {description: Unique role name, maxLength: 50, type: string}
+      system_default: {description: 'If true, role is a system default entry that
+          cannot be modified
+
+          ', readOnly: true, type: boolean}
+    required: [pretty_name]
+    type: object
+  role_names:
+    additionalProperties: false
+    description: The list of roles and their names
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/role_names'}
+      self: {path: $/role_names}
+    properties:
+      items:
+        items:
+          additionalProperties: false
+          description: Name and description for a single role
+          properties:
+            description: {description: Role description, type: string}
+            id: {description: Unique role identifier, type: integer}
+            pretty_name: {description: Unique role name, type: string}
+          relations:
+            full:
+              description: The full role definition
+              resource: '#/resources/role'
+              vars: {id: 0/id}
+          required: [id, pretty_name, description]
+          type: object
+        type: array
+    required: [items]
+    type: object
+  roles:
+    additionalProperties: false
+    description: All configured roles
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/role'}
+        response: {$ref: '#/resources/role'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/roles'}
+      self: {path: $/roles}
+    properties:
+      items:
+        description: A role identifier
+        items: {$ref: '#/resources/role'}
+        type: array
+    type: object
+  tacacs_server:
+    additionalProperties: false
+    description: A TACACS+ authentication server
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/tacacs_server'}
+      self: {path: '$/tacacs_servers/items/{id}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/tacacs_server'}
+        response: {$ref: '#/resources/tacacs_server'}
+    properties:
+      enabled: {description: 'Whether this TACACS+ server is enabled or not.  A server
+          is enabled when it is in the server_order list in the tacacs_servers resource.
+
+          ', readOnly: true, type: boolean}
+      host: {description: The hostname or IP address of the TACACS+ server, minLength: 1,
+        type: string}
+      id: {description: Server ID, readOnly: true, type: integer}
+      new_key: {description: 'The secret key used to encrypt communications.  An empty
+          string indicates no encryption is used.
+
+          ', maxLength: 64, type: string}
+      port: {default: 49, description: The post of the TACACS+ server, maximum: 65535,
+        minimum: 1, type: integer}
+    required: [host, port]
+    type: object
+  tacacs_servers:
+    additionalProperties: false
+    description: The configured TACACS+ servers
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/tacacs_server'}
+        response: {$ref: '#/resources/tacacs_server'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/tacacs_servers'}
+      self: {path: $/tacacs_servers}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/tacacs_servers'}
+        response: {$ref: '#/resources/tacacs_servers'}
+    properties:
+      server_priority:
+        description: 'The order in which authentication requests are made to the configured
+          servers.  Servers not in this list will be disabled.
+
+          '
+        items:
+          relations:
+            full:
+              resource: '#/resources/tacacs_server'
+              vars: {id: '0'}
+          type: integer
+        type: array
+      servers:
+        description: The configured TACACS+ servers
+        items: {$ref: '#/resources/tacacs_server'}
+        readOnly: true
+        type: array
+      timeout: {description: 'Max time, in seconds, to wait for a server to respond
+          to an auth request.
+
+          ', maximum: 30, minimum: 1, type: integer}
+    required: [server_priority, timeout]
+    type: object
+  user:
+    additionalProperties: false
+    description: A user configured for local authentication
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/user'}
+      self: {path: '$/users/{name}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/user'}
+        response: {$ref: '#/resources/user'}
+    properties:
+      account_never_inactive: {default: false, description: 'User account will never
+          become inactive, preventing login, due to an expired password
+
+          ', type: boolean}
+      description: {default: '', description: Description for the user account, maxLength: 255,
+        type: string}
+      enable: {default: false, description: Whether the user is allowed to log in,
+        type: boolean}
+      logged_in: {description: User is currently logged in, readOnly: true, type: boolean}
+      login_failure:
+        additionalProperties: false
+        description: Login failure information
+        properties:
+          count: {description: Number of failed login attempts, type: integer}
+          date: {description: 'Date, in Unix epoch time, of the most recent login
+              failure
+
+              ', type: timestamp}
+          source: {description: 'Address of the most recent login failure
+
+              ', type: string}
+        readOnly: true
+        type: object
+      name: {description: Account name, maxLength: 32, type: string}
+      new_password:
+        additionalProperties: false
+        description: 'Set this user''s password to a new value.  Used for creation
+          and bulk importing of users.  Normal password changes should go through
+          the password resource.  Changing passwords using this API may result in
+          passwords which violate the password policy.
+
+          '
+        oneOf:
+        - required: [cleartext]
+          type: object
+        - required: [hashed]
+          type: object
+        properties:
+          cleartext: {description: 'Set the user''s password in plain text
+
+              ', type: string}
+          hashed: {description: 'Set the user''s password as a hash
+
+              ', type: string}
+        type: object
+      password:
+        additionalProperties: false
+        description: Password settings
+        properties:
+          change_allowed_in: {description: 'Days remaining until the user can change
+              their password.  A value of 0 indicates the password may be changed
+              immediately.
+
+              ', readOnly: true, type: integer}
+          expires_on: {description: 'Date, in Unix epoch time, after which the user''s
+              password will expire.  If 0, the password will never expire.
+
+              ', readOnly: true, type: timestamp}
+          locks_on: {description: 'Date, in Unix epoch time, after which the user
+              account will be locked due to an expired password. If 0, the account
+              will never be locked.
+
+              ', readOnly: true, type: timestamp}
+        required: [expires_on, locks_on, change_allowed_in]
+        type: object
+      password_never_expires: {default: false, description: User account password
+          will never expire, type: boolean}
+      roles:
+        description: List of roles granted to this user
+        items:
+          description: The role identifier
+          relations:
+            full:
+              resource: '#/resources/role'
+              vars: {id: '0'}
+          type: integer
+        type: array
+      status:
+        description: Status of the account
+        enum: [active, inactive, disabled, login_failure_lockout]
+        readOnly: true
+        type: string
+    required: [name]
+    type: object
+  users:
+    additionalProperties: false
+    description: The users configured for local authentication
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/user'}
+        response: {$ref: '#/resources/user'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/users'}
+      self: {path: $/users}
+    properties:
+      items:
+        items: {$ref: '#/resources/user'}
+        type: array
+    type: object
+title: AAA Service
+types:
+  authentication:
+    description: 'The type of authentication used
+
+      '
+    enum: [local, RADIUS, TACACS+, other-remote]
+    type: string
+  refresh_token_assertion: {description: A refresh token assertion, type: string}
+  service_resource:
+    additionalProperties: false
+    description: 'Resources available from a service.  If only the service_name property
+      is present, all resources are included.
+
+      '
+    not:
+      required: [all_except, only_include]
+      type: object
+    properties:
+      all_except:
+        description: 'List of resources excluded from this group. All other resources
+          from this service are included.
+
+          '
+        items: {type: string}
+        type: array
+      only_include:
+        description: 'List of resources included in this group.  All other resources
+          from this service are excluded.
+
+          '
+        items: {type: string}
+        type: array
+      service_name: {description: Name of the service, readOnly: true, type: string}
+    required: [service_name]
+    type: object
+  user_credentials_assertion:
+    additionalProperties: false
+    description: A username/password assertion
+    properties:
+      password: {description: Password, type: string}
+      username: {description: Username, type: string}
+    required: [username, password]
+    type: object
+version: '2.0'

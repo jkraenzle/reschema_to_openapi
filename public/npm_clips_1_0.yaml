@@ -1,0 +1,125 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Capture Jobs Clips API
+id: http://support.riverbed.com/apis/npm.clips/1.0
+name: npm.clips
+provider: riverbed
+resources:
+  clip:
+    additionalProperties: false
+    description: Configuration, status and statistics of a clip.
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/clip'}
+      self: {path: '$/clips/items/{id}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/clip'}
+        response: {$ref: '#/resources/clip'}
+    properties:
+      config:
+        additionalProperties: false
+        description: Configuration of a clip.
+        properties:
+          description: {description: Description of this clip configuration., type: string}
+          end_time: {description: Clip end time., type: string}
+          filters:
+            additionalProperties: false
+            description: Collection of filter criteria.
+            properties:
+              items: {$ref: '#/types/filters_list'}
+            type: object
+          job_id: {description: Job UUID on which the clip is applied., type: string}
+          start_time: {description: Clip start time., type: string}
+        type: object
+      id: {description: Clip unique identifier., readOnly: true, type: string}
+      index_stats:
+        additionalProperties: false
+        description: Collection of microflow index statistics.
+        properties:
+          items:
+            description: Array of microflow index statistics.
+            items: {$ref: '#/types/index_info_stat'}
+            type: array
+        type: object
+      status:
+        additionalProperties: false
+        description: Status of a clip.
+        properties:
+          creation_time: {description: Clip creation time., readOnly: true, type: string}
+          estimated_size:
+            description: Estimated size for this clip in packet storage.
+            readOnly: true
+            tags: {cpptype: uint64}
+            type: integer
+          locked: {description: '''true'' if packets and the index for this clip are
+              locked, ''false'' otherwise.', type: boolean}
+          modification_time: {description: Clip last modified time., readOnly: true,
+            type: string}
+          packets_dropped:
+            description: Statistics for the number of packets that arrived at the
+              capture port but could not be written successfully to the packet storage
+              for this clip.
+            readOnly: true
+            tags: {cpptype: uint64}
+            type: integer
+          packets_written:
+            description: Statistics for the number of packets successfully written
+              to the packet storage for this clip.
+            readOnly: true
+            tags: {cpptype: uint64}
+            type: integer
+        type: object
+    type: object
+  clips:
+    additionalProperties: false
+    description: Collection of clips on the device.
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/clip'}
+        response: {$ref: '#/resources/clip'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/clips'}
+      self: {path: $/clips}
+    properties:
+      items:
+        description: Array of clips.
+        items: {$ref: '#/resources/clip'}
+        type: array
+    type: object
+title: Clips API
+types:
+  filters_list:
+    description: Array of filter criteria.
+    items:
+      additionalProperties: false
+      description: Filter
+      properties:
+        context:
+          description: Context from which the filter was applied (e.g., user request,
+            data drill-down, etc).
+          enum: [NONE, INTERNAL, USER, DRILL_DOWN]
+          tags: {cpptype: filter_criterion_context}
+          type: string
+        id: {description: Filter criterion ID., type: string}
+        type:
+          description: The type of filter used on the data.
+          enum: [BPF, STEELFILTER, WIRESHARK]
+          type: string
+        value: {description: Query filter text to use., type: string}
+      required: [id, type, value]
+      type: object
+    type: array
+  index_info_stat:
+    additionalProperties: false
+    description: Microflow index statistics.
+    properties:
+      end_time: {description: End time for an indexed interval., type: string}
+      start_time: {description: Start time for an indexed interval., type: string}
+      version: {description: Microflow index version., type: string}
+    required: [version, start_time, end_time]
+    type: object
+version: '1.0'

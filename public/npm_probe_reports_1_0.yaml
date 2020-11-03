@@ -1,0 +1,1536 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+id: http://support.riverbed.com/apis/npm.probe.reports/1.0
+name: npm.probe.reports
+provider: riverbed
+resources:
+  data_definition:
+    additionalProperties: true
+    description: A single data definition from a report instance
+    links:
+      delete: {description: Delete a single data definition from a report instance,
+        method: DELETE}
+      get:
+        description: Get a single data definition from a report instance
+        method: GET
+        response: {$ref: '#/resources/data_definition'}
+      get_data:
+        description: Get data definition data. For live data feeds, this will also
+          trigger a data definition update.
+        method: GET
+        path:
+          template: $/instances/items/{report_id}/data_defs/items/{id}/data{?limit,offset,start_time,end_time,resolution,top_by,nsamples,sort_by,filter}
+          vars:
+            columns: {description: List of columns to return, type: string}
+            end_time: {description: End time (for live data feeds), type: string}
+            filter: {description: A Steelfilter expression to filter the results,
+              type: string}
+            limit:
+              description: Maximum number of returned data rows
+              tags: {cpptype: uint32}
+              type: integer
+            nsamples: {description: Return avg values as 'sum|nsamples' to allow client
+                to re-aggregate the values, type: boolean}
+            offset:
+              description: Start returning data rows from offset
+              tags: {cpptype: uint32}
+              type: integer
+            resolution: {description: Resolution (for live data feeds), type: string}
+            sort_by: {description: Sort By column list with sort direction for each
+                column, type: string}
+            start_time: {description: Start time (for live data feeds), type: string}
+            stream: {description: Skip buffering and render the data row by row as
+                the are produced internally, type: boolean}
+            test_error: {description: 'A temporary hook to simulate exceptions during
+                streaming (0 = no error, 1 = before get_live_data, 2 = after prologue,
+                3 = after second row)', type: integer}
+            top_by: {description: List of columns to top by, type: string}
+        response: {$ref: '#/types/data_def_results'}
+      get_status:
+        description: Get the status for a single data definition from a report instance.
+          For live data feeds, this will also trigger a data definition update.
+        method: GET
+        path: $/instances/items/{report_id}/data_defs/items/{id}/status
+        response: {$ref: '#/types/data_def_status'}
+      self: {path: '$/instances/items/{report_id}/data_defs/items/{id}'}
+      set:
+        description: In a live report instance, update data for a single data definition
+        method: PUT
+        request: {$ref: '#/resources/data_definition'}
+        response: {$ref: '#/resources/data_definition'}
+    properties:
+      act_as_source: {description: Make this object available to other data requests
+          (using source.reference_id), type: boolean}
+      actual_centricity:
+        description: Actual centricity used by the back-end data source. Used by network
+          flow sources. When AUTO is requested, the back-end sets this to HOST or
+          INTERFACE.
+        enum: [HOST, INTERFACE]
+        type: string
+      actual_filters: {$ref: '#/types/filter_criteria'}
+      actual_source: {$ref: '#/types/data_def_source'}
+      actual_time:
+        additionalProperties: false
+        description: Actual time frame returned by the data source based on data availability.
+        properties:
+          granularities:
+            description: Array of actual granularities used in the query.
+            items: {description: Actual granularity used in the query., type: string}
+            type: array
+          resolution: {description: Actual resolution used in the query., type: string}
+          time_ranges: {$ref: '#/types/time_pairs'}
+        required: []
+        type: object
+      available_columns: {$ref: '#/types/column_list'}
+      centricity:
+        description: For network flow sources, this parameter hints the back-end to
+          calculate metrics from hosts point of view or from interfaces point of view.
+        enum: [AUTO, HOST, INTERFACE]
+        type: string
+      columns: {$ref: '#/types/column_list'}
+      data: {$ref: '#/types/data_matrix'}
+      datasource_id: {description: Data source to which the data definition belongs.
+          Globally unique within the system., readOnly: true, type: string}
+      datasource_storage_key: {description: Location within the datasource in which
+          data is stored, readOnly: true, type: string}
+      definition: {$ref: '#/resources/data_definition'}
+      filters: {$ref: '#/types/filter_criteria'}
+      group_by: {$ref: '#/types/column_list'}
+      id:
+        description: ID for the data definition. Unique within a single report instance.
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      limit:
+        description: Limit returned data rows to the specified number.
+        tags: {cpptype: uint32}
+        type: integer
+      others: {$ref: '#/types/data_row'}
+      reference_id: {description: Corresponding data definition ID in the client system,
+        type: string}
+      report_id:
+        description: Report instance ID to which the data definition belogs.
+        tags: {cpptype: uint32}
+        type: integer
+      source: {$ref: '#/types/data_def_source'}
+      stats:
+        additionalProperties: false
+        description: Overall statistics for a data definition.
+        properties:
+          completed: {description: Date and time when the data definition execution
+              was ended (regardless of final status). High-precision timestamp in
+              Unix Epoch format., readOnly: true, type: string}
+          created: {description: Date and time when the data definition was created.
+              High-precision timestamp in Unix Epoch format., readOnly: true, type: string}
+          exec_time: {description: The time it took to execute. High-precision duration
+              (seconds)., readOnly: true, type: string}
+          executing: {description: Date and time when the data definition started
+              executing. High-precision timestamp in Unix Epoch format., readOnly: true,
+            type: string}
+          init_time: {description: The time it took initialize. High-precision duration
+              (seconds)., readOnly: true, type: string}
+          initial_queue_pos:
+            description: The queue position at the time it was first placed in the
+              queue.
+            readOnly: true
+            tags: {cpptype: uint32}
+            type: integer
+          initialized: {description: Deprecated and unused anymore., readOnly: true,
+            type: string}
+          initializing: {description: Date and time when the data definition started
+              initializing. High-precision timestamp in Unix Epoch format., readOnly: true,
+            type: string}
+          queue_time: {description: The time it took waiting in the queue. High-precision
+              duration (seconds)., readOnly: true, type: string}
+          queued: {description: Date and time when the data definition was placed
+              on the queue. High-precision timestamp in Unix Epoch format., readOnly: true,
+            type: string}
+        readOnly: true
+        type: object
+      status: {$ref: '#/types/data_def_status'}
+      summary_max_values: {$ref: '#/types/data_row'}
+      summary_min_values: {$ref: '#/types/data_row'}
+      time:
+        additionalProperties: false
+        description: The time frame that was requested for a reporting query.
+        properties:
+          duration: {description: 'Time frame duration. When combined with either
+              a start time or end time (but not both), determines the desired report
+              time frame. If specified, and no start/end time is present, it is used
+              with an end time of now.', type: string}
+          end: {description: The start time. This is a high-precision time value in
+              Unix Epoch format., type: string}
+          granularity: {description: 'For sources that support multiple data granularity/rollup
+              levels, the preferred granularity. If unspecified, the system will choose
+              a granularity.', type: string}
+          max_num_bins: {description: 'For auto-resolution, the maximum number of
+              bins that the client supports. The system will not exceed this.', maximum: 20000,
+            minimum: 1, type: integer}
+          offset: {description: 'Offset the start/end time by the given amount (e.g.,
+              ''5 min'' to offset the start and end time back by 5 minutes).', type: string}
+          optimal_num_bins: {description: 'For auto-resolution, the preferred number
+              of bins for the client. The system will attempt to pick a resolution
+              as close to this as possible.', maximum: 5000, minimum: 1, type: integer}
+          required_resolutions:
+            description: Array of resolutions. When auto-resolution is requested,
+              the back end will limit its choice to one of these.
+            items: {description: A required resolution., type: string}
+            type: array
+          resolution: {description: 'The requested resolution bin time-range for returned
+              data (e.g., show in 1-hour bins). System will automatically pick if
+              not specified.', type: string}
+          retention_time:
+            description: Specifies the time to retain data before rollint it off the
+              query. Required for live data definitions.
+            tags: {format: timestamp}
+            type: string
+          start: {description: The start time. This is a high-precision time value
+              in Unix Epoch format., type: string}
+          time_ranges: {$ref: '#/types/time_pairs'}
+          timezone: {description: FUTURE - Time zone for the time frame. Not yet available.,
+            type: string}
+        required: []
+        type: object
+      timeout: {description: Maximum time within which to return data., type: string}
+      top_by:
+        description: Array of sort criteria.
+        items:
+          description: A single sorting criterion, with direction.
+          properties:
+            direction:
+              description: Direction in which to sort.
+              enum: [asc, desc]
+              tags: {cpptype: sort_criterion_dir}
+              type: string
+            id: {description: ID to sort by, type: string}
+          type: object
+        type: array
+      total_number_rows:
+        description: Total number of available data rows.
+        tags: {cpptype: uint32}
+        type: integer
+      totals: {$ref: '#/types/data_row'}
+      ts_max_values: {$ref: '#/types/ts_statistical_results'}
+      ts_min_values: {$ref: '#/types/ts_statistical_results'}
+      ts_percentile_values: {$ref: '#/types/ts_statistical_results'}
+      user_agent: {description: User agent string for the client that generated the
+          report., readOnly: true, type: string}
+      with_max_values: {description: Whether to return column max value with the data
+          results when querying., type: boolean}
+      with_min_values: {description: Whether to return column min value with the data
+          results when querying., type: boolean}
+      with_percentile_values:
+        description: Whether to return column percentile value with the data results
+          when querying.
+        enum: [80, 85, 90, 95]
+        maximum: 95
+        minimum: 80
+        tags: {cpptype: uint32}
+        type: integer
+      with_totals: {description: Whether to return column totals with the data results
+          when querying., type: boolean}
+    required: [source]
+    type: object
+  data_definitions:
+    additionalProperties: false
+    description: Data definitions for a report instance
+    links:
+      bulk_create:
+        description: Run multiple new data definition on an existing instance
+        method: POST
+        path: $/instances/items/{report_id}/data_defs/bulk_create
+        request: {$ref: '#/types/data_defs_list'}
+        response: {$ref: '#/types/data_defs_list'}
+      bulk_delete:
+        description: Delete multiple data definitions from an instance
+        method: POST
+        path: $/instances/items/{report_id}/data_defs/bulk_delete
+        request: {$ref: '#/types/multiple_ids'}
+        response: {$ref: '#/types/multiple_ids'}
+      create:
+        description: Run a new data definition on an existing instance
+        method: POST
+        request: {$ref: '#/resources/data_definition'}
+        response: {$ref: '#/resources/data_definition'}
+      get:
+        description: Get all data definitions for an instance
+        method: GET
+        response: {$ref: '#/resources/data_definitions'}
+      self: {path: '$/instances/items/{report_id}/data_defs'}
+    properties:
+      items: {$ref: '#/types/data_defs_list'}
+      report_id:
+        description: Report instance to which the data definitions belong.
+        tags: {cpptype: uint32}
+        type: integer
+    required: [items]
+    type: object
+  instance:
+    additionalProperties: true
+    description: A single report instance
+    links:
+      delete: {description: Delete a report instance, method: DELETE}
+      get:
+        description: Get a report instance. For live data feeds, this will also trigger
+          an instance update to latest.
+        method: GET
+        response: {$ref: '#/resources/instance'}
+      get_data:
+        description: Get data for all data definitions on an instance. For live data
+          feeds, this will also trigger an instance update to latest.
+        method: GET
+        path: $/instances/items/{id}/data
+        response:
+          additionalProperties: false
+          description: Data for all data definitions within a report instance.
+          properties:
+            data_defs:
+              description: Array of data definition result sets.
+              items: {$ref: '#/types/data_def_results'}
+              type: array
+          type: object
+      get_rights:
+        description: Get the access rights for an instance
+        method: GET
+        path: $/instances/items/{id}/access_rights
+        response: {$ref: '#/types/access_rights_obj'}
+      get_status:
+        description: Get status for all data definitions on an instance. For live
+          data feeds, this will also trigger an instance update to latest.
+        method: GET
+        path: $/instances/items/{id}/status
+        response:
+          description: Array of data definition statuses.
+          items: {$ref: '#/types/data_def_status'}
+          type: array
+      get_view:
+        description: Download an instance as PDF. The only accepted content-type is
+          application-pdf.
+        method: GET
+        path: $/instances/items/{id}/view
+        tags:
+          media_types: [application/pdf]
+      replace_sync:
+        description: Update a report instance. This call will not return until the
+          report completes.
+        method: PUT
+        path: $/instances/items/{id}/sync
+        request: {$ref: '#/resources/instance'}
+        response: {$ref: '#/resources/instance'}
+      self: {path: '$/instances/items/{id}'}
+      set:
+        description: Update a report instance
+        method: PUT
+        request: {$ref: '#/resources/instance'}
+        response: {$ref: '#/resources/instance'}
+      set_rights:
+        description: Update the access rights for an instance
+        method: PUT
+        path: $/instances/items/{id}/access_rights
+        request: {$ref: '#/types/access_rights_obj'}
+      sync:
+        description: Get a report instance. If the instance is still running, this
+          call will not return until it completes
+        method: GET
+        path: $/instances/items/{id}/sync
+        response: {$ref: '#/resources/instance'}
+    properties:
+      access_rights: {$ref: '#/types/access_rights_obj'}
+      created: {description: Date and time at which the report was created. High precision
+          timestamp in Unix Epoch format., type: string}
+      data_defs: {$ref: '#/types/data_defs_list'}
+      id:
+        description: ID of the report instance
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      idle_timeout:
+        description: Specifies the time to keep processing live data requests after
+          last access (get info or get data).
+        tags: {format: timestamp}
+        type: string
+      info: {$ref: '#/resources/report_instance_info'}
+      last_modified: {description: Date and time at which the report was last modified.
+          High precision timestamp in Unix Epoch format., type: string}
+      live: {description: 'Whether the instance is a live (continuously updating)
+          instance, rather than a static instance.', type: boolean}
+      presentation: {$ref: '#/resources/report_instance_presentation'}
+      priority:
+        description: FUTURE - Report instance priority. Not yet used.
+        enum: [low, medium, high]
+        tags: {cpptype: report_priority}
+        type: string
+      schedule_id:
+        description: Schedule ID which generated the report instance.
+        minimum: 0
+        tags: {cpptype: uint32}
+        type: integer
+      schedule_name: {description: Schedule name which generated the report instance.,
+        type: string}
+      template_id:
+        description: Template ID on which the report instance was based.
+        minimum: 0
+        tags: {cpptype: uint32}
+        type: integer
+      template_name: {description: Template name on which the report instance was
+          based., type: string}
+      user_agent: {description: User agent string for the client that generated the
+          report., readOnly: true, type: string}
+      views:
+        additionalProperties: false
+        description: Indicates which views, PDF or JSON (raw), are available for an
+          instance
+        properties:
+          pdf: {description: Whether rendered PDF is available., readOnly: true, type: boolean}
+          raw_data: {description: Whether raw JSON data is available., readOnly: true,
+            type: boolean}
+        required: [pdf, raw_data]
+        type: object
+    required: [data_defs]
+    type: object
+  instances:
+    additionalProperties: false
+    description: Collection of report instances. When limiting results via query,
+      all parameters must match a report instance for it to show.
+    links:
+      bulk_delete:
+        description: Bulk-delete multiple instances. Delete operation will be aborted
+          and none of the instances will be deleted if the user does not have R/W
+          access to any of the ids in the input list. Instance ids that do not exist
+          (already deleted) will be ignored.
+        method: POST
+        path: $/instances/bulk_delete
+        request:
+          description: Array of report instance IDs
+          items:
+            description: Report instance ID
+            tags: {cpptype: uint32}
+            type: integer
+          type: array
+      bulk_delete_matching:
+        description: Bulk-delete multiple instances. Delete operation will be aborted
+          for the instances the user does not have R/W access to.
+        method: POST
+        path: $/instances/bulk_delete_matching
+        request:
+          additionalProperties: false
+          description: Parameters to filter report instances
+          properties:
+            older_than: {description: High precision timestamp in Unix Epoch format.
+                Matches report instances older than the provided timestamp., type: string}
+            schedule_id:
+              description: Matches if the report instance was created as part of the
+                specified schedule ID.
+              minimum: 0
+              tags: {cpptype: uint32}
+              type: integer
+            template_id:
+              description: Matches if the report instance is based on the specified
+                template ID.
+              minimum: 0
+              tags: {cpptype: uint32}
+              type: integer
+            user: {description: Performs a case-insensitive exact match against the
+                owner of each report instance., type: string}
+          type: object
+      create:
+        description: Run a report asynchronously
+        method: POST
+        path: $/instances
+        request: {$ref: '#/resources/instance'}
+        response: {$ref: '#/resources/instance'}
+      create_sync:
+        description: Run a report synchronously. This call will not return until the
+          report completes.
+        method: POST
+        path: $/instances/sync
+        request: {$ref: '#/resources/instance'}
+        response: {$ref: '#/resources/instance'}
+      get:
+        description: Get a list of report instances
+        method: GET
+        response: {$ref: '#/resources/instances'}
+      get_tags:
+        description: Collect tags from all instances by owner
+        method: GET
+        path: $/instances/tags
+        response: {$ref: '#/types/rpt_tags'}
+      refresh: {description: 'Request a saved snapshots disk utilization refresh.
+          This operation is executed in the background, and should complete within
+          a few seconds.', method: POST, path: $/instances/snapshots_disk_usage/refresh}
+      self:
+        params:
+          access:
+            enum: [all, private, shared, public]
+            type: string
+          access_rights:
+            enum: [all, read_only, read_write]
+            type: string
+          description: {type: string}
+          limit:
+            tags: {cpptype: uint32}
+            type: integer
+          name: {type: string}
+          offset:
+            tags: {cpptype: uint32}
+            type: integer
+          owner: {type: string}
+          schedule_id: {type: string}
+          schedule_name: {type: string}
+          sort:
+            enum: [asc, desc]
+            type: string
+          sortby:
+            enum: [name, description, owner, created, last_modified]
+            type: string
+          state:
+            enum: [temporary, saved]
+            type: string
+          tag: {type: string}
+          template_id: {type: string}
+          template_name: {type: string}
+        path: $/instances
+      snapshots_disk_usage:
+        description: Current quota and disk utilization of saved snapshots
+        method: GET
+        path: $/instances/snapshots_disk_usage
+        response:
+          additionalProperties: false
+          description: Current size and allowed quota of snapshots
+          properties:
+            current_size_kb:
+              description: Current snapshots disk usage (collected hourly, or by manual
+                update)
+              readOnly: true
+              tags: {cpptype: uint32}
+              type: integer
+            quota_size_kb:
+              description: Maximum quota for all disk snapshots
+              readOnly: true
+              tags: {cpptype: uint32}
+              type: integer
+          required: [quota_size_kb, current_size_kb]
+          type: object
+      stream:
+        description: Run a report synchronously, streaming data from the data source.
+          If the report does not complete within 50 seconds, it will return a 201
+          Created response, and the client must re-attach as with a synchronous request.
+        method: POST
+        path: $/instances/stream
+        request: {$ref: '#/resources/instance'}
+        response: {$ref: '#/resources/instance'}
+    properties:
+      items:
+        description: Array of report instances
+        items: {$ref: '#/resources/instance'}
+        type: array
+      meta:
+        additionalProperties: false
+        description: Meta data of the data set returned when a list of reports are
+          fetched.
+        properties:
+          access:
+            description: Filters instances based on access. "all", returns all instances
+              that the current authenticated user has access to. "private", returns
+              all instances not shared with any roles that the current authenticated
+              user has access to. "shared", returns all instances shared with one
+              or more roles. "public" returns all objects marked public.
+            enum: [all, private, shared, public]
+            type: string
+          access_rights:
+            description: Filters instances based on access_rights. "all", returns
+              all instances with read_only or read_write rights that the authenticated
+              user has access to. "read_only", returns all instances with read_only
+              rights that the authenticated user has access to. "read_write", Returns
+              all instances with read_write rights that the authenticated user has
+              access to.
+            enum: [all, read_only, read_write]
+            type: string
+          count:
+            description: The actual number of reports returned for this request.
+            tags: {cpptype: uint32}
+            type: integer
+          description: {description: Filters report instances based on the description
+              param passed. Does a case-insensitive substring match., type: string}
+          limit:
+            description: Maximum number report instances to be returned.
+            tags: {cpptype: uint32}
+            type: integer
+          name: {description: Filters report instances based on the name param passed.
+              Does a case-insensitive substring match., type: string}
+          offset:
+            description: Start returning report instances from offset specified.
+            tags: {cpptype: uint32}
+            type: integer
+          owner: {description: 'Filters report instances based on the owner param
+              passed. Does a case sensitive exact match of each owner, not a substring
+              comparison of each owner. Owners can be passed as comma-separated values.
+              Report instances with at least one of the owners passed in the query
+              string will be matched.', type: string}
+          schedule_id: {description: Filters report instances based on the schedule_id
+              param passed. schedule_id can be passed as comma-separated values. Report
+              instances with one of the schedule_ids passed in the query string param
+              will be matched., type: string}
+          schedule_name: {description: Filters report instances based on the schedule_name
+              param passed. Does a case-insensitive substring match., type: string}
+          sort:
+            description: Sort direction.
+            enum: [asc, desc]
+            type: string
+          sortby:
+            description: Sort by specified field.
+            enum: [name, description, owner, created, last_modified]
+            type: string
+          state:
+            description: Filter by specified state.
+            enum: [temporary, saved]
+            type: string
+          tag: {description: 'Filters report instances based on the tag param passed.
+              Does a case-insensitive exact match of each tag, not a substring comparison
+              of each tag. Tags can be passed as comma-separated values. Report instances
+              with at least one of the passed tags will be matched.', type: string}
+          template_id: {description: Filters report instances based on the template_id
+              param passed. template_id can be passed as comma-separated values. Report
+              instances with one of the template_ids passed in the query string param
+              will be matched., type: string}
+          template_name: {description: Filters report instances based on the template_name
+              param passed. Does a case-insensitive substring match., type: string}
+          total:
+            description: Total number of reports in the system that match the filter
+              criteria.
+            tags: {cpptype: uint32}
+            type: integer
+        type: object
+    required: [items]
+    type: object
+  report_instance_info:
+    additionalProperties: true
+    description: General information for a report instance
+    links:
+      get:
+        description: Get the report info for an instance
+        method: GET
+        response: {$ref: '#/resources/report_instance_info'}
+      self: {path: '$/instances/items/{report_id}/info'}
+      set:
+        description: Replace the report info for an instance
+        method: PUT
+        request: {$ref: '#/resources/report_instance_info'}
+    properties:
+      description:
+        description: Description of the report instance
+        tags: {cpptype: string}
+        type: string
+      name:
+        description: Name of the report instance
+        tags: {cpptype: string}
+        type: string
+      report_id:
+        description: ID of the report instance
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      state:
+        description: Persistence state of the report instance
+        enum: [temporary, saved, transient]
+        tags: {cpptype: report_state}
+        type: string
+      tags: {$ref: '#/types/tags_obj'}
+    required: []
+    type: object
+  report_instance_presentation:
+    additionalProperties: true
+    description: Client presentation information for a report instance
+    links:
+      get:
+        description: Get the presentation for an instance
+        method: GET
+        response: {$ref: '#/resources/report_instance_presentation'}
+      self: {path: '$/instances/items/{report_id}/presentation'}
+      set:
+        description: Replace the presentation for an instance
+        method: PUT
+        request: {$ref: '#/resources/report_instance_presentation'}
+    properties:
+      report_id:
+        description: Instance ID to which the presentation belongs.
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+    type: object
+  schedule:
+    additionalProperties: true
+    description: A single report schedule.
+    links:
+      delete: {description: Delete a report schedule, method: DELETE}
+      get:
+        description: Get a report schedule
+        method: GET
+        response: {$ref: '#/resources/schedule'}
+      self: {path: '$/schedules/items/{id}'}
+      set:
+        description: Update a report schedule
+        method: PUT
+        request: {$ref: '#/resources/schedule'}
+        response: {$ref: '#/resources/schedule'}
+    properties:
+      access_rights: {$ref: '#/types/access_rights_obj'}
+      created: {type: string}
+      enabled: {type: boolean}
+      err_message: {$ref: '#/types/run_message'}
+      execute_on: {$ref: '#/types/execution_timestamps'}
+      executing: {description: Flag indicating if the schedule is executing at the
+          moment, readOnly: true, type: boolean}
+      executing_job_id:
+        tags: {cpptype: uint32}
+        type: integer
+      id:
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      info: {$ref: '#/resources/schedule_info'}
+      last_executed: {type: string}
+      last_modified: {type: string}
+      notification_attachment_name: {type: string}
+      notification_enabled: {type: boolean}
+      notification_message: {type: string}
+      num_instances:
+        description: Number of snapshots already generated by this schedule
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      rrule: {$ref: '#/types/recurrence_rule'}
+      subscription:
+        additionalProperties: true
+        properties:
+          recipient_ids:
+            description: List of pre-defined recipient IDs.
+            items:
+              tags: {cpptype: uint32}
+              type: integer
+            type: array
+          subscription_id:
+            readOnly: true
+            tags: {cpptype: uint32}
+            type: integer
+          to:
+            description: List of emails.
+            items: {type: string}
+            type: array
+        type: object
+      template_id:
+        tags: {cpptype: uint32}
+        type: integer
+      template_name: {description: Name of the report template used for this schedule,
+        readOnly: true, type: string}
+      time:
+        additionalProperties: false
+        description: Snapshot execution time range
+        properties:
+          duration: {description: 'Lenght of time duration. Example: 1 hour.', type: string}
+          snap_to_previous:
+            description: Calendar unit to snap the end of time range to.
+            enum: [NONE, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR]
+            tags: {cpptype: snap_to_previous_type}
+            type: string
+        required: [duration, snap_to_previous]
+        type: object
+    required: [enabled, info, template_id, rrule, time]
+    type: object
+  schedule_info:
+    additionalProperties: true
+    description: Information on a scheduled report
+    links:
+      get:
+        description: Get the info for a scheduled report
+        method: GET
+        response: {$ref: '#/resources/schedule_info'}
+      self: {path: '$/schedules/items/{schedule_id}/info'}
+      set:
+        description: Replace the info for a scheduled report
+        method: PUT
+        request: {$ref: '#/resources/schedule_info'}
+    properties:
+      description:
+        tags: {cpptype: string}
+        type: string
+      name:
+        tags: {cpptype: string}
+        type: string
+      schedule_id:
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      tags: {$ref: '#/types/tags_obj'}
+    required: [name]
+    type: object
+  schedules:
+    additionalProperties: false
+    description: List of scheduled reports
+    links:
+      bulk_delete:
+        description: Bulk-delete multiple scheduled reports. Delete operation will
+          be aborted and none of the schedules will be deleted if the user does not
+          have R/W access to any of the ids in the input list. Schedule ids that do
+          not exist will be ignored.
+        method: POST
+        path: $/schedules/bulk_delete
+        request: {$ref: '#/types/schedule_ids'}
+        response: {$ref: '#/types/schedule_ids'}
+      create:
+        description: Set up a scheduled report.
+        method: POST
+        request: {$ref: '#/resources/schedule'}
+        response: {$ref: '#/resources/schedule'}
+      execute_rrule:
+        description: For the given recurrence rule, calculate the corresponding schedule
+          execution times.
+        method: POST
+        path: $/schedules/execute_rrule
+        request: {$ref: '#/types/recurrence_rule'}
+        response: {$ref: '#/types/execution_timestamps'}
+      export:
+        description: Get full version of all scheduled reports.
+        method: GET
+        path: $/schedules/export
+        response: {$ref: '#/resources/schedules'}
+      get:
+        description: Get a list of scheduled reports.
+        method: GET
+        response: {$ref: '#/resources/schedules'}
+      get_tags:
+        description: Collect tags from all schedules by owner
+        method: GET
+        path: $/schedules/tags
+        response: {$ref: '#/types/rpt_tags'}
+      self:
+        params:
+          access:
+            description: Filters Schedules based on access. "all", returns all schedules
+              the current authenticated user has access to including those marked
+              public. "private", returns all schedules not shared with any roles that
+              the current authenticated user has access to. "shared", returns all
+              schedules shared with one or more roles. "public" returns all schedules
+              marked public
+            enum: [all, private, shared, public]
+            type: string
+          access_rights:
+            description: Filters Schedules based on access_rights. "all", returns
+              all schedules with read_only or read_write rights that the authenticated
+              user has access to. "read_only", returns all schedules with read_only
+              rights that the authenticated user has access to. "read_write", Returns
+              all schedules with read_write rights that the authenticated user has
+              access to.
+            enum: [all, read_only, read_write]
+            type: string
+          description: {description: Filters Schedules based on the description param
+              passed. Does a case-insensitive substring match., type: string}
+          limit:
+            description: Maximum number of schedules to be returned
+            tags: {cpptype: uint32}
+            type: integer
+          name: {description: Filters Schedules based on the name param passed. Does
+              a case-insensitive substring match., type: string}
+          offset:
+            description: Number of schedules to be skipped as specified by the offset
+              value
+            tags: {cpptype: uint32}
+            type: integer
+          owner: {description: 'Filters Schedules based on the owner param passed.
+              Does a case-sensitive exact match of each owner, not a substring comparison
+              of each owner. Owners can be passed as comma-separated values. Schedules
+              with at least one of the owners passed in the query string will be matched.',
+            type: string}
+          sort:
+            description: Sort direction. Possible values [asc,desc]
+            enum: [asc, desc]
+            type: string
+          sortby:
+            description: Sort by the selected field.
+            enum: [name, description, owner, created, last_modified]
+            type: string
+          tag: {description: 'Filters Schedules based on the tag param passed. Does
+              a case-insensitive exact match of each tag, not a substring comparison
+              of each tag. Tags can be passed as comma-separated values. Schedules
+              with at least one of the tags passed in the query string will be matched.',
+            type: string}
+          template_id: {description: Filters Schedules based on the template_id param
+              passed. template_id can be passed as comma-separated values. Schedules
+              with the template_ids passed in the query string param will be matched.,
+            type: string}
+          template_name: {description: Filters report Schedules based on the template_name
+              param passed. Does a case-insensitive substring match., type: string}
+        path: $/schedules
+    properties:
+      items:
+        items: {$ref: '#/resources/schedule'}
+        type: array
+      meta:
+        additionalProperties: false
+        description: Meta data of the data set returned when a list of schedules are
+          fetched.
+        properties:
+          access: {description: Schedules filtered by this access param in the query
+              string, type: string}
+          access_rights: {description: Schedules filtered by this access_rights param
+              in the query string, type: string}
+          count:
+            description: The actual number of rows returned as for this request.
+            tags: {cpptype: uint32}
+            type: integer
+          description: {description: Schedules filtered by this description param
+              in the query string, type: string}
+          limit:
+            description: The maximum number rows to return. 0 means no limit.
+            tags: {cpptype: uint32}
+            type: integer
+          name: {description: Schedules filtered by this name param in the query string,
+            type: string}
+          offset:
+            description: Number of schedules to be skipped as specified by offset.
+              Offset value of 0 will be ignored.
+            tags: {cpptype: uint32}
+            type: integer
+          owner: {description: Schedules filtered by this owner param in the query
+              string, type: string}
+          sort: {description: Schedules sorted on param in the query string, type: string}
+          sortby: {description: Schedules sorted by ascending or descending, type: string}
+          tag: {description: Schedules filtered by this tag/tags param in the query
+              string, type: string}
+          template_id: {type: string}
+          template_name: {description: Schedules filtered by this template name param
+              in the query string, type: string}
+          total:
+            description: Total number of rows that exists for the requested resource
+            tags: {cpptype: uint32}
+            type: integer
+        type: object
+    required: [items]
+    type: object
+  template:
+    additionalProperties: true
+    description: A single report template
+    links:
+      delete: {description: Delete a report template, method: DELETE}
+      get:
+        description: Get a report template
+        method: GET
+        response: {$ref: '#/resources/template'}
+      get_rights:
+        description: Get the access rights for a report template
+        method: GET
+        path: $/templates/items/{id}/access_rights
+        response: {$ref: '#/types/access_rights_obj'}
+      self: {path: '$/templates/items/{id}'}
+      set:
+        description: Update a report template
+        method: PUT
+        request: {$ref: '#/resources/template'}
+        response: {$ref: '#/resources/template'}
+      set_rights:
+        description: Update the access rights for a report template
+        method: PUT
+        path: $/templates/items/{id}/access_rights
+        request: {$ref: '#/types/access_rights_obj'}
+    properties:
+      access_rights: {$ref: '#/types/access_rights_obj'}
+      created: {type: string}
+      id:
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      info: {$ref: '#/resources/template_info'}
+      last_modified: {type: string}
+      num_schedules:
+        description: Number of schedules already generated by this template
+        tags: {cpptype: uint32}
+        type: integer
+    required: [info]
+    type: object
+  template_info:
+    additionalProperties: true
+    description: Information about a report template
+    links:
+      get:
+        description: Get the info for a report template
+        method: GET
+        response: {$ref: '#/resources/template_info'}
+      self: {path: '$/templates/items/{template_id}/info'}
+      set:
+        description: Replace the info for a report template
+        method: PUT
+        request: {$ref: '#/resources/template_info'}
+    properties:
+      built_in: {readOnly: true, type: boolean}
+      client_source:
+        enum: [ALLOY_CLIENT, WEB_UI]
+        tags: {cpptype: template_client_source}
+        type: string
+      description:
+        tags: {cpptype: string}
+        type: string
+      name:
+        tags: {cpptype: string}
+        type: string
+      navigator: {type: boolean}
+      schedulable: {type: boolean}
+      tags: {$ref: '#/types/tags_obj'}
+      template_id:
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      type:
+        enum: [INTERACTIVE, DASHBOARD, REPORT, FAVORITES, HIDDEN]
+        tags: {cpptype: template_type}
+        type: string
+    required: [name, client_source]
+    type: object
+  templates:
+    additionalProperties: false
+    description: List of system report templates
+    links:
+      built_in_version:
+        description: Get the current version of built-in template content
+        method: GET
+        path: $/templates/built_in_version
+        response:
+          properties:
+            version: {type: string}
+          type: object
+      bulk_delete:
+        description: Bulk-delete multiple templates. Delete operation will be aborted
+          and none of the templates will be deleted if the user does not have R/W
+          access to any of the ids in the input list, or if the template a built-in
+          template. template ids that do not exist will be ignored.
+        method: POST
+        path: $/templates/bulk_delete
+        request: {$ref: '#/types/template_ids'}
+        response: {$ref: '#/types/template_ids'}
+      create:
+        description: Create a new report template
+        method: POST
+        request: {$ref: '#/resources/template'}
+        response: {$ref: '#/resources/template'}
+      export:
+        description: Get full version of all report templates
+        method: GET
+        path: $/templates/export
+        response: {$ref: '#/resources/templates'}
+      get:
+        description: Get a list of report templates
+        method: GET
+        response: {$ref: '#/resources/templates'}
+      get_tags:
+        description: Collect tags from all templates by owner
+        method: GET
+        path: $/templates/tags
+        response: {$ref: '#/types/rpt_tags'}
+      self:
+        params:
+          access: {description: 'Filters Templates based on access. Possible values
+              are [all, private, shared, public]. "all", returns all templates the
+              current authenticated user has access to including those marked public.
+              "private", returns all templates not shared with any roles that the
+              current authenticated user has access to. "shared", returns all templates
+              shared with one or more roles."public" returns all templates marked
+              public', type: string}
+          access_rights: {description: 'Filters Templates based on access_rights.
+              Possible values are [all, read_only, read_write]. "all", returns all
+              templates with read_only or read_write rights that the authenticated
+              user has access to. "read_only", returns all templates with read_only
+              rights that the authenticated user has access to. "read_write", Returns
+              all templates with read_write rights that the authenticated user has
+              access to.', type: string}
+          built_in: {description: Filters Templates based on the built_in param passed.
+              'true' show only built-in templates. 'false' show only custom user-created
+              templates., type: boolean}
+          client_source:
+            description: Filters Templates based on the client_source param passed.
+              Possible values are [ALLOY_CLIENT, WEB_UI]
+            tags: {cpptype: template_client_source}
+            type: string
+          description: {description: Filters Templates based on the description param
+              passed. Does a case-insensitive substring match., type: string}
+          limit:
+            description: Maximum number of templates to be returned
+            tags: {cpptype: uint32}
+            type: integer
+          name: {description: Filters Templates based on the name param passed. Does
+              a case-insensitive substring match., type: string}
+          navigator: {description: Filters Templates based on the navigator param
+              passed. 'true' show only templates that can be included in the navigator
+              workspace. 'false' show only non-navigator templates., type: boolean}
+          offset:
+            description: Number of templates to be skipped as specified by the offset
+              value
+            tags: {cpptype: uint32}
+            type: integer
+          owner: {description: 'Filters Templates based on the owner param passed.
+              Does a case sensitive exact match of each owner, not a substring comparison
+              of each owner. Owners can be passed as comma-separated values. Templates
+              with at least one of the owners passed in the query string will be matched.',
+            type: string}
+          schedulable: {description: Filters Templates based on the schedulable param
+              passed. 'true' show only schedulable reports. 'false' show only reports
+              that can't be scheduled., type: boolean}
+          sort:
+            description: Sort direction.
+            enum: [asc, desc]
+            type: string
+          sortby:
+            description: Sort by the selected field.
+            enum: [name, description, owner, created, last_modified]
+            type: string
+          tag: {description: 'Filters Templates based on the tag param passed. Does
+              a case-insensitive exact match of each tag, not a substring comparison
+              of each tag. Tags can be passed as comma-separated values. Templates
+              with at least one of the tags passed in the query string will be matched.',
+            type: string}
+          type:
+            description: Filters Templates based on the type param passed. Possible
+              values are [INTERACTIVE, DASHBOARD, REPORT, FAVORITES]
+            tags: {cpptype: template_type}
+            type: string
+        path: $/templates
+    properties:
+      items:
+        items: {$ref: '#/resources/template'}
+        type: array
+      meta:
+        additionalProperties: false
+        description: Meta data of the data set returned when a list of templates are
+          fetched.
+        properties:
+          access: {description: Templates filtered by this access param in the query
+              string, type: string}
+          access_rights: {description: Templates filtered by this access_rights param
+              in the query string, type: string}
+          built_in: {description: Templates filtered by this built_in param in the
+              query string, type: boolean}
+          client_source: {description: Templates filtered by this client_source param
+              in the query string, type: string}
+          count:
+            description: The actual number of rows returned as for this request.
+            tags: {cpptype: uint32}
+            type: integer
+          description: {description: Templates filtered by this description param
+              in the query string, type: string}
+          limit:
+            description: The maximum number rows to return. 0 means no limit.
+            tags: {cpptype: uint32}
+            type: integer
+          name: {description: Templates filtered by this name param in the query string,
+            type: string}
+          navigator: {description: Templates filtered by this navigator param in the
+              query string, type: boolean}
+          offset:
+            description: Number of templates to be skipped as specified by offset.
+              Offset value of 0 will be ignored.
+            tags: {cpptype: uint32}
+            type: integer
+          owner: {description: Templates filtered by this owner param in the query
+              string, type: string}
+          schedulable: {description: Templates filtered by this schedulable param
+              in the query string, type: boolean}
+          sort: {description: Templates sorted on param in the query string, type: string}
+          sortby: {description: Templates sorted by ascending or descending, type: string}
+          tag: {description: Templates filtered by this tag/tags param in the query
+              string, type: string}
+          total:
+            description: Total number of rows that exists for the requested resource
+            tags: {cpptype: uint32}
+            type: integer
+          type: {description: Templates filtered by this type param in the query string,
+            type: string}
+        type: object
+    required: [items]
+    type: object
+title: Report Manager API
+types:
+  access_rights_obj:
+    additionalProperties: false
+    description: Specifies roles that have read/write access to an object. Users with
+      read_write roles can read, update and delete the object. They can also share
+      the object with other roles.
+    properties:
+      effective:
+        description: Provides a summary of user's access to the object. This is a
+          read-only type.
+        properties:
+          access_right:
+            description: Value READ_WRITE implies that the user has read_write access
+              on the object. READ_ONLY implies the user has read only access. NONE
+              implies the user has no access to the object being requested.
+            enum: [NONE, READ_ONLY, READ_WRITE]
+            readOnly: true
+            tags: {cpptype: access_right_type}
+            type: string
+        required: [access_right]
+        type: object
+      id:
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      owner: {readOnly: true, type: string}
+      public:
+        description: Indicates if an object/resource is public. All public objects/resouce
+          are read_only.
+        properties:
+          access_right:
+            enum: [READ_ONLY]
+            tags: {cpptype: pub_access_right_type}
+            type: string
+        required: [access_right]
+        type: object
+      shared:
+        description: Property read_only - Specifies a list of roles that have read_only
+          access to the resource/object. Property read_write - Specifies a list of
+          roles that have read_write access to the resource/object.
+        properties:
+          read_only: {$ref: '#/types/roles_obj'}
+          read_write: {$ref: '#/types/roles_obj'}
+        type: object
+    type: object
+  column_list:
+    description: Collection of data column IDs.
+    items: {description: Data column ID., type: string}
+    type: array
+  data_def_results:
+    additionalProperties: false
+    description: Data results for one data definition
+    properties:
+      columns: {$ref: '#/types/column_list'}
+      data: {$ref: '#/types/data_matrix'}
+      datasource_id: {description: Data source to which the results belong., readOnly: true,
+        type: string}
+      datasource_storage_key: {description: Location within the datasource in which
+          data is stored, readOnly: true, type: string}
+      errors: {$ref: '#/types/run_messages'}
+      id:
+        description: Data definition ID to which the results belong.
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      meta:
+        additionalProperties: false
+        description: Information about a data definition's data results.
+        properties:
+          count:
+            description: The number of data rows returned in the current results after
+              filtering
+            tags: {cpptype: uint32}
+            type: integer
+          end_time: {description: 'The end time of a live data request. A high-precision
+              time value, based on Unix Epoch time.', type: string}
+          filter: {description: A Steelfilter expression to filter results., type: string}
+          filtered:
+            description: Total number of data rows matching the filter.
+            tags: {cpptype: uint32}
+            type: integer
+          limit:
+            description: The maximum number of data rows to return. 0 means no limit.
+            tags: {cpptype: uint32}
+            type: integer
+          offset:
+            description: Skip the specified number of rows before starting to return
+              data.
+            tags: {cpptype: uint32}
+            type: integer
+          resolution: {description: The resolution to use for a live data request.,
+            type: string}
+          sort_by: {description: 'Sort by specified column. Format is a comma separated
+              list, with a column id and direction for each entry (column_id1 desc,column_id2
+              asc)', type: string}
+          start_time: {description: 'The start time of a live data request. A high-precision
+              time value, based on Unix Epoch time.', type: string}
+          total:
+            description: Total number of available data rows.
+            tags: {cpptype: uint32}
+            type: integer
+        tags: {cpptype: data_matrix_meta}
+        type: object
+      others: {$ref: '#/types/data_row'}
+      reference_id: {description: Corresponding data definition ID in the client system,
+        readOnly: true, type: string}
+      summary_max_values: {$ref: '#/types/data_row'}
+      summary_min_values: {$ref: '#/types/data_row'}
+      totals: {$ref: '#/types/data_row'}
+      ts_max_values: {$ref: '#/types/ts_statistical_results'}
+      ts_min_values: {$ref: '#/types/ts_statistical_results'}
+      ts_percentile_values: {$ref: '#/types/ts_statistical_results'}
+    type: object
+  data_def_source:
+    description: Data source specificiation for a data definition.
+    properties:
+      name: {description: Name of the data source for the data definition., type: string}
+      origin: {description: 'The origin data source for a query that is performing
+          a sub-query into another data source (e.g., alerting requesting into system_metrics).
+          Required in these cases for data column validation.', type: string}
+      path: {description: Reference path to the requested data from within the data
+          source., type: string}
+      reference_id: {description: Reference to another data_def which will be used
+          as a source to this one., type: string}
+      type: {description: Data type requested, type: string}
+    required: [name]
+    type: object
+  data_def_status:
+    additionalProperties: false
+    description: Status for a data definition.
+    properties:
+      datasource_id: {description: Data source to which the data definition belongs.,
+        readOnly: true, type: string}
+      datasource_storage_key: {description: Location within the datasource in which
+          data is stored, readOnly: true, type: string}
+      id:
+        description: Data definition ID to which the status belongs.
+        readOnly: true
+        tags: {cpptype: uint32}
+        type: integer
+      messages: {$ref: '#/types/run_messages'}
+      progress:
+        additionalProperties: false
+        description: Details about the current progress of a running query.
+        properties:
+          percent:
+            description: Percentage of the total query that has been executed so far.
+            maximum: 100
+            minimum: 0
+            tags: {cpptype: uint16}
+            type: integer
+          remaining_sec:
+            description: Estimated number of seconds remaining in the query.
+            minimum: 0
+            tags: {cpptype: uint32}
+            type: integer
+        type: object
+      reference_id: {description: Corresponding data definition ID in the client system,
+        readOnly: true, type: string}
+      state:
+        description: Current execution state of the data definition.
+        enum: [pending, initializing, executing, completed, error, collecting]
+        tags: {cpptype: data_def_state}
+        type: string
+    type: object
+  data_defs_list:
+    description: Array of data definitions.
+    items: {$ref: '#/resources/data_definition'}
+    type: array
+  data_matrix:
+    description: Array of results data rows within a data definition.
+    items: {$ref: '#/types/data_row'}
+    type: array
+  data_row:
+    description: Row of results data within a data definition.
+    items: {type: string}
+    type: array
+  execution_timestamps:
+    description: Report Schedule's next execution times in relative to the Unix Epoch
+      format.
+    items: {type: string}
+    type: array
+  filter_criteria:
+    description: Array of filter criteria.
+    items:
+      description: A single filter criterion to use on the query data.
+      properties:
+        context:
+          description: Context from which the filter was applied (e.g., user request,
+            data drill-down, etc).
+          enum: [NONE, INTERNAL, USER, DRILL_DOWN]
+          tags: {cpptype: filter_criterion_context}
+          type: string
+        id: {description: Filter criterion ID., type: string}
+        type: {$ref: '#/types/filter_criterion_type'}
+        value: {description: Query filter text to use., type: string}
+      type: object
+    type: array
+  filter_criterion_type:
+    description: The type of filter used on the data.
+    enum: [STEELFILTER, WIRESHARK, BPF]
+    tags: {cpptype: filter_criterion_type}
+    type: string
+  multiple_ids:
+    description: Array of IDs.
+    items:
+      description: ID.
+      tags: {cpptype: uint32}
+      type: integer
+    type: array
+  recurrence_rule:
+    additionalProperties: false
+    description: Recurrence rule specification for report schedule. Implements(incompletely)
+      the Recurrence Rule Specification from iCalendar RFC - http://www.ietf.org/rfc/rfc2445.txt
+    properties:
+      allow_past_times: {description: 'Allow calculating rules for times in the past.
+          If not set, or set to false, the result rules will always be in the future
+          regardless of what dtstart is passed.', type: boolean}
+      byday:
+        description: Specifies days of the week.
+        items:
+          enum: [SU, MO, TU, WE, TH, FR, SA]
+          type: string
+        type: array
+      byhour:
+        description: Specifies hours of the day.
+        items:
+          maximum: 23
+          minimum: 0
+          tags: {cpptype: uint16}
+          type: integer
+        type: array
+      byminute:
+        description: Specifies minutes within an hour.
+        items:
+          maximum: 59
+          minimum: 0
+          tags: {cpptype: uint16}
+          type: integer
+        type: array
+      bymonth:
+        description: Specifies array of the months of the year.
+        items:
+          maximum: 12
+          minimum: 1
+          tags: {cpptype: uint16}
+          type: integer
+        type: array
+      bymonthday:
+        description: Specifies array of days of the month. 0 is invalid value.
+        items:
+          maximum: 31
+          minimum: -31
+          tags: {cpptype: int16}
+          type: integer
+        type: array
+      bysecond:
+        description: Specifies seconds within a minute.
+        items:
+          maximum: 59
+          minimum: 0
+          tags: {cpptype: uint16}
+          type: integer
+        type: array
+      bysetpos:
+        description: Specifies the nth occurrence within the set of events specified
+          by the rule. 0 is invalid value. It MUST only be used in conjunction with
+          another BYxxx rule part.
+        items:
+          maximum: 366
+          minimum: -366
+          tags: {cpptype: int16}
+          type: integer
+        type: array
+      count:
+        description: Specifies the number of occurrences, either until or count must
+          be specified, but not both.
+        tags: {cpptype: uint32}
+        type: integer
+      dtstart: {description: Specifies when the recurrence begins. High precision
+          timestamp relative to the Unix Epoch., type: string}
+      freq:
+        description: Type of recurrence rule, to specify repeating events based on
+          an interval of freq.
+        enum: [YEARLY, QUARTERLY, MONTHLY, WEEKLY, DAILY, HOURLY, ONETIME]
+        type: string
+      interval:
+        description: Specifies how often the recurrence rule repeats.
+        tags: {cpptype: uint32}
+        type: integer
+      timezone: {description: 'Specifies when the time zone. Example: Europe/Budapest.
+          If not specified Etc/Universal is used.', type: string}
+      until: {description: 'Specifies when the recurrence ends, either until or count
+          must be specified, but not both. High precision timestamp relative to the
+          Unix Epoch.', type: string}
+    required: [freq]
+    type: object
+  roles_obj:
+    properties:
+      roles:
+        items:
+          tags: {cpptype: uint64}
+          type: integer
+        type: array
+    required: [roles]
+    type: object
+  rpt_tags:
+    additionalProperties: false
+    description: Container for all tag sets on a report instance.
+    properties:
+      items:
+        description: Array of report instance tag sets.
+        items:
+          additionalProperties: true
+          description: A single set of report tags.
+          properties:
+            owner: {description: Owner of the tag set., type: string}
+            tags: {$ref: '#/types/tags_obj'}
+          required: [owner, tags]
+          type: object
+        type: array
+    required: [items]
+    type: object
+  run_message:
+    additionalProperties: true
+    description: Runtime status message for a data definition.
+    properties:
+      details:
+        additionalProperties: {type: string}
+        description: Additional message details.
+        type: object
+      id: {description: Machine-parsable message or error code., type: string}
+      module_id: {description: The system module that generated the message., type: string}
+      nested: {$ref: '#/types/run_message'}
+      text: {description: Message text., type: string}
+    tags: {cpptype: run_message}
+    type: object
+  run_messages:
+    description: Array of runtime status messages for a data definition.
+    items: {$ref: '#/types/run_message'}
+    type: array
+  schedule_ids:
+    description: Array of report schedule IDs.
+    items:
+      description: Report schedule ID.
+      tags: {cpptype: uint32}
+      type: integer
+    type: array
+  tags_obj:
+    description: Container for a set of report tags.
+    properties:
+      items:
+        description: Array of report tags.
+        items: {description: Report tag., type: string}
+        type: array
+    type: object
+  template_ids:
+    description: Array of report template IDs
+    items:
+      description: Report template ID
+      tags: {cpptype: uint32}
+      type: integer
+    type: array
+  time_pairs:
+    description: Array of time range pairs.
+    items:
+      additionalProperties: false
+      description: A time range pair, consisting of a start and end time.
+      properties:
+        end: {description: The ending time. This is a high-precision time value in
+            Unix Epoch format., type: string}
+        start: {description: The start time. This is a high-precision time value in
+            Unix Epoch format., type: string}
+      required: [start, end]
+      type: object
+    type: array
+  ts_statistical_results:
+    description: Array of statistical result rows.
+    items:
+      additionalProperties: false
+      description: One result from a statistical or compatibility function
+      properties:
+        group_by: {$ref: '#/types/data_row'}
+        metric: {description: The metric column ID, type: string}
+        value: {description: The result value, type: string}
+      required: [value, metric, group_by]
+      type: object
+    type: array
+version: '1.0'

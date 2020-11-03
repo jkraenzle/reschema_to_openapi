@@ -1,0 +1,166 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Allows configuration of the HTTPS interface
+id: http://support.riverbed.com/apis/npm.https/1.0
+name: npm.https
+provider: riverbed
+resources:
+  certificate:
+    additionalProperties: false
+    description: The SSL certificate used on the HTTPS port
+    links:
+      generate:
+        description: 'Generate a new self-signed certificate and private key. This
+          replaces the current certificate.
+
+          '
+        method: POST
+        path: $/certificate/generate
+        request: {$ref: '#/types/distingushed_name'}
+        response: {$ref: '#/resources/certificate'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/certificate'}
+      import:
+        description: Import a new certificate and private key
+        method: POST
+        path: $/certificate/import
+        request:
+          additionalProperties: false
+          description: Import request format
+          properties:
+            passphrase: {description: 'Optional passphrase to decrypt private key
+
+                ', type: string}
+            pem: {description: 'Certificate and private key to import, in PEM format
+
+                '}
+          required: [pem]
+          type: object
+        response: {$ref: '#/resources/certificate'}
+      self: {path: $/certificate}
+    properties:
+      expires_at: {description: 'Time at which the certificate expires, in Unix epoch
+          seconds
+
+          ', type: integer}
+      fingerprint:
+        additionalProperties: false
+        description: Certificate fingerprint information
+        properties:
+          algorithm: {description: 'The algorithm used to calculate the fingerprint
+
+              ', type: string}
+          value: {description: Fingerprint value, type: string}
+        required: [algorithm, value]
+        type: object
+      issuer: {$ref: '#/types/distingushed_name'}
+      key:
+        additionalProperties: false
+        description: Certificate key information
+        properties:
+          algorithm: {description: 'The algorithm used to generate the key
+
+              ', type: string}
+          size: {description: 'The size (number of bits) of the key
+
+              ', type: integer}
+        required: [algorithm, size]
+        type: object
+      pem: {description: 'The certificate, in PEM format', type: string}
+      subject: {$ref: '#/types/distingushed_name'}
+      valid_at: {description: 'Time at which the certificate becomes valid, in Unix
+          epoch seconds
+
+          ', type: integer}
+    required: [issuer, subject, valid_at, expires_at, fingerprint, key, pem]
+    type: object
+  http:
+    additionalProperties: false
+    description: HTTP configuration
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/http'}
+      self: {path: $/http}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/http'}
+        response: {$ref: '#/resources/http'}
+    properties:
+      available_ports:
+        description: Port ranges HTTP may be configured to use
+        items:
+          additionalProperties: false
+          description: A contiguous range of port values
+          properties:
+            max: {description: Maximum port value in this range, type: integer}
+            min: {description: Minimum port value in this range, type: integer}
+          required: [min, max]
+          type: object
+        readOnly: true
+        type: array
+      mode:
+        description: Mode of the HTTP port
+        enum: [enabled, disabled, redirect_to_https]
+        type: string
+      port: {description: Port HTTP is listening on (if not disabled), type: integer}
+    required: [mode, port]
+    type: object
+  https:
+    additionalProperties: false
+    description: HTTPS configuration
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/https'}
+      self: {path: $/https}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/https'}
+        response: {$ref: '#/resources/https'}
+    properties:
+      available_ports:
+        description: Port ranges HTTPS may be configured to use
+        items:
+          additionalProperties: false
+          description: A contiguous range of port values
+          properties:
+            max: {description: Maximum port value in this range, type: integer}
+            min: {description: Minimum port value in this range, type: integer}
+          required: [min, max]
+          type: object
+        readOnly: true
+        type: array
+      available_ssl_protocols:
+        description: The SSL protocols available to use
+        items: {type: string}
+        type: array
+      port: {description: Port HTTPS is listening on, type: integer}
+      ssl_ciphers: {description: The SSL cipher string to use, type: string}
+      ssl_protocols:
+        description: 'The SSL protocols to enable.  Each list item must be one of
+          the values in the available_ssl_protocols list.
+
+          '
+        items: {type: string}
+        type: array
+    required: [port, ssl_protocols, ssl_ciphers]
+    type: object
+title: HTTPS Configuration
+types:
+  distingushed_name:
+    additionalProperties: false
+    description: Distinguished name information
+    properties:
+      common_name: {description: Common name (CN), maxLength: 64, minLength: 0, type: string}
+      country: {description: Country code (C), maxLength: 2, minLength: 2, type: string}
+      email: {description: Email address, maxLength: 255, minLength: 0, type: string}
+      locality: {description: Locality (L), maxLength: 128, minLength: 0, type: string}
+      organization: {description: Organization name (O), maxLength: 64, minLength: 0,
+        type: string}
+      organizational_unit: {description: Organization unit name (OU), maxLength: 64,
+        minLength: 0, type: string}
+      state: {description: State or province name (ST), maxLength: 128, minLength: 0,
+        type: string}
+    type: object
+version: '1.0'

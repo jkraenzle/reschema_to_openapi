@@ -1,0 +1,146 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+id: http://support.riverbed.com/apis/npm.wta_config/1.0
+name: npm.wta_config
+provider: riverbed
+resources:
+  wta_webapp:
+    additionalProperties: false
+    description: A Web Application
+    links:
+      delete: {description: Delete a Web Application, method: DELETE}
+      get:
+        description: Retrieve a Web Application
+        method: GET
+        response: {$ref: '#/resources/wta_webapp'}
+      self: {path: '$/wta_webapps/items/{id}'}
+      set:
+        description: Update a Web Application
+        method: PUT
+        request: {$ref: '#/resources/wta_webapp'}
+        response: {$ref: '#/resources/wta_webapp'}
+    properties:
+      advanced_criteria: {description: Advanced criteria expression, type: string}
+      content_values:
+        description: List of page datums to match
+        items: {$ref: '#/types/wta_content_value'}
+        type: array
+      description: {description: Web Application description, type: string}
+      enabled: {description: Indicates whether the Web Application is enabled, type: boolean}
+      id: {description: Web Application ID (will be assigned), type: integer}
+      match:
+        description: Specifies how to logically join the criteria
+        enum: [any, all]
+        type: string
+      name: {description: Web Application name, type: string}
+      order_number: {description: Order number (will be assigned), type: integer}
+      preferred: {description: Indicates whether the Web Application is preferred,
+        type: boolean}
+      slow_page_threshold: {description: Duration (seconds) after which pages are
+          considered slow, type: string}
+      tags: {description: Web Application tags, type: string}
+      url_patterns:
+        description: List of URL patterns to match
+        items:
+          properties:
+            url_pattern: {description: URL pattern (use asterisk as wildcard), type: string}
+          type: object
+        type: array
+      use_advanced_criteria: {description: 'Use any advanced criteria?', type: boolean}
+      use_content_values: {description: 'Use page datums as criteria?', type: boolean}
+      use_filter: {description: 'Specify criteria? (otherwise Web Application will
+          contain All Pages)', type: string}
+      use_url_patterns: {description: 'Use URL patterns as criteria?', type: boolean}
+      vers: {description: Web Application version number (will be assigned), type: integer}
+    type: object
+  wta_webapps:
+    additionalProperties: false
+    description: Web Applications
+    links:
+      bulk_delete:
+        description: Bulk delete multiple Web Applications
+        method: POST
+        path: $/wta_webapps/bulk_delete
+        request: {$ref: '#/types/BulkDeleter'}
+        response: {$ref: '#/types/IDList'}
+      create:
+        description: Create an Web Application
+        method: POST
+        request: {$ref: '#/resources/wta_webapp'}
+        response: {$ref: '#/resources/wta_webapp'}
+      get:
+        description: Retrieve list of Web Applications
+        method: GET
+        response: {$ref: '#/resources/wta_webapps'}
+      merge:
+        description: Merge a list of Web Applications into the existing Web Applications
+        method: POST
+        path: $/wta_webapps/merge
+        request: {$ref: '#/resources/wta_webapps'}
+        response: {$ref: '#/types/IDList'}
+      move:
+        description: Reorder the Web Applications
+        method: POST
+        path: $/wta_webapps/move
+        request: {$ref: '#/types/wta_move_list'}
+      self: {path: $/wta_webapps}
+      since:
+        description: Get a list of Web Applications that have been recently updated
+        method: GET
+        path: $/wta_webapps/since/{time}
+        response:
+          properties:
+            webapps:
+              description: List of Web Application IDs and corresponding names
+              items:
+                properties:
+                  name: {description: Web Application name, type: string}
+                  rid: {description: ID (missing if Web Application is deleted), type: integer}
+                  updated: {description: Timestamp of last update, type: integer}
+                  wid: {description: Internal ID (internally assigned and managed),
+                    type: integer}
+                type: object
+              type: array
+          type: object
+    properties:
+      rules:
+        description: List of Web Applications
+        items: {$ref: '#/resources/wta_webapp'}
+        type: array
+    type: object
+title: Web Transaction Analysis Configuration
+types:
+  BulkDeleter:
+    description: Used for performing bulk delete operations
+    properties:
+      delete_all: {description: Delete all objects in the collection, type: boolean}
+      delete_ids: {$ref: '#/types/IDList'}
+    type: object
+  IDList:
+    description: A list of IDs
+    items: {type: number}
+    type: array
+  wta_content_value:
+    description: Page datum used to specify criteria
+    properties:
+      content_type:
+        description: Format of the datum
+        enum: [soapValue, urlParam, formValue, httpHeader, cookie, regex]
+        type: string
+      equals: {description: Indicates whether the value MUST match or MUST NOT match,
+        type: boolean}
+      location:
+        description: Location of the datum
+        enum: [requestHeader, responseHeader, requestBody, responseBody, url, title]
+        type: string
+      name: {description: Name of the datum, type: string}
+      value: {description: Value to compare to, type: string}
+    type: object
+  wta_move_list:
+    description: Ordered list of IDs used to specify a new ordering for a move operation
+    properties:
+      order:
+        description: ID list
+        items: {type: integer}
+        type: array
+    type: object
+version: '1.0'

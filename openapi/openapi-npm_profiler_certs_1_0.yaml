@@ -1,0 +1,378 @@
+components:
+  schemas:
+    certificate:
+      additionalProperties: false
+      description: 'The SSL Certificate presented to connecting Profiler devices
+
+        '
+      properties:
+        expires_at:
+          description: 'Time at which the certificate expires, in Unix epoch seconds
+
+            '
+          type: integer
+        fingerprint:
+          additionalProperties: false
+          description: Certificate fingerprint information
+          properties:
+            algorithm:
+              description: 'The algorithm used to calculate the fingerprint
+
+                '
+              type: string
+            value:
+              description: Fingerprint value
+              type: string
+          required:
+          - algorithm
+          - value
+          type: object
+        issuer:
+          $ref: '#/components/schemas/distingushed_name'
+        key:
+          additionalProperties: false
+          description: Certificate key information
+          properties:
+            algorithm:
+              description: 'The algorithm used to generate the key
+
+                '
+              type: string
+            size:
+              description: 'The size (number of bits) of the key
+
+                '
+              type: integer
+          required:
+          - algorithm
+          - size
+          type: object
+        pem:
+          description: The certificate, in PEM format
+          type: string
+        subject:
+          $ref: '#/components/schemas/distingushed_name'
+        valid_at:
+          description: 'Time at which the certificate becomes valid, in Unix epoch
+            seconds
+
+            '
+          type: integer
+      required:
+      - issuer
+      - subject
+      - valid_at
+      - expires_at
+      - fingerprint
+      - key
+      - pem
+      type: object
+    distingushed_name:
+      additionalProperties: false
+      description: Distinguished name information
+      properties:
+        common_name:
+          description: Common name (CN)
+          maxLength: 64
+          minLength: 0
+          type: string
+        country:
+          description: Country code (C)
+          maxLength: 2
+          minLength: 2
+          type: string
+        email:
+          description: Email address
+          maxLength: 255
+          minLength: 0
+          type: string
+        locality:
+          description: Locality (L)
+          maxLength: 128
+          minLength: 0
+          type: string
+        organization:
+          description: Organization name (O)
+          maxLength: 64
+          minLength: 0
+          type: string
+        organizational_unit:
+          description: Organization unit name (OU)
+          maxLength: 64
+          minLength: 0
+          type: string
+        state:
+          description: State or province name (ST)
+          maxLength: 128
+          minLength: 0
+          type: string
+      type: object
+    trusted_certificate:
+      additionalProperties: false
+      description: A certificate or CA-certificate to be trusted
+      properties:
+        cert_details:
+          additionalProperties: false
+          description: Certificate details
+          properties:
+            expires_at:
+              description: 'Time at which the certificate expires, in Unix epoch seconds
+
+                '
+              type: integer
+            fingerprint:
+              additionalProperties: false
+              description: Certificate fingerprint information
+              properties:
+                algorithm:
+                  description: 'The algorithm used to calculate the fingerprint
+
+                    '
+                  type: string
+                value:
+                  description: Fingerprint value
+                  type: string
+              required:
+              - algorithm
+              - value
+              type: object
+            issuer:
+              $ref: '#/components/schemas/distingushed_name'
+            key:
+              additionalProperties: false
+              description: Certificate key information
+              properties:
+                algorithm:
+                  description: 'The algorithm used to generate the key
+
+                    '
+                  type: string
+                size:
+                  description: 'The size (number of bits) of the key
+
+                    '
+                  type: integer
+              required:
+              - algorithm
+              - size
+              type: object
+            subject:
+              $ref: '#/components/schemas/distingushed_name'
+            valid_at:
+              description: 'Time at which the certificate becomes valid, in Unix epoch
+                seconds
+
+                '
+              type: integer
+          readOnly: true
+          type: object
+        id:
+          description: 'Server-assigned identifier for this trusted certificate
+
+            '
+          readOnly: true
+          type: integer
+        name:
+          description: Name of this certificate
+          type: string
+        pem:
+          description: The certificate, in PEM format
+          type: string
+      required:
+      - name
+      - pem
+      type: object
+    trusted_certificates:
+      additionalProperties: false
+      description: The list of all trusted certificates
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/trusted_certificate'
+          type: array
+      required:
+      - items
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  description: Allows configuration of the Profiler SSL certificates
+  title: Profiler SSL Certificate Configuration
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /npm.profiler_certs/1.0/certificate:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/certificate'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - certificate
+  /npm.profiler_certs/1.0/certificate/generate:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/types/distingushed_name'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/certificate'
+                type: array
+          description: ''
+      summary: generate
+      tags:
+      - certificate
+  /npm.profiler_certs/1.0/certificate/import:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              description: Import request format
+              properties:
+                passphrase:
+                  description: 'Optional passphrase to decrypt private key
+
+                    '
+                  type: string
+                pem:
+                  description: 'Certificate and private key to import, in PEM format
+
+                    '
+              required:
+              - pem
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/certificate'
+                type: array
+          description: ''
+      summary: import
+      tags:
+      - certificate
+  /npm.profiler_certs/1.0/trusted_certificates:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/trusted_certificates'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - trusted_certificates
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/trusted_certificate'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/trusted_certificate'
+                type: array
+          description: ''
+      summary: create
+      tags:
+      - trusted_certificates
+  /npm.profiler_certs/1.0/trusted_certificates/items/{id}:
+    delete:
+      parameters:
+      - description: 'Server-assigned identifier for this trusted certificate
+
+          '
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: delete
+      tags:
+      - trusted_certificates
+    get:
+      parameters:
+      - description: 'Server-assigned identifier for this trusted certificate
+
+          '
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/trusted_certificate'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - trusted_certificates
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

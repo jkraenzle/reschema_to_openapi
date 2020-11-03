@@ -1,0 +1,53 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: NPM APIs for SSL Diffie Hellman Keys APIs
+id: http://support.riverbed.com/apis/npm.ssl_dh_keys/1.0
+name: npm.ssl_dh_keys
+provider: riverbed
+resources:
+  dh_key:
+    additionalProperties: false
+    description: This resource handles a DH key
+    links:
+      self: {path: '$/keys/items/{id}'}
+    properties:
+      client_ip_addr: {description: The IP address of the client, type: string}
+      client_port:
+        description: The port of the client
+        tags: {cpptype: uint16}
+        type: integer
+      client_random: {description: Hex encoded client random, type: string}
+      id: {description: A unique id for the Diffie-Hellman key, type: string}
+      master_key: {description: Master secret of the session, type: string}
+      server_ip_addr: {description: The IP address of the server, type: string}
+      server_port:
+        description: The port of the server
+        tags: {cpptype: uint16}
+        type: integer
+    required: [client_random, master_key]
+    type: object
+  dh_keys:
+    additionalProperties: false
+    description: This resource handles DH keys
+    links:
+      bulk_create:
+        description: Adds associations between multiple pairs of client random and
+          master secret values for TLS connections encrypted with Diffie-Hellman.
+        method: POST
+        path: $/keys/bulk_create
+        request: {$ref: '#/resources/dh_keys'}
+        response: {$ref: '#/resources/dh_keys'}
+      create:
+        description: Adds an association between the client random and the master
+          secret for a single TLS connection encrypted with Diffie-Hellman.
+        method: POST
+        path: $/keys/create
+        request: {$ref: '#/resources/dh_key'}
+        response: {$ref: '#/resources/dh_key'}
+      self: {path: $/keys}
+    properties:
+      items:
+        items: {$ref: '#/resources/dh_key'}
+        type: array
+    type: object
+title: NPM Probe SSL Diffie Hellman Keys APIs
+version: '1.0'

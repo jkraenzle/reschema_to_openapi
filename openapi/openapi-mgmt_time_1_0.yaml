@@ -1,0 +1,577 @@
+components:
+  schemas:
+    current_time:
+      additionalProperties: false
+      description: Current system time
+      properties:
+        is_dst:
+          description: Daylight saving status
+          readOnly: true
+          type: boolean
+        timestamp:
+          description: Current system time, in Unix epoch seconds
+          type: integer
+        tz_name:
+          description: Time zone abbreviation, e.g., PST
+          readOnly: true
+          type: string
+        utc_offset:
+          description: The UTC offset in seconds
+          readOnly: true
+          type: integer
+      type: object
+    ntp_server:
+      additionalProperties: false
+      description: An NTP server
+      oneOf:
+      - properties:
+          encryption:
+            enum:
+            - none
+            type: string
+        required:
+        - address
+        - encryption
+        - prefer
+        - version
+        type: object
+      - properties:
+          encryption:
+            enum:
+            - sha1
+            - md5
+            type: string
+        required:
+        - address
+        - encryption
+        - key_id
+        - secret
+        - prefer
+        - version
+        type: object
+      properties:
+        address:
+          description: NTP server address
+          minLength: 1
+          type: string
+        encryption:
+          description: Encryption method to use
+          enum:
+          - none
+          - sha1
+          - md5
+          type: string
+        key_id:
+          description: Encryption key ID
+          maximum: 65534
+          minimum: 0
+          type: integer
+        prefer:
+          description: Prefer this server
+          type: boolean
+        secret:
+          description: Encryption secret, if encryption is enabled
+          minLength: 1
+          type: string
+        server_id:
+          description: Unique NTP server ID
+          readOnly: true
+          type: integer
+        version:
+          description: NTP version
+          maximum: 4
+          minimum: 1
+          type: integer
+      type: object
+    ntp_servers:
+      description: Configured NTP servers
+      properties:
+        items:
+          allOf:
+          - $ref: '#/components/schemas/ntp_server'
+      type: object
+    ntp_status:
+      additionalProperties: false
+      description: Status of a single NTP server
+      properties:
+        active_sync:
+          description: 'This is the active NTP server.  Only one may be active at
+            a time.
+
+            '
+          type: boolean
+        auth:
+          description: This peer has been authenticated
+          type: boolean
+        conf:
+          description: 'True if this peer was configured.  False indicates it was
+            learned.
+
+            '
+          type: boolean
+        delay:
+          description: Roundtrip time to source, in milliseconds
+          type: number
+        jitter:
+          description: The difference between two samples, in milliseconds
+          type: number
+        key_id:
+          description: Encryption key id
+          maximum: 65534
+          minimum: 0
+          type: integer
+        offset:
+          description: Time difference between client and source, in milliseconds
+          type: number
+        refid:
+          description: Remote peer's reference ID
+          type: string
+        remote_peer:
+          description: Hostname/IP address of the remote NTP peer
+          type: string
+      readOnly: true
+      type: object
+    ptp_config:
+      additionalProperties: false
+      description: PTP configuration
+      properties:
+        interface:
+          description: Name of the interface to use for PTP synchronization
+          type: string
+        transport:
+          description: PTP transport type
+          enum:
+          - ipv4
+          - ipv6
+          - ethernet
+          type: string
+      required:
+      - interface
+      - transport
+      type: object
+    ptp_status:
+      additionalProperties: false
+      description: PTP status
+      properties:
+        active_sync:
+          description: PTP is synchronized with the master
+          type: boolean
+        offset:
+          description: PTP offset, in milliseconds, from the master
+          type: number
+        server:
+          description: Server address (IPv4/IPv6/MAC address)
+          type: string
+      readOnly: true
+      type: object
+    time_configuration:
+      description: Time source configuration
+      properties:
+        mode:
+          description: Mode for automatic clock synchronization
+          enum:
+          - none
+          - ntp
+          - ptp
+          type: string
+      type: object
+    time_set_event:
+      additionalProperties: false
+      description: 'The time has been changed. This event will only be sent when the
+        system is on local clock.
+
+        '
+      properties:
+        hdr:
+          $ref: /apis/mgmt.types.events/1.0#/components/schemas/event_header
+        new_timestamp:
+          description: New system time, in Unix epoch time
+          type: integer
+        old_timestamp:
+          description: Previous system time, in Unix epoch time
+          type: integer
+      required:
+      - hdr
+      - old_timestamp
+      - new_timestamp
+      type: object
+    time_set_events:
+      description: All time change events that have occurred
+      properties:
+        queue:
+          description: The time change events
+          items:
+            $ref: '#/components/schemas/time_set_event'
+          type: array
+      type: object
+    timezone:
+      description: The configured timezone
+      type: string
+    timezones:
+      description: A timezone
+      type: string
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  title: System Time/NTP/PTP configuration module
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /mgmt.time/1.0/configuration:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/time_configuration'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - configuration
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/time_configuration'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/time_configuration'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - configuration
+  /mgmt.time/1.0/event_queues/time_set_events:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/time_set_events'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - event_queues
+  /mgmt.time/1.0/event_queues/time_set_events/{id}:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/time_set_event'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - event_queues
+  /mgmt.time/1.0/now:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/current_time'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - now
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/current_time'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/current_time'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - now
+  /mgmt.time/1.0/ntp/servers:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ntp_servers'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - ntp
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ntp_server'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ntp_server'
+                type: array
+          description: ''
+      summary: create
+      tags:
+      - ntp
+  /mgmt.time/1.0/ntp/servers/items/{server_id}:
+    delete:
+      parameters:
+      - description: Unique NTP server ID
+        in: path
+        name: server_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: delete
+      tags:
+      - ntp
+    get:
+      parameters:
+      - description: Unique NTP server ID
+        in: path
+        name: server_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ntp_server'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - ntp
+    put:
+      parameters:
+      - description: Unique NTP server ID
+        in: path
+        name: server_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ntp_server'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ntp_server'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - ntp
+  /mgmt.time/1.0/ntp/status:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ntp_status'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - ntp
+  /mgmt.time/1.0/ptp/config:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ptp_config'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - ptp
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ptp_config'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ptp_config'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - ptp
+  /mgmt.time/1.0/ptp/status:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ptp_status'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - ptp
+  /mgmt.time/1.0/timezone:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/timezone'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - timezone
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/timezone'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/timezone'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - timezone
+  /mgmt.time/1.0/timezones:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/timezones'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - timezones
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

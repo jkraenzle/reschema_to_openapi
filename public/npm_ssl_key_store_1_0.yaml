@@ -1,0 +1,55 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Service which securely stores SSL keys
+id: http://support.riverbed.com/apis/npm.ssl_key_store/1.0
+name: npm.ssl_key_store
+provider: riverbed
+resources:
+  key:
+    additionalProperties: false
+    description: A single SSL key
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/key'}
+      self: {path: '$/keys/items/{id}'}
+    properties:
+      description: {description: A brief description of the key, type: string}
+      id: {description: Key ID, readOnly: true, type: integer}
+      name: {description: The name of the key, type: string}
+      timestamp: {description: 'The time when this key was added, in Unix epoch seconds
+
+          ', readOnly: true, type: integer}
+    required: [id, name]
+    type: object
+  keys:
+    additionalProperties: false
+    description: The SSL keys being stored
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/keys'}
+      import:
+        method: POST
+        path: $/keys/import
+        request:
+          additionalProperties: false
+          properties:
+            description: {description: A brief description of the key, type: string}
+            key: {description: 'The key to import, in PEM format', type: string}
+            name: {description: The name of the key, type: string}
+            passphrase: {description: 'The passphrase to decode the key, if required
+
+                ', type: string}
+          required: [name, key]
+          type: object
+        response: {$ref: '#/resources/key'}
+      self: {path: $/keys}
+    properties:
+      items:
+        items: {$ref: '#/resources/key'}
+        type: array
+    required: [items]
+    type: object
+title: NPM SSL Key Store
+version: '1.0'

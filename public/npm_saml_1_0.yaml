@@ -1,0 +1,125 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Allows configuration of SAML
+id: http://support.riverbed.com/apis/npm.saml/1.0
+name: npm.saml
+provider: riverbed
+resources:
+  saml_settings:
+    additionalProperties: false
+    description: SAML configuration
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/saml_settings'}
+      self: {path: $/settings}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/saml_settings'}
+        response: {$ref: '#/resources/saml_settings'}
+    properties:
+      enabled: {description: Whether SAML logins are enabled, type: boolean}
+      fqdn: {description: 'Override the detected fully-qualified domain name of this
+          SP
+
+          ', type: string}
+      idp_metadata: {description: XML metadata of the Identity Provider, type: string}
+      require_signed_assertions: {description: Whether assertions from the IdP must
+          be signed, type: boolean}
+      roles_attr: {description: SAML attribute containing the user's roles, type: string}
+      sign_auth_requests: {description: Whether requests from the SP should be signed,
+        type: boolean}
+      username_attr: {description: 'SAML attribute containing the username.  Leave
+          blank to use SAML NameID.
+
+          ', type: string}
+    required: [enabled, idp_metadata, fqdn, username_attr, roles_attr, sign_auth_requests,
+      require_signed_assertions]
+    type: object
+  sp_certificate:
+    additionalProperties: false
+    description: The SSL certificate used to sign SP requests to the IdP
+    links:
+      generate:
+        description: 'Generate a new self-signed certificate and private key. This
+          replaces the current certificate.
+
+          '
+        method: POST
+        path: $/sp_certificate/generate
+        request: {$ref: '#/types/distinguished_name'}
+        response: {$ref: '#/resources/sp_certificate'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/sp_certificate'}
+      import:
+        description: Import a new certificate and private key
+        method: POST
+        path: $/sp_certificate/import
+        request:
+          additionalProperties: false
+          description: Import request format
+          properties:
+            passphrase: {description: 'Optional passphrase to decrypt private key
+
+                ', type: string}
+            pem: {description: 'Certificate and private key to import, in PEM format
+
+                '}
+          required: [pem]
+          type: object
+        response: {$ref: '#/resources/sp_certificate'}
+      self: {path: $/sp_certificate}
+    properties:
+      expires_at: {description: 'Time at which the certificate expires, in Unix epoch
+          seconds
+
+          ', type: integer}
+      fingerprint:
+        additionalProperties: false
+        description: Certificate fingerprint information
+        properties:
+          algorithm: {description: 'The algorithm used to calculate the fingerprint
+
+              ', type: string}
+          value: {description: Fingerprint value, type: string}
+        required: [algorithm, value]
+        type: object
+      issuer: {$ref: '#/types/distinguished_name'}
+      key:
+        additionalProperties: false
+        description: Certificate key information
+        properties:
+          algorithm: {description: 'The algorithm used to generate the key
+
+              ', type: string}
+          size: {description: 'The size (number of bits) of the key
+
+              ', type: integer}
+        required: [algorithm, size]
+        type: object
+      pem: {description: 'The certificate, in PEM format', type: string}
+      subject: {$ref: '#/types/distinguished_name'}
+      valid_at: {description: 'Time at which the certificate becomes valid, in Unix
+          epoch seconds
+
+          ', type: integer}
+    required: [issuer, subject, valid_at, expires_at, fingerprint, key, pem]
+    type: object
+title: SAML Configuration
+types:
+  distinguished_name:
+    additionalProperties: false
+    description: Distinguished name information
+    properties:
+      common_name: {description: Common name (CN), maxLength: 64, minLength: 0, type: string}
+      country: {description: Country code (C), maxLength: 2, minLength: 2, type: string}
+      email: {description: Email address, maxLength: 255, minLength: 0, type: string}
+      locality: {description: Locality (L), maxLength: 128, minLength: 0, type: string}
+      organization: {description: Organization name (O), maxLength: 64, minLength: 0,
+        type: string}
+      organizational_unit: {description: Organization unit name (OU), maxLength: 64,
+        minLength: 0, type: string}
+      state: {description: State or province name (ST), maxLength: 128, minLength: 0,
+        type: string}
+    type: object
+version: '1.0'

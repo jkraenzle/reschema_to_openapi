@@ -1,0 +1,123 @@
+components:
+  schemas:
+    dh_key:
+      additionalProperties: false
+      description: This resource handles a DH key
+      properties:
+        client_ip_addr:
+          description: The IP address of the client
+          type: string
+        client_port:
+          description: The port of the client
+          type: integer
+        client_random:
+          description: Hex encoded client random
+          type: string
+        id:
+          description: A unique id for the Diffie-Hellman key
+          type: string
+        master_key:
+          description: Master secret of the session
+          type: string
+        server_ip_addr:
+          description: The IP address of the server
+          type: string
+        server_port:
+          description: The port of the server
+          type: integer
+      required:
+      - client_random
+      - master_key
+      type: object
+    dh_keys:
+      additionalProperties: false
+      description: This resource handles DH keys
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/dh_key'
+          type: array
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  description: NPM APIs for SSL Diffie Hellman Keys APIs
+  title: NPM Probe SSL Diffie Hellman Keys APIs
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /npm.ssl_dh_keys/1.0/keys/bulk_create:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/dh_keys'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/dh_keys'
+                type: array
+          description: ''
+      summary: bulk_create
+      tags:
+      - keys
+  /npm.ssl_dh_keys/1.0/keys/create:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/dh_key'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/dh_key'
+                type: array
+          description: ''
+      summary: create
+      tags:
+      - keys
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

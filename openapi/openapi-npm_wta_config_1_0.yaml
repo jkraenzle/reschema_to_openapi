@@ -1,0 +1,369 @@
+components:
+  schemas:
+    BulkDeleter:
+      description: Used for performing bulk delete operations
+      properties:
+        delete_all:
+          description: Delete all objects in the collection
+          type: boolean
+        delete_ids:
+          $ref: '#/components/schemas/IDList'
+      type: object
+    IDList:
+      type: number
+    wta_content_value:
+      description: Page datum used to specify criteria
+      properties:
+        content_type:
+          description: Format of the datum
+          enum:
+          - soapValue
+          - urlParam
+          - formValue
+          - httpHeader
+          - cookie
+          - regex
+          type: string
+        equals:
+          description: Indicates whether the value MUST match or MUST NOT match
+          type: boolean
+        location:
+          description: Location of the datum
+          enum:
+          - requestHeader
+          - responseHeader
+          - requestBody
+          - responseBody
+          - url
+          - title
+          type: string
+        name:
+          description: Name of the datum
+          type: string
+        value:
+          description: Value to compare to
+          type: string
+      type: object
+    wta_move_list:
+      description: Ordered list of IDs used to specify a new ordering for a move operation
+      properties:
+        order:
+          description: ID list
+          items:
+            type: integer
+          type: array
+      type: object
+    wta_webapp:
+      additionalProperties: false
+      description: A Web Application
+      properties:
+        advanced_criteria:
+          description: Advanced criteria expression
+          type: string
+        content_values:
+          description: List of page datums to match
+          items:
+            $ref: '#/components/schemas/wta_content_value'
+          type: array
+        description:
+          description: Web Application description
+          type: string
+        enabled:
+          description: Indicates whether the Web Application is enabled
+          type: boolean
+        id:
+          description: Web Application ID (will be assigned)
+          type: integer
+        match:
+          description: Specifies how to logically join the criteria
+          enum:
+          - any
+          - all
+          type: string
+        name:
+          description: Web Application name
+          type: string
+        order_number:
+          description: Order number (will be assigned)
+          type: integer
+        preferred:
+          description: Indicates whether the Web Application is preferred
+          type: boolean
+        slow_page_threshold:
+          description: Duration (seconds) after which pages are considered slow
+          type: string
+        tags:
+          description: Web Application tags
+          type: string
+        url_patterns:
+          description: List of URL patterns to match
+          items:
+            properties:
+              url_pattern:
+                description: URL pattern (use asterisk as wildcard)
+                type: string
+            type: object
+          type: array
+        use_advanced_criteria:
+          description: Use any advanced criteria?
+          type: boolean
+        use_content_values:
+          description: Use page datums as criteria?
+          type: boolean
+        use_filter:
+          description: Specify criteria? (otherwise Web Application will contain All
+            Pages)
+          type: string
+        use_url_patterns:
+          description: Use URL patterns as criteria?
+          type: boolean
+        vers:
+          description: Web Application version number (will be assigned)
+          type: integer
+      type: object
+    wta_webapps:
+      additionalProperties: false
+      description: Web Applications
+      properties:
+        rules:
+          description: List of Web Applications
+          items:
+            $ref: '#/components/schemas/wta_webapp'
+          type: array
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  title: Web Transaction Analysis Configuration
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /npm.wta_config/1.0/wta_webapps:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/wta_webapps'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - wta_webapps
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/wta_webapp'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/wta_webapp'
+                type: array
+          description: ''
+      summary: create
+      tags:
+      - wta_webapps
+  /npm.wta_config/1.0/wta_webapps/bulk_delete:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/types/BulkDeleter'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/types/IDList'
+                type: array
+          description: ''
+      summary: bulk_delete
+      tags:
+      - wta_webapps
+  /npm.wta_config/1.0/wta_webapps/items/{id}:
+    delete:
+      parameters:
+      - description: Web Application ID (will be assigned)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: delete
+      tags:
+      - wta_webapps
+    get:
+      parameters:
+      - description: Web Application ID (will be assigned)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/wta_webapp'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - wta_webapps
+    put:
+      parameters:
+      - description: Web Application ID (will be assigned)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/wta_webapp'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/wta_webapp'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - wta_webapps
+  /npm.wta_config/1.0/wta_webapps/merge:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/wta_webapps'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/types/IDList'
+                type: array
+          description: ''
+      summary: merge
+      tags:
+      - wta_webapps
+  /npm.wta_config/1.0/wta_webapps/move:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/types/wta_move_list'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: move
+      tags:
+      - wta_webapps
+  /npm.wta_config/1.0/wta_webapps/since/{time}:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  webapps:
+                    description: List of Web Application IDs and corresponding names
+                    items:
+                      properties:
+                        name:
+                          description: Web Application name
+                          type: string
+                        rid:
+                          description: ID (missing if Web Application is deleted)
+                          type: integer
+                        updated:
+                          description: Timestamp of last update
+                          type: integer
+                        wid:
+                          description: Internal ID (internally assigned and managed)
+                          type: integer
+                      type: object
+                    type: array
+                type: object
+          description: ''
+      summary: since
+      tags:
+      - wta_webapps
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

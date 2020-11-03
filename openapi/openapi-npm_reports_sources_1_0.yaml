@@ -1,0 +1,729 @@
+components:
+  schemas:
+    column_labels:
+      additionalProperties: false
+      description: '...'
+      properties:
+        column:
+          $ref: '#/components/schemas/src_column_strings'
+        column_id:
+          type: string
+      type: object
+    columns_labels:
+      additionalProperties: false
+      description: '...'
+      properties:
+        columns:
+          additionalProperties:
+            $ref: '#/types/src_column_strings'
+          type: object
+      type: object
+    field:
+      additionalProperties: false
+      description: '...'
+      properties:
+        categories:
+          items:
+            type: string
+          type: array
+        depends_on:
+          items:
+            type: string
+          type: array
+        enum:
+          type: boolean
+        enum_dup:
+          type: string
+        groups:
+          items:
+            type: string
+          type: array
+        id:
+          type: string
+        identifier:
+          type: boolean
+        internal:
+          type: boolean
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+        maximum:
+          type: number
+        metric:
+          type: boolean
+        minimum:
+          type: number
+        name:
+          type: string
+        precision:
+          type: integer
+        type:
+          type: string
+        unit:
+          type: string
+      type: object
+    fields:
+      additionalProperties: false
+      description: '...'
+      type: object
+    source:
+      additionalProperties: false
+      description: '...'
+      properties:
+        capabilities:
+          properties:
+            filters_on_metrics:
+              description: Are filters supported on metric columns
+              type: boolean
+          type: object
+        columns:
+          $ref: '#/components/schemas/src_column_list'
+        granularities:
+          items:
+            type: string
+          type: array
+        info:
+          $ref: '#/components/schemas/src_columns_info'
+        name:
+          type: string
+      required:
+      - name
+      - columns
+      type: object
+    source_column:
+      additionalProperties: false
+      description: '...'
+      properties:
+        area:
+          description: Whether the data is wan or lan related.
+          type: string
+        categories:
+          description: Organization categories that the column belongs to.
+          items:
+            description: Category to which the column belongs.
+            type: string
+          type: array
+        custom:
+          description: Whether the column has custom fields.
+          type: boolean
+        custom_id:
+          description: A custom column ID provided by the data source.
+          type: string
+        default_if_absent:
+          description: If no data is present, the value to use when plotting in a
+            time-series chart
+          type: string
+        default_sort_direction:
+          description: Default sort direction (desc by default)
+          enum:
+          - asc
+          - desc
+          type: string
+        description:
+          description: Description of the column contents.
+          type: string
+        direction:
+          description: Direction of the data in the data type (server to client, member
+            to peer, outbound, etc).
+          type: string
+        divisor_formula:
+          description: Divisor formula to use for statistical columns.
+          type: string
+        field:
+          description: Data field into which the column queries
+          type: string
+        formula:
+          description: Formula to use for statistical columns such as weighted average.
+          type: string
+        grouped_by:
+          description: Whether the column can be used in the group-by parameter.
+          type: boolean
+        groups:
+          items:
+            type: string
+          type: array
+        id:
+          description: Addressable data colunm ID.
+          type: string
+        identifier:
+          description: Whether the column represents an entity ID.
+          type: boolean
+        items_type:
+          description: For array fields, the data type of the items in the array.
+          type: string
+        label:
+          description: Human-readable label for the column, to be used by the UI.
+            May be internationalized
+          type: string
+        maximum:
+          description: Maximum value for the column.
+          type: integer
+        metric:
+          description: Whether it is a metric column
+          type: boolean
+        minimum:
+          description: Minimum value for the column.
+          type: integer
+        operation:
+          description: The operation that the field uses in aggregating (min, max,
+            sum, etc).
+          type: string
+        precision:
+          description: Decimal precision of the column data.
+          maximum: 32
+          minimum: 0
+          type: integer
+        rate:
+          description: The rate at which the data type is measured (per second, per
+            minute, etc).
+          type: string
+        role:
+          description: Role of the data type (server, caller, etc).
+          type: string
+        sortable:
+          description: Whether it is possible to sort on the column.
+          type: boolean
+        source_name:
+          description: Data source to which the column belongs.
+          type: string
+        superseded_by:
+          description: For a deprecated column, its replacement.
+          type: string
+        supports_resample:
+          description: Whether it supports resampling (true by default)
+          type: boolean
+        synthesized:
+          additionalProperties: false
+          description: Details on how to synthesize the column based on other data.
+          properties:
+            depends_on:
+              description: Columns that the synthesis depends on.
+              items:
+                type: string
+              type: array
+            method:
+              description: The type that is being synthesized.
+              enum:
+              - web_user
+              - web_page_family
+              - host_group
+              - host_groups
+              - app
+              - apps
+              - app_type
+              - port_name
+              type: string
+            phase:
+              description: At which point in processing to synthesize the data.
+              enum:
+              - firstrequest
+              - everyrequest
+              type: string
+            type:
+              description: Type for a column with internally-synthesized values (e.g.,
+                IP synthesized to DNS Hostname)
+              enum:
+              - custom
+              - bool2name
+              - enum2name
+              - ip2dns
+              - id2name
+              - id2enum
+              - sum
+              - percent
+              - ip2countrycode
+              - ip2regioncode
+              - ip2hostgroups
+              - audit_details
+              - violations_preview
+              - tags
+              type: string
+          required:
+          - phase
+          - type
+          - depends_on
+          type: object
+        topped_by:
+          additionalProperties: false
+          description: Whether the column can be used in a top-query.
+          properties:
+            asc:
+              description: Whether it can be topped by the column, ascending.
+              type: boolean
+            desc:
+              description: Whether it can be topped by the column, descending.
+              type: boolean
+          type: object
+        type:
+          description: Data type of the column contents.
+          type: string
+        unit:
+          description: The unit of the data type being queried (bytes, percent, seconds).
+          type: string
+      required:
+      - id
+      - field
+      - label
+      type: object
+    source_column_labels:
+      additionalProperties: false
+      description: '...'
+      properties:
+        column:
+          $ref: '#/components/schemas/src_column_strings'
+        column_id:
+          type: string
+        source_name:
+          type: string
+      required:
+      - items
+      type: object
+    source_columns:
+      additionalProperties: false
+      description: '...'
+      properties:
+        info:
+          $ref: '#/components/schemas/src_columns_info'
+        items:
+          $ref: '#/components/schemas/src_column_list'
+        source_name:
+          type: string
+      required:
+      - source_name
+      - items
+      type: object
+    source_columns_labels:
+      additionalProperties: false
+      description: '...'
+      properties:
+        columns:
+          additionalProperties:
+            $ref: '#/types/src_column_strings'
+          type: object
+        source_name:
+          type: string
+      required:
+      - column
+      type: object
+    source_field:
+      additionalProperties: false
+      description: '...'
+      properties:
+        field:
+          $ref: '#/components/schemas/field'
+        source_name:
+          type: string
+      type: object
+    source_fields:
+      additionalProperties: false
+      description: '...'
+      properties:
+        fields:
+          $ref: '#/components/schemas/fields'
+        source_name:
+          type: string
+      type: object
+    source_names:
+      additionalProperties: false
+      description: '...'
+      properties:
+        items:
+          items:
+            type: string
+          type: array
+      type: object
+    source_restrictions:
+      additionalProperties: false
+      description: '...'
+      properties:
+        items:
+          items:
+            additionalProperties: false
+            properties:
+              available_sets:
+                items:
+                  type: string
+                type: array
+              id:
+                type: string
+            required:
+            - id
+            - available_sets
+            type: object
+          type: array
+        source_name:
+          type: string
+      required:
+      - items
+      type: object
+    sources:
+      additionalProperties: false
+      description: '...'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/source'
+          type: array
+      type: object
+    src_column_list:
+      $ref: '#/components/schemas/source_column'
+    src_column_strings:
+      properties:
+        description:
+          type: string
+        label:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+      type: object
+    src_columns_info:
+      properties:
+        external_api_access:
+          description: 'The value of this attribute indicates whether this data source
+            should be used in end users'' scripts. A value of "supported" indicates
+            that resource is available for API-based use; a value "not_supported"  indicates
+            the opposite. API-based access to unsupported resources could cause the
+            following problems:  (a) Resource-specific APIs are not guaranteed to
+            be present in future releases; (b) Using the API to interact with unsupported
+            resources may also cause data processing gaps in the appliance.'
+          enum:
+          - not_supported
+          - supported
+          type: string
+        generated_at:
+          description: Date/time when the source information was generated.
+          type: string
+        vendor:
+          description: Name of vendor providing the data source.
+          type: string
+        version:
+          description: Columns content version. If you are connecting to two devices
+            and the returned columns are slightly different, please use this property
+            to figure out which one is latest.
+          type: string
+      required:
+      - version
+      - vendor
+      - generated_at
+      - external_api_access
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  description: Report Manager Data Sources API
+  title: Report Manager Data Sources API
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /npm.reports.sources/1.0/columns/items/{column_id}/labels:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: column_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/column_labels'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - columns
+  /npm.reports.sources/1.0/columns/labels:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/columns_labels'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - columns
+  /npm.reports.sources/1.0/fields:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/fields'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - fields
+  /npm.reports.sources/1.0/fields/items/{id}:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/field'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - fields
+  /npm.reports.sources/1.0/sources:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/sources'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{name}:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/columns:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_columns'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/columns/items/{column_id}/labels:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      - description: ''
+        in: path
+        name: column_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_column_labels'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/columns/items/{id}:
+    get:
+      parameters:
+      - description: Data source to which the column belongs.
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      - description: Addressable data colunm ID.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_column'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/columns/labels:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_columns_labels'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/fields:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_fields'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/fields/items/{id}:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      - description: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_field'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/items/{source_name}/restrictions:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: source_name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_restrictions'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+  /npm.reports.sources/1.0/sources/names:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/source_names'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - sources
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

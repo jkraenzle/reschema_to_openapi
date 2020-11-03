@@ -1,0 +1,828 @@
+components:
+  schemas:
+    capabilities:
+      description: The capabilities of an interface
+      properties:
+        autoneg:
+          description: Whether Auto-negotiation is available
+          type: boolean
+        speed_duplex:
+          description: 'The speed and duplex combinations available on this interface
+
+            '
+          items:
+            description: A speed and duplex combination
+            type: string
+          type: array
+      type: object
+    configuration:
+      description: Interface configuration
+      properties:
+        autoneg:
+          anyOf:
+          - description: Auto-negotiation enabled
+            type: boolean
+          - description: 'Not configured, or does not apply to this interface
+
+              '
+            type: 'null'
+        description:
+          description: Interface description
+          type: string
+        duplex:
+          anyOf:
+          - description: 'Interface duplex setting. Ignored if "autoneg" is True.
+
+              '
+            enum:
+            - full
+            - half
+            type: string
+          - description: 'Not configured, or does not apply to this interface
+
+              '
+            type: 'null'
+        enable:
+          description: Interface enabled
+          type: boolean
+        ipv4:
+          properties:
+            address:
+              description: 'Set the IPv4 address of the interface. This field is validated
+                but not applied if DHCP is enabled. To disable an interface IP, set
+                address to 0.0.0.0.
+
+                '
+              type: string
+            dhcp:
+              description: Obtain IP address via DHCP
+              type: boolean
+            dynamic_dns:
+              description: Send hostname with the DHCP request
+              type: boolean
+            subnet_mask:
+              description: 'Set the subnet mask of the interface. This field is validated
+                but not applied if DHCP is enabled. Cleared if address is set to 0.0.0.0.
+
+                '
+              type: string
+          type: object
+        ipv6:
+          properties:
+            address:
+              description: 'Set the IPv6 address of the interface. This field is validated
+                but not applied if DHCP is enabled. Remove the IPv6 address by setting
+                this field to an empty string.
+
+                '
+              type: string
+            dhcp:
+              description: Obtain IP address via DHCP
+              type: boolean
+            dynamic_dns:
+              description: Send hostname with the DHCP request
+              type: boolean
+            prefix:
+              description: 'The IPv6 address prefix. This field is validated but not
+                applied if DHCP is enabled, or the address is not set.
+
+                '
+              type: string
+          type: object
+        mtu:
+          description: Interface MTU
+          type: number
+        speed:
+          anyOf:
+          - description: 'Speed to force this interface to run at. Ignored if "autoneg"
+              is True.
+
+              '
+            enum:
+            - 10
+            - 100
+            - 1000
+            - 2500
+            - 10000
+            type: number
+          - description: 'Not configured, or does not apply to this interface
+
+              '
+            type: 'null'
+      type: object
+    host_settings:
+      description: 'General networking setting for the host machine, including the
+        hostname, name servers, and domain names.
+
+        '
+      properties:
+        dns_domains:
+          description: 'Ordered list of domain names to append when attempting hostname
+            resolution. If DHCP is enabled, these domains will be prepended to any
+            returned by the DHCP server.
+
+            '
+          items:
+            description: A single domain name
+            type: string
+          type: array
+        dns_servers:
+          description: 'Ordered list of DNS server IP addresses. A maximum of three
+            servers may be configured. If DHCP is enabled, these servers will be prepended
+            to any returned by the DHCP server.
+
+            '
+          items:
+            description: A single DNS server IP address
+            type: string
+          type: array
+        hostname:
+          description: Hostname of the device
+          type: string
+        hosts:
+          description: Additional host entries
+          items:
+            description: A single host to IP mapping
+            properties:
+              hostname:
+                description: The hostname to associate with this IP address
+                type: string
+              ip_address:
+                description: The IP address of the host
+                type: string
+            type: object
+          type: array
+      type: object
+    host_state:
+      additionalProperties: false
+      description: 'The host settings applied to the system, both from values configured
+        in host_settings as well as provided by DHCP, if enabled
+
+        '
+      properties:
+        dns_domains:
+          description: 'Ordered list of domain names to append when attempting hostname
+            resolution.
+
+            '
+          items:
+            description: A single domain name
+            type: string
+          type: array
+        dns_servers:
+          description: Ordered list of DNS server IP addresses
+          items:
+            description: A single DNS server IP address
+            type: string
+          type: array
+        ipv4_default_gateway:
+          description: The IPv4 default gateway
+          type: string
+        ipv6_default_gateway:
+          description: The IPv6 default gateway
+          type: string
+      required:
+      - ipv4_default_gateway
+      - ipv6_default_gateway
+      - dns_servers
+      - dns_domains
+      type: object
+    interface:
+      description: Configuration and current status of a management interface
+      properties:
+        configuration:
+          $ref: '#/components/schemas/configuration'
+        name:
+          description: Interface name
+          readOnly: true
+          type: string
+        state:
+          $ref: '#/components/schemas/state'
+      type: object
+    interfaces:
+      description: The name of an available management interface
+      type: string
+    ipv4_route:
+      description: A single IPv4 route
+      properties:
+        gateway_address:
+          description: Gateway IP address
+          type: string
+        id:
+          description: Route ID
+          readOnly: true
+          type: number
+        interface:
+          description: 'Network interface. At least one of "gateway_address" or "interface
+            needs" to be specified.
+
+            '
+          type: string
+        network_prefix:
+          description: 'Destination network prefix. A string consisting of an IPv4
+            address and a mask, separated by a slash (/). For example, "192.168.1.0/24"
+            or "192.168.1.0/255.255.255.0"
+
+            '
+          type: string
+      required:
+      - network_prefix
+      - gateway_address
+      - interface
+      type: object
+    ipv4_routes:
+      description: Configured IPv4 routes
+      properties:
+        all:
+          description: 'All configured IPv4 routes, including default gateway.
+
+            '
+          items:
+            $ref: '#/components/schemas/route_type'
+          type: array
+        static:
+          allOf:
+          - $ref: '#/components/schemas/ipv4_route'
+      type: object
+    ipv6_route:
+      description: A single Ipv6 route
+      properties:
+        gateway_address:
+          description: Gateway IP address
+          type: string
+        id:
+          description: Route ID
+          readOnly: true
+          type: number
+        interface:
+          description: 'Network interface. At least one of "gateway_address" or "interface
+            needs" to be specified.
+
+            '
+          type: string
+        network_prefix:
+          description: 'Destination network prefix. A string consisting of an IP address
+            and prefix, separated by a slash (/).
+
+            '
+          type: string
+      required:
+      - network_prefix
+      - gateway_address
+      - interface
+      type: object
+    ipv6_routes:
+      description: Configured IPv6 routes
+      properties:
+        all:
+          description: 'All configured IPv6 routes
+
+            '
+          items:
+            $ref: '#/components/schemas/route_type'
+          type: array
+        static:
+          allOf:
+          - $ref: '#/components/schemas/ipv6_route'
+      type: object
+    route_settings:
+      description: Global route settings
+      properties:
+        default_gateway:
+          description: 'The default gateway configuration for the host. Ignored if
+            DHCP is enabled. The state can be verified by quering the "ipv4_routes"
+            or "ipv6_routes" resources.
+
+            '
+          properties:
+            ipv4:
+              description: 'IPv4 address for default gateway. Blank string unsets
+                it.
+
+                '
+              type: string
+            ipv6:
+              description: 'IPv6 address for default gateway. Blank string unsets
+                it.
+
+                '
+              type: string
+          type: object
+      type: object
+    route_type:
+      description: A route
+      properties:
+        gateway_address:
+          description: Gateway IP address
+          type: string
+        interface:
+          description: 'Network interface. At least one of "gateway_address" or "interface"
+            needs to be specified.
+
+            '
+          type: string
+        network_prefix:
+          description: 'Destination network prefix. A string consisting of an IP address
+            and a mask, separated by a slash (/). For example, "192.168.1.0/24" or
+            "192.168.1.0/255.255.255.0". For ipv6 specify prefix after slash (/).
+
+            '
+          type: string
+      type: object
+    state:
+      description: Current interface state
+      properties:
+        autoneg:
+          anyOf:
+          - description: Auto-negotiation status
+            type: boolean
+          - description: Auto-negotiation is not relevant for this interface
+            type: 'null'
+        duplex:
+          anyOf:
+          - description: Interface duplex
+            type: string
+          - description: Duplex is not relevant for this interface
+            type: 'null'
+        enabled:
+          description: Interface enabled/up
+          type: boolean
+        hw_address:
+          description: Interface hardware address
+          type: string
+        if_index:
+          description: Interface index
+          type: number
+        interface_type:
+          description: Interface type
+          type: string
+        ipv4:
+          properties:
+            address:
+              description: Interface IPv4 address
+              type: string
+            subnet_mask:
+              description: Subnet mask
+              type: string
+          type: object
+        ipv6:
+          properties:
+            address:
+              description: Interface IPv6 address
+              type: string
+            link_local:
+              description: Link local IPv6 address
+              type: string
+          type: object
+        link:
+          description: Interface link state
+          type: boolean
+        mtu:
+          description: Interface MTU
+          type: number
+        speed:
+          anyOf:
+          - description: Interface speed
+            type: string
+          - description: Speed is not relevant for this interface
+            type: 'null'
+      readOnly: true
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  description: 'General networking configuration and status of the management interfaces
+
+    '
+  title: Management networking configuration
+  version: '1.1'
+openapi: 3.0.2
+paths:
+  /mgmt.networking/1.1/host_state:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/host_state'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - host_state
+  /mgmt.networking/1.1/interfaces:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/interfaces'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - interfaces
+  /mgmt.networking/1.1/interfaces/{name}:
+    get:
+      parameters:
+      - description: Interface name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/interface'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - interfaces
+    put:
+      parameters:
+      - description: Interface name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/interface'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/interface'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - interfaces
+  /mgmt.networking/1.1/interfaces/{name}/capabilities:
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/capabilities'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - interfaces
+  /mgmt.networking/1.1/interfaces/{name}/renew_dhcp:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: DHCP version to renew
+              enum:
+              - 4
+              - 6
+              type: number
+        required: true
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: renew
+      tags:
+      - interfaces
+  /mgmt.networking/1.1/routes/ipv4:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv4_routes'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - routes
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ipv4_route'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv4_route'
+                type: array
+          description: ''
+      summary: create
+      tags:
+      - routes
+  /mgmt.networking/1.1/routes/ipv4/{id}:
+    delete:
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: delete
+      tags:
+      - routes
+    get:
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv4_route'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - routes
+    put:
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ipv4_route'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv4_route'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - routes
+  /mgmt.networking/1.1/routes/ipv6:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv6_routes'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - routes
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ipv6_route'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv6_route'
+                type: array
+          description: ''
+      summary: create
+      tags:
+      - routes
+  /mgmt.networking/1.1/routes/ipv6/{id}:
+    delete:
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: delete
+      tags:
+      - routes
+    get:
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv6_route'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - routes
+    put:
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/ipv6_route'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ipv6_route'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - routes
+  /mgmt.networking/1.1/settings/host:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/host_settings'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - settings
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/host_settings'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/host_settings'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - settings
+  /mgmt.networking/1.1/settings/route:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/route_settings'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - settings
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/route_settings'
+                  type: array
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/route_settings'
+                type: array
+          description: ''
+      summary: set
+      tags:
+      - settings
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com

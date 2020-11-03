@@ -1,0 +1,31 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Configure OpenSSL FIPS mode
+id: http://support.riverbed.com/apis/npm.fips/1.0
+name: npm.fips
+provider: riverbed
+resources:
+  status:
+    additionalProperties: false
+    description: OpenSSL FIPS configuration
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/status'}
+      self: {path: $/status}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/status'}
+        response: {$ref: '#/resources/status'}
+    properties:
+      enabled_current: {description: 'Whether the system is currently running in FIPS
+          mode
+
+          ', readOnly: true, type: boolean}
+      enabled_next_boot: {description: 'Whether the system will run in FIPS mode on
+          the next boot
+
+          ', type: boolean}
+    required: [enabled_next_boot]
+    type: object
+title: FIPS configuration
+version: '1.0'

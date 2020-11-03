@@ -1,0 +1,193 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: NPM APIs for SSL Module
+id: http://support.riverbed.com/apis/npm.ssl_module/1.0
+name: npm.ssl_module
+provider: riverbed
+resources:
+  ignored_certificate:
+    additionalProperties: false
+    description: This resource deals with an ignored certificate
+    links:
+      delete: {description: Un-ignore a certificate, method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/ignored_certificate'}
+      self: {path: '$/ignored_certificates/items/{id}'}
+    properties:
+      id: {description: A unique id for the certificate, type: string}
+    type: object
+  ignored_certificates:
+    additionalProperties: true
+    description: This resource deals with ignored certificates
+    links:
+      bulk_create:
+        description: Ignores a list of certificates
+        method: POST
+        path: $/ignored_certificates/bulk_create
+        request: {$ref: '#/resources/ignored_certificates'}
+        response: {$ref: '#/resources/ignored_certificates'}
+      bulk_delete:
+        description: Un-ignore a list of certificates
+        method: POST
+        path: $/ignored_certificates/bulk_delete
+        request: {$ref: '#/types/certs_bulk_deleter'}
+        response: {$ref: '#/types/certs_bulk_deleter'}
+      create:
+        description: Ignores a certificate
+        method: POST
+        request: {$ref: '#/resources/ignored_certificate'}
+        response: {$ref: '#/resources/ignored_certificate'}
+      get:
+        description: Returns the list of ignored certificate IDs
+        method: GET
+        response: {$ref: '#/resources/ignored_certificates'}
+      limit:
+        description: Returns the ignored certificates entries limit
+        method: GET
+        path: $/ignored_certificates/limit
+        response: {$ref: '#/types/ignored_certs_limit'}
+      self: {path: $/ignored_certificates}
+    properties:
+      items:
+        items: {$ref: '#/resources/ignored_certificate'}
+        type: array
+      limit: {$ref: '#/types/ignored_certs_limit'}
+    type: object
+  latest_certificate:
+    additionalProperties: false
+    description: This resource deals with a certificate
+    links:
+      delete: {description: Deletes a certificate, method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/latest_certificate'}
+      self: {path: '$/latest_certificates/items/{id}'}
+    properties:
+      first_seen: {description: Time at which this certificate was first seen, type: string}
+      has_rsa_key: {description: True if the certificate is expired, type: boolean}
+      id: {description: A unique id for the certificate, type: string}
+      ignored: {description: True if the certificate is ignored, type: boolean}
+      issuer:
+        description: Certificate 'Issuer' details
+        properties:
+          common_name: {description: '''Issuer'' common name', type: string}
+          country: {description: '''Issuer'' country', type: string}
+          organization: {description: '''Issuer'' organization', type: string}
+        type: object
+      last_seen: {description: Time at which this certificate was last seen, type: string}
+      serial_number: {description: Certificate 'Serial Number', type: string}
+      servers:
+        items:
+          description: Certificate server endpoint
+          properties:
+            host: {description: The IP address of the server, type: string}
+            port:
+              description: The TCP port of the server
+              tags: {cpptype: uint16}
+              type: integer
+          type: object
+        type: array
+      status: {description: 'Certificate current status (Valid, Invalid, Expired,
+          Revoked)', type: string}
+      subject:
+        description: Certificate 'Subject' details
+        properties:
+          common_name: {description: '''Subject'' common name', type: string}
+          country: {description: '''Subject'' country', type: string}
+          locality: {description: '''Subject'' locality', type: string}
+          organization: {description: '''Subject'' organization', type: string}
+          organization_unit: {description: '''Subject'' organization unit', type: string}
+          state: {description: '''Subject'' state', type: string}
+        type: object
+      valid_from: {description: Certificate 'Not Before', type: string}
+      valid_to: {description: Certificate 'Not After', type: string}
+    type: object
+  latest_certificates:
+    additionalProperties: true
+    description: This resource deals with the list of latest certificate processed
+    links:
+      bulk_delete:
+        description: Deletes a list of certificates
+        method: POST
+        path: $/latest_certificates/bulk_delete
+        request: {$ref: '#/types/latest_certs_bulk_deleter'}
+        response: {$ref: '#/types/latest_certs_bulk_deleter'}
+      get:
+        description: Returns the list of certificates
+        method: GET
+        path:
+          template: $/latest_certificates{?has_rsa_key,ignored,topby,topn}
+          vars:
+            has_rsa_key:
+              tags: {type: boolean}
+            ignored:
+              tags: {type: boolean}
+            topby:
+              description: 'Tob by property. Values: ''last_seen'' (default), ''first_seen'',
+                ''valid_from'', ''valid_to'''
+              tags: {type: string}
+            topn:
+              description: Max number of entries returned
+              tags: {type: integer}
+        response: {$ref: '#/resources/latest_certificates'}
+      self: {path: $/latest_certificates}
+    properties:
+      items:
+        items: {$ref: '#/resources/latest_certificate'}
+        type: array
+      total:
+        description: The number of total requested certificates
+        tags: {cpptype: uint32}
+        type: integer
+    type: object
+  ssl_module:
+    additionalProperties: false
+    description: This resource deals with SSL Module configuration
+    links:
+      get:
+        description: Returns the SSL Module configuration
+        method: GET
+        response: {$ref: '#/resources/ssl_module'}
+      self: {path: $/ssl_module}
+      set:
+        description: Updates the SSL Module configuration
+        method: PUT
+        request: {$ref: '#/resources/ssl_module'}
+        response: {$ref: '#/resources/ssl_module'}
+    properties:
+      enabled: {description: Enable/disable SSL Module., type: boolean}
+    required: [enabled]
+    type: object
+title: NPM SSL Module APIs
+types:
+  certs_bulk_deleter:
+    properties:
+      delete_all: {description: Delete all objects in the given config, type: boolean}
+      delete_ids:
+        description: List of certificate ids to delete
+        items: {type: string}
+        type: array
+    type: object
+  ignored_certs_limit:
+    additionalProperties: true
+    properties:
+      current:
+        description: The current number of certificates ignored
+        tags: {cpptype: uint32}
+        type: integer
+      max:
+        description: The max number of certificates that can be ignored
+        tags: {cpptype: uint32}
+        type: integer
+    type: object
+  latest_certs_bulk_deleter:
+    properties:
+      delete_all: {description: Delete all objects in the given config, type: boolean}
+      delete_all_ignored: {description: Delete all ignored certificates in the given
+          config, type: boolean}
+      delete_ids:
+        description: List of certificate ids to delete
+        items: {type: string}
+        type: array
+    type: object
+version: '1.0'

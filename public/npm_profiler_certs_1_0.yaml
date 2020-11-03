@@ -1,0 +1,169 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Allows configuration of the Profiler SSL certificates
+id: http://support.riverbed.com/apis/npm.profiler_certs/1.0
+name: npm.profiler_certs
+provider: riverbed
+resources:
+  certificate:
+    additionalProperties: false
+    description: 'The SSL Certificate presented to connecting Profiler devices
+
+      '
+    links:
+      generate:
+        description: 'Generate a new self-signed certificate and private key. This
+          replaces the current certificate.
+
+          '
+        method: POST
+        path: $/certificate/generate
+        request: {$ref: '#/types/distingushed_name'}
+        response: {$ref: '#/resources/certificate'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/certificate'}
+      import:
+        description: Import a new certificate and private key
+        method: POST
+        path: $/certificate/import
+        request:
+          additionalProperties: false
+          description: Import request format
+          properties:
+            passphrase: {description: 'Optional passphrase to decrypt private key
+
+                ', type: string}
+            pem: {description: 'Certificate and private key to import, in PEM format
+
+                '}
+          required: [pem]
+          type: object
+        response: {$ref: '#/resources/certificate'}
+      self: {path: $/certificate}
+    properties:
+      expires_at: {description: 'Time at which the certificate expires, in Unix epoch
+          seconds
+
+          ', type: integer}
+      fingerprint:
+        additionalProperties: false
+        description: Certificate fingerprint information
+        properties:
+          algorithm: {description: 'The algorithm used to calculate the fingerprint
+
+              ', type: string}
+          value: {description: Fingerprint value, type: string}
+        required: [algorithm, value]
+        type: object
+      issuer: {$ref: '#/types/distingushed_name'}
+      key:
+        additionalProperties: false
+        description: Certificate key information
+        properties:
+          algorithm: {description: 'The algorithm used to generate the key
+
+              ', type: string}
+          size: {description: 'The size (number of bits) of the key
+
+              ', type: integer}
+        required: [algorithm, size]
+        type: object
+      pem: {description: 'The certificate, in PEM format', type: string}
+      subject: {$ref: '#/types/distingushed_name'}
+      valid_at: {description: 'Time at which the certificate becomes valid, in Unix
+          epoch seconds
+
+          ', type: integer}
+    required: [issuer, subject, valid_at, expires_at, fingerprint, key, pem]
+    type: object
+  trusted_certificate:
+    additionalProperties: false
+    description: A certificate or CA-certificate to be trusted
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/trusted_certificate'}
+      self: {path: '$/trusted_certificates/items/{id}'}
+    properties:
+      cert_details:
+        additionalProperties: false
+        description: Certificate details
+        properties:
+          expires_at: {description: 'Time at which the certificate expires, in Unix
+              epoch seconds
+
+              ', type: integer}
+          fingerprint:
+            additionalProperties: false
+            description: Certificate fingerprint information
+            properties:
+              algorithm: {description: 'The algorithm used to calculate the fingerprint
+
+                  ', type: string}
+              value: {description: Fingerprint value, type: string}
+            required: [algorithm, value]
+            type: object
+          issuer: {$ref: '#/types/distingushed_name'}
+          key:
+            additionalProperties: false
+            description: Certificate key information
+            properties:
+              algorithm: {description: 'The algorithm used to generate the key
+
+                  ', type: string}
+              size: {description: 'The size (number of bits) of the key
+
+                  ', type: integer}
+            required: [algorithm, size]
+            type: object
+          subject: {$ref: '#/types/distingushed_name'}
+          valid_at: {description: 'Time at which the certificate becomes valid, in
+              Unix epoch seconds
+
+              ', type: integer}
+        readOnly: true
+        type: object
+      id: {description: 'Server-assigned identifier for this trusted certificate
+
+          ', readOnly: true, type: integer}
+      name: {description: Name of this certificate, type: string}
+      pem: {description: 'The certificate, in PEM format', type: string}
+    required: [name, pem]
+    type: object
+  trusted_certificates:
+    additionalProperties: false
+    description: The list of all trusted certificates
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/trusted_certificate'}
+        response: {$ref: '#/resources/trusted_certificate'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/trusted_certificates'}
+      self: {path: $/trusted_certificates}
+    properties:
+      items:
+        items: {$ref: '#/resources/trusted_certificate'}
+        type: array
+    required: [items]
+    type: object
+title: Profiler SSL Certificate Configuration
+types:
+  distingushed_name:
+    additionalProperties: false
+    description: Distinguished name information
+    properties:
+      common_name: {description: Common name (CN), maxLength: 64, minLength: 0, type: string}
+      country: {description: Country code (C), maxLength: 2, minLength: 2, type: string}
+      email: {description: Email address, maxLength: 255, minLength: 0, type: string}
+      locality: {description: Locality (L), maxLength: 128, minLength: 0, type: string}
+      organization: {description: Organization name (O), maxLength: 64, minLength: 0,
+        type: string}
+      organizational_unit: {description: Organization unit name (OU), maxLength: 64,
+        minLength: 0, type: string}
+      state: {description: State or province name (ST), maxLength: 128, minLength: 0,
+        type: string}
+    type: object
+version: '1.0'

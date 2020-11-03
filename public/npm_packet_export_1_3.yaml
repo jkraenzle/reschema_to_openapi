@@ -1,0 +1,230 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Packet export API
+id: http://support.riverbed.com/apis/npm.packet_export/1.3
+name: npm.packet_export
+provider: riverbed
+resources:
+  export:
+    additionalProperties: true
+    description: Configuration, status and statistics of an export.
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/export'}
+      packets:
+        description: Packets stream from an export.
+        method: GET
+        path: $/packets/items/{+id}
+        tags:
+          media_types: [application/octet-stream]
+      self: {path: '$/exports/items/{+id}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/export'}
+        response: {$ref: '#/resources/export'}
+    properties:
+      config:
+        additionalProperties: false
+        description: Configuration of an export.
+        properties:
+          connection_timeout_msec:
+            default: 180000
+            description: Max period of time for which the handle waits for a user
+              action (e.g starts to download the packets, set PREPARE mode, etc).
+            tags: {cpptype: uint64}
+            type: integer
+          end_time: {description: Time (seconds from epoch) at which export is to
+              end., type: string}
+          filters:
+            additionalProperties: false
+            description: Collection of filter criteria.
+            properties:
+              items: {$ref: '#/types/filters_list'}
+            type: object
+          handle_timeout_msec:
+            description: Period of time for which the export handle is available after
+              the packets download is terminated.
+            tags: {cpptype: uint64}
+            type: integer
+          mode:
+            description: Export mode.
+            enum: [LIVE_STREAM, BUFFER_STREAM, STREAM_TO_FILE, LEGACY, PREPARE]
+            type: string
+          output_filename: {description: 'If sending packets to file, the filename
+              within the probe file system.', type: string}
+          output_format:
+            description: Output format type.
+            enum: [PCAP_US, PCAP_NS, PCAPNG_US, PCAPNG_NS]
+            type: string
+          path: {description: Path of the source to open., type: string}
+          snap_length:
+            default: 65535
+            description: Packet snap length for this export.
+            tags: {cpptype: uint16}
+            type: integer
+          start_time: {description: Time (seconds from epoch) at which export is to
+              begin., type: string}
+          stop_rule:
+            additionalProperties: false
+            description: Stop rule for an export.
+            properties:
+              packet_limit:
+                description: Max number of packets.
+                tags: {cpptype: uint64}
+                type: integer
+              size_limit:
+                description: Max bytes of packet data.
+                tags: {cpptype: uint64}
+                type: integer
+              time_limit:
+                description: Max time in seconds.
+                tags: {cpptype: uint32}
+                type: integer
+            type: object
+          time_intervals:
+            description: Array of time intervals.
+            items: {$ref: '#/types/time_interval_t'}
+            type: array
+        required: [path]
+        type: object
+      id: {description: Export unique identifier., readOnly: true, type: string}
+      status:
+        additionalProperties: false
+        description: Status of an export.
+        properties:
+          creation_time: {description: Time at which the export was created., readOnly: true,
+            type: string}
+          error:
+            additionalProperties: false
+            description: Asynchronous task error object.
+            properties:
+              error_id: {description: Error code., type: string}
+              error_metrics: {$ref: '#/types/async_error_metrics_list'}
+              error_text: {description: Error text., type: string}
+            required: [error_id, error_text]
+            type: object
+          owner: {description: User who initiated the export., readOnly: true, type: string}
+          progress:
+            description: Processing progress including both filtering and buffering/streaming.
+            readOnly: true
+            tags: {cpptype: double}
+            type: number
+          state:
+            description: Export state.
+            enum: [UNINITIALIZED, INITIALIZING, READY, RUNNING, STREAMING, ERRORS,
+              NODATA, DONE]
+            type: string
+          stats:
+            additionalProperties: false
+            description: Statistics of an export.
+            properties:
+              dropped_packets:
+                description: Number of dropped packets.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              estimated_bytes:
+                description: Estimated number of bytes that will be exported.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              estimated_packets:
+                description: Estimated number of packets that will be exported.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              exported_bytes:
+                description: Number of exported bytes.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              exported_packets:
+                description: Number of exported packets.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              processed_packets:
+                description: Number of processed packets.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              total_bytes:
+                description: Approximate number of bytes in the input.
+                readOnly: true
+                tags: {cpptype: uint64}
+                type: integer
+              truncated: {description: True in case the output has been truncated.,
+                type: boolean}
+            type: object
+        type: object
+    type: object
+  exports:
+    additionalProperties: false
+    description: Collection of exports on the device.
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/export'}
+        response: {$ref: '#/resources/export'}
+      get:
+        method: GET
+        path:
+          template: $/exports{?path}
+          vars:
+            path:
+              tags: {type: string}
+        response: {$ref: '#/resources/exports'}
+      self: {path: $/exports}
+    properties:
+      items:
+        description: Array of exports.
+        items: {$ref: '#/resources/export'}
+        type: array
+    type: object
+title: Packet Export API
+types:
+  async_error_metrics_list:
+    description: Array of key/value error metrics, used for detailed error responses
+      from async tasks.
+    items:
+      additionalProperties: false
+      description: Individual error key/value.
+      properties:
+        key: {description: Error metric ID., type: string}
+        value: {description: Error metric value., type: string}
+      required: [key, value]
+      type: object
+    type: array
+  filters_list:
+    description: Array of filter criteria.
+    items:
+      additionalProperties: false
+      description: Filter
+      properties:
+        context:
+          description: Context from which the filter was applied (e.g., user request,
+            data drill-down, etc).
+          enum: [NONE, INTERNAL, USER, DRILL_DOWN]
+          tags: {cpptype: filter_criterion_context}
+          type: string
+        id: {description: Filter criterion ID., type: string}
+        type:
+          description: The type of filter used on the data.
+          enum: [BPF, STEELFILTER, WIRESHARK]
+          type: string
+        value: {description: Query filter text to use., type: string}
+      required: [id, type, value]
+      type: object
+    type: array
+  time_interval_t:
+    additionalProperties: false
+    description: Time interval.
+    properties:
+      end_time: {description: Time (seconds from epoch) at which the interval ends.,
+        type: string}
+      start_time: {description: Time (seconds from epoch) at which the interval begins.,
+        type: string}
+    required: [start_time, end_time]
+    type: object
+version: '1.3'

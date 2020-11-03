@@ -1,0 +1,199 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: ''
+id: http://support.riverbed.com/apis/npm.policies/3.0
+name: npm.policies
+provider: riverbed
+resources:
+  alert_cache:
+    description: 'Allows generated alerts to be stored for later retrieval.  The cache
+      holds 128 alerts per policy id.  Alerts whose end_time is more than an hour
+      old will pruned from the cache periodically. A sample algorithm to retrieve
+      the alerts every 5 seconds: (1) query_ts = null (2) if query_ts is null, alerts
+      = GET /alert_cache (3) else alerts = GET /alert_cache?start_time=<query_ts>
+      (4) if alerts are empty, wait 5 seconds, go to step (2) (5) find the largest
+      violation timestamp in the returned alerts, assign to query_ts (6) process returned
+      alerts (7) wait 5 seconds, got to step 2'
+    items:
+      additionalProperties: false
+      description: An object describing an alert on the system
+      properties:
+        disambiguator_list:
+          description: An optional array whose members are used as a key when deciding
+            which alerts can be merged with this one
+          items: {type: string}
+          type: array
+        id:
+          description: The unique identifier of this alert
+          minimum: 0
+          tags: {cpptype: uint32}
+          type: integer
+        max_severity:
+          description: The maximum severity attained by this Alert over its duration
+          maximum: 100
+          minimum: 0
+          tags: {cpptype: uint32}
+          type: integer
+        notification_prefix: {description: Used to help route notifications for this
+            alert to the correct recipients, type: string}
+        overwrite_violations_on_update: {description: 'If true, updates to this alert
+            will overwrite previous information; if false, the update is merged into
+            the alert', type: boolean}
+        policy_description: {description: The description of the policy that generated
+            this alert, type: string}
+        policy_id: {description: The unique identifier of the policy that generated
+            this alert, minimum: 0, type: integer}
+        policy_name: {description: The name of the policy that generated this alert,
+          type: string}
+        policy_type: {description: The type of the policy that generated this alert,
+          type: integer}
+        severity:
+          description: The current severity of this Alert
+          maximum: 100
+          minimum: 0
+          tags: {cpptype: uint32}
+          type: integer
+        time_range:
+          additionalProperties: false
+          description: A time range pair, consisting of a start and end time.
+          properties:
+            end: {description: The ending time. This is a high-precision time value
+                in Unix Epoch format., type: string}
+            start: {description: The start time. This is a high-precision time value
+                in Unix Epoch format., type: string}
+          required: [start, end]
+          type: object
+        violations:
+          items:
+            additionalProperties: false
+            description: violating entity and value(s)
+            properties:
+              attributes: {$ref: '#/types/VAttribute'}
+              keys: {$ref: '#/types/VKey'}
+            type: object
+          type: array
+      required: [policy_type, policy, time_range, severity]
+      type: object
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/alert_cache'}
+      get:
+        method: GET
+        path:
+          template: $/alert_cache{?policy_id,start_time,end_time}
+          vars:
+            end_time: {description: Query end time in seconds since 1970, type: integer}
+            policy_id: {description: Retrieve cached alerts for this policy ID, type: integer}
+            start_time: {description: Query start time in seconds since 1970, type: integer}
+        response: {$ref: '#/resources/alert_cache'}
+      self: {path: $/alert_cache}
+    type: array
+title: Policy management API
+types:
+  PolicyCounts:
+    items:
+      additionalProperties: false
+      properties:
+        count: {type: integer}
+        type: {type: integer}
+      type: object
+    type: array
+  SubscriptionList:
+    items:
+      additionalProperties: false
+      description: Pairs a recipient ID with a notification frequency
+      properties:
+        email_address: {type: string}
+        notification_frequency:
+          enum: [continuous, on_crossing, on_change, on_expire]
+          tags: {cpptype: notif_freq}
+          type: string
+        recipient_id:
+          tags: {cpptype: uint32}
+          type: integer
+      type: object
+    type: array
+  VAttribute:
+    additionalProperties: false
+    description: Information about the violating metric values.
+    properties:
+      additional_info_values:
+        description: Optional information used to help display the violator
+        items:
+          additionalProperties: false
+          properties:
+            key: {type: string}
+            value: {type: string}
+          type: object
+        type: array
+      count: {description: The number of times this violator has appeared in the alert,
+        type: integer}
+      metric_context:
+        items:
+          additionalProperties: false
+          properties:
+            data:
+              items: {$ref: '#/types/VProfilePoint'}
+              type: array
+            metric: {type: string}
+          required: [metric]
+          type: object
+        type: array
+      metric_values:
+        items: {$ref: '#/types/VValue'}
+        type: array
+      severity:
+        description: The current severity of this Violation in this Alert
+        maximum: 100
+        minimum: 0
+        tags: {cpptype: uint32}
+        type: integer
+      timestamp: {description: Epoch timestamp representing the last time this violator
+          was updated in the alert, type: string}
+    type: object
+  VKey:
+    items: {type: string}
+    type: array
+  VProfilePoint:
+    additionalProperties: false
+    description: Represents the tolerance bands used in Adaptive Threshold alert detail
+      reports.
+    properties:
+      fc: {type: number}
+      mjh: {type: number}
+      mjl: {type: number}
+      mnh: {type: number}
+      mnl: {type: number}
+      nmh: {type: number}
+      nml: {type: number}
+      ts: {type: string}
+      va: {type: number}
+    type: object
+  VValue:
+    additionalProperties: false
+    description: Holds a metric and its value.  Value can be null.  Valid is deprecated.
+    properties:
+      metric: {type: string}
+      valid: {type: boolean}
+      value: {type: number}
+    required: [metric]
+    type: object
+  column_list:
+    description: Collection of data column IDs.
+    items: {description: Data column ID., type: string}
+    type: array
+  data_def_source:
+    description: Data source specificiation for a data definition.
+    properties:
+      name: {description: Name of the data source for the data definition., type: string}
+      origin: {description: 'The origin data source for a query that is performing
+          a sub-query into another data source (e.g., alerting requesting into system_metrics).
+          Required in these cases for data column validation.', type: string}
+      path: {description: Reference path to the requested data from within the data
+          source., type: string}
+      reference_id: {description: Reference to another data_def which will be used
+          as a source to this one., type: string}
+      type: {description: Data type requested, type: string}
+    required: [name]
+    type: object
+version: '3.0'

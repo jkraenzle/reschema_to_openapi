@@ -1,0 +1,423 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: 'REST API for hardware monitor service.
+
+  '
+id: http://support.riverbed.com/apis/npm.hardware_monitor/1.2
+name: npm.hardware_monitor
+provider: riverbed
+resources:
+  chassis:
+    additionalProperties: false
+    description: Chassis data
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/chassis'}
+      self: {path: '$/chassis/items/{serial_number}'}
+    properties:
+      availability:
+        $merge:
+          source: {$ref: '#/types/chassis_availability'}
+          with: {readOnly: true}
+      columns: {description: 'The number of columns of disk slots on the chassis.
+          ''0'' is at the left.
+
+          ', minimum: 0, readOnly: true, type: integer}
+      headunit: {description: Indicates whether this is the head unit chassis., readOnly: true,
+        type: boolean}
+      health:
+        $merge:
+          source: {$ref: '#/types/health_status'}
+          with: {readOnly: true}
+      model: {readOnly: true, type: string}
+      rows: {description: 'The number of rows of disk slots on the chassis. ''0''
+          is at the top.
+
+          ', minimum: 0, readOnly: true, type: integer}
+      sensor_status:
+        additionalProperties: false
+        description: 'Status of the sensors on the chassis
+
+          '
+        properties:
+          cpus:
+            items: {$ref: '#/types/cpu'}
+            type: array
+          exhaust_air_sensors:
+            items: {$ref: '#/types/exhaust_air_sensor'}
+            type: array
+          intake_air_sensors:
+            items: {$ref: '#/types/intake_air_sensor'}
+            type: array
+          power_supplies:
+            items: {$ref: '#/types/power_supply'}
+            type: array
+          raid_controllers:
+            items: {$ref: '#/types/raid_controller'}
+            type: array
+          storage_unit_controllers:
+            items: {$ref: '#/types/storage_unit_controller'}
+            type: array
+          system_fans:
+            items: {$ref: '#/types/system_fan'}
+            type: array
+        type: object
+      serial_number:
+        $merge:
+          source: {$ref: '#/types/device_id'}
+          with: {readOnly: true}
+      unused_slots:
+        description: A list of positions in the disk grid that are unused.
+        items:
+          items: {type: integer}
+          type: array
+        type: array
+    relations:
+      disks:
+        resource: '#/resources/disks'
+        vars: {chassis: 0/serial_number}
+      instances: {resource: '#/resources/chassis_list'}
+    type: object
+  chassis_list:
+    additionalProperties: false
+    description: Collection of chassis
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/chassis_list'}
+      self:
+        params:
+          availability: {$ref: '#/types/chassis_availability'}
+        path: $/chassis
+    properties:
+      items:
+        items: {$ref: '#/resources/chassis'}
+        type: array
+    type: object
+  disk:
+    additionalProperties: false
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/disk'}
+      self: {path: '$/disks/items/{id}'}
+      set:
+        method: PUT
+        request: {$ref: '#/resources/disk'}
+        response: {$ref: '#/resources/disk'}
+    properties:
+      blink: {description: Set to true to blink the drive for identification., type: boolean}
+      chassis:
+        $merge:
+          source: {$ref: '#/types/device_id'}
+          with: {readOnly: true}
+      device_type:
+        enum: [disk]
+        readOnly: true
+        type: string
+      disk_type: {description: Disk technology, readOnly: true, type: string}
+      health:
+        $merge:
+          source: {$ref: '#/types/health_status'}
+          with: {readOnly: true}
+      id: {description: 'A unique identifier for this disk''s slot on this system.
+
+          ', readOnly: true, type: string}
+      location:
+        $merge:
+          source: {$ref: '#/types/disk_location'}
+          with: {readOnly: true}
+      model: {description: Model string of the disk, readOnly: true, type: string}
+      serial_number: {description: Unique identifier of the disk, readOnly: true,
+        type: string}
+      size_mb: {description: Size of the disk in mebibytes, readOnly: true, type: integer}
+      status:
+        $merge:
+          source: {$ref: '#/types/disk_status'}
+          with: {readOnly: true}
+    relations:
+      chassis:
+        resource: '#/resources/chassis'
+        vars: {serial_number: 0/chassis}
+      instances: {resource: '#/resources/disks'}
+    required: [id, blink]
+    type: object
+  disks:
+    additionalProperties: false
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/disks'}
+      self:
+        params:
+          chassis: {$ref: '#/types/device_id'}
+          disk_type: {type: string}
+          serial_number: {type: string}
+          status: {$ref: '#/types/disk_status'}
+        path: $/disks
+    properties:
+      items:
+        items: {$ref: '#/resources/disk'}
+        type: array
+    type: object
+  hardware_change_event:
+    additionalProperties: false
+    description: Event sent when the status of a hardware object changes.
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/hardware_change_event'}
+      self:
+        path:
+          template: $/event_queues/hardware_change_events/{id}
+          vars: {id: 0/hdr/id}
+    oneOf:
+    - additionalProperties: false
+      properties:
+        device_type:
+          enum: [disk]
+          type: string
+        previous_status: {$ref: '#/types/disk_status'}
+        status: {$ref: '#/types/disk_status'}
+      type: object
+    - additionalProperties: false
+      properties:
+        availability: {$ref: '#/types/chassis_availability'}
+        device_type:
+          enum: [chassis]
+          type: string
+        previous_status: {$ref: '#/types/disk_status'}
+      type: object
+    properties:
+      action:
+        description: Type of object change the event is describing.
+        enum: [new, removed, changed]
+        type: string
+      device_id: {description: Identifying unique attribute of the device, type: string}
+      device_type:
+        $merge:
+          source: {$ref: '#/types/device_type'}
+          with: {description: The type of device that changed.}
+      hdr: {$ref: /apis/mgmt.types.events/1.0#/types/event_header}
+      jobs:
+        description: A list of jobs created in response to this event (future use).
+        items:
+          additionalProperties: false
+          description: A job record with name and job id
+          properties:
+            job_id: {type: string}
+            name: {type: string}
+          type: object
+        type: array
+      previous_status: {description: 'The previous status, if status changed.', type: string}
+      status: {description: The current status of the device. Not included if device
+          was removed., type: string}
+    relations:
+      instances: {resource: '#/resources/hardware_change_events'}
+    required: [device_type, device_id]
+    type: object
+  hardware_change_events:
+    additionalProperties: false
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/hardware_change_event'}
+        response: {$ref: '#/resources/hardware_change_event'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/hardware_change_events'}
+      self:
+        params:
+          limit: {description: When specified at most 'limit' events will be returned.,
+            type: integer}
+          since_id: {description: When specified only events with ids greater than
+              'since_id' will be returned., type: integer}
+        path: $/event_queues/hardware_change_event
+    properties:
+      items:
+        items: {$ref: '#/resources/hardware_change_event'}
+        type: array
+    type: object
+  hardware_health:
+    additionalProperties: false
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/hardware_health'}
+      refresh: {description: Force a refresh of hardware status, method: POST, path: $/status/refresh}
+      self: {path: $/status}
+    properties:
+      status:
+        $merge:
+          source: {$ref: '#/types/health_status'}
+          with: {readOnly: true}
+    type: object
+  volume:
+    additionalProperties: false
+    description: Data Volume
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/volumes'}
+      self: {path: '$/volumes/items/{id}'}
+    properties:
+      chassis:
+        $merge:
+          source: {$ref: '#/types/device_id'}
+          with: {readOnly: true}
+      health:
+        $merge:
+          source: {$ref: '#/types/health_status'}
+          with: {readOnly: true}
+      id: {readOnly: true, type: string}
+      mode:
+        $merge:
+          source: {$ref: '#/types/raid_mode'}
+          with: {readOnly: true}
+      roles:
+        items:
+          enum: [os, data, capture]
+          type: string
+        type: array
+      status:
+        $merge:
+          source: {$ref: '#/types/volume_status'}
+          with: {readOnly: true}
+    relations:
+      chassis:
+        resource: '#/resources/chassis'
+        vars: {serial_number: 0/chassis}
+      instances: {resource: '#/resources/volumes'}
+    required: [id, mode, status, health, chassis, roles]
+    type: object
+  volumes:
+    additionalProperties: false
+    description: Data Volumes
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/volumes'}
+      self:
+        params:
+          status: {$ref: '#/types/volume_status'}
+        path: $/volumes
+    properties:
+      items:
+        items: {$ref: '#/resources/volumes'}
+        type: array
+    required: [items]
+    type: object
+tags:
+  relint-disable: [E0105]
+title: Hardware Monitor
+types:
+  chassis_availability:
+    enum: [ok, missing, foreign, invalid]
+    type: string
+  cpu:
+    additionalProperties: false
+    properties:
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+      temperature: {$ref: '#/types/sensor_temperature'}
+    required: [status, name, status_msg, temperature]
+    type: object
+  device_id: {type: string}
+  device_identity:
+    additionalProperties: false
+    properties:
+      device_id: {type: string}
+      manufacturer: {type: string}
+      model: {type: string}
+    required: [device_id]
+    type: object
+  device_type:
+    enum: [disk, chassis]
+    type: string
+  disk_location:
+    additionalProperties: false
+    properties:
+      column: {minimum: 0, type: integer}
+      label: {type: string}
+      row: {minimum: 0, type: integer}
+    type: object
+  disk_status:
+    enum: [ok, failed, failing, rebuilding, missing, invalid, new]
+    type: string
+  exhaust_air_sensor:
+    additionalProperties: false
+    properties:
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+      temperature: {$ref: '#/types/sensor_temperature'}
+    required: [status, name, status_msg, temperature]
+    type: object
+  health_status:
+    enum: [ok, notice, failing, failed]
+    type: string
+  intake_air_sensor:
+    additionalProperties: false
+    properties:
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+      temperature: {$ref: '#/types/sensor_temperature'}
+    required: [status, name, status_msg, temperature]
+    type: object
+  power_supply:
+    additionalProperties: false
+    properties:
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+      temperature: {$ref: '#/types/sensor_temperature'}
+    required: [status, name, status_msg, temperature]
+    type: object
+  raid_controller:
+    additionalProperties: false
+    properties:
+      battery: {$ref: '#/types/sensor_status'}
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+      temperature: {$ref: '#/types/sensor_temperature'}
+    required: [status, name, status_msg, battery, temperature]
+    type: object
+  raid_mode:
+    enum: ['', RAID0, RAID5, RAID6]
+    type: string
+  rpm: {description: Revolutions per minute, type: integer}
+  sensor_status:
+    enum: [ok, missing, unknown, failing, failed]
+    type: string
+  sensor_temperature:
+    additionalProperties: false
+    properties:
+      current_temperature: {description: Current temperature in celsius, type: integer}
+      threshold: {description: Threshold temperature in celsius, type: integer}
+    required: [current_temperature, threshold]
+    type: object
+  storage_unit_controller:
+    additionalProperties: false
+    properties:
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+      temperature: {$ref: '#/types/sensor_temperature'}
+    required: [status, name, status_msg, temperature]
+    type: object
+  system_fan:
+    additionalProperties: false
+    properties:
+      fan_speed: {$ref: '#/types/rpm'}
+      name: {type: string}
+      status: {$ref: '#/types/sensor_status'}
+      status_msg: {type: string}
+    required: [status, name, status_msg, fan_speed]
+    type: object
+  volume_status:
+    enum: [ok, degraded, rebuilding, uninitialized, failed, missing, invalid]
+    type: string
+version: '1.2'

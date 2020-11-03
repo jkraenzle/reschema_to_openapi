@@ -1,0 +1,953 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+provider: riverbed
+id: http://support.riverbed.com/apis/npm.packet_capture/3.0
+name: npm.packet_capture
+version: '3.0'
+title: NPM Packet Capture
+description: NPM Packet Capture API
+types:
+    flow_export_filter:
+        type: object
+        description: Filter settings used for Flow Export
+        required:
+        - enabled
+        - filter
+        additionalProperties: false
+        properties:
+            enabled:
+                type: boolean
+                description: Enable or disable Flow Export filtering
+            filter:
+                $ref: '#/types/input_filter'
+    input_filter:
+        type: object
+        description: Packet filter configuration
+        required:
+        - type
+        - value
+        additionalProperties: false
+        properties:
+            value:
+                type: string
+                description: String representation of the filter
+            type:
+                type: string
+                description: The type of filter to be processed
+                enum:
+                - UNKNOWN
+                - STEELFILTER
+                - BPF
+    job_indexing:
+        type: object
+        description: Parameters for Microflow indexing
+        required:
+        - enabled
+        - retention_rules
+        additionalProperties: false
+        properties:
+            enabled:
+                type: boolean
+                description: Enable or disable Microflow indexing on the capture job
+            retention_rules:
+                $ref: '#/types/packet_retention'
+    packet_broker_types_type_enum:
+        type: string
+        description: Enumerative for supported packet brokers
+        enum:
+        - NONE
+        - UNKNOWN
+        - CPACKET_TS_ONLY
+        - CPACKET_TS_AND_SLICE
+        - GIGAMON_HEADER
+        - GIGAMON_TRAILER
+        - GIGAMON_TRAILER_X12
+        - ANUE
+        - ARISTA
+        - ARISTA_BEFORE_FCS
+    packet_retention:
+        type: object
+        description: Packet storage retention rules
+        additionalProperties: false
+        properties:
+            min_retention_time:
+                type: string
+                description: Minimum retention time for captured packets (i.e. best
+                    effort to have at least N seconds worth of packets in the capture
+                    job). The string represents a decimal value of seconds since epoch.
+                    If equal to zero or not set, the parameter will be ignored
+            max_retention_time:
+                type: string
+                description: Maximum retention time for captured packets (i.e. the
+                    capture job cannot store more than N seconds worth of packets).
+                    The string represents a decimal velue of seconds since epoch.
+                    If equal to zero or not set, the parameter will be ignored
+            min_disk_space:
+                tags:
+                    cpptype: uint64
+                type: integer
+                description: Minimum disk space for captured packets (i.e. best effort
+                    to have at least N bytes worth of packets in the capture job).
+                    Value in bytes. If equal to zero or not set, the parameter will
+                    be ignored
+            max_disk_space:
+                tags:
+                    cpptype: uint64
+                type: integer
+                description: Maximum disk space for captured packets (i.e. the capture
+                    job cannot store more than N bytes worth of packets). Value in
+                    bytes. If equal to zero or not set, the paramter will be ignored
+    phys_interface_capabilities_enum:
+        type: string
+        description: The types of supported speed/duplex configurations. AUTONEG_*
+            values will try to autonegotiate the corresponding speed in Mbps (AUTNEG
+            will negotiate them all). All other values will force a specific speed
+            in Mbps (FD full duplex, HD half duplex)
+        enum:
+        - UNKNOWN
+        - AUTONEG
+        - AUTONEG_10
+        - AUTONEG_100
+        - AUTONEG_1000
+        - 10_HD
+        - 10_FD
+        - 100_HD
+        - 100_FD
+        - 1000_FD
+        - 10000_FD
+        - 40000_FD
+        - 100000_FD
+    recent_stats:
+        type: object
+        readOnly: true
+        required:
+        - total
+        description: Statistics about last second/minute/hour (and total)
+        additionalProperties: false
+        properties:
+            total:
+                tags:
+                    cpptype: uint64
+                type: integer
+                description: Total number of the statistic
+            last_second:
+                tags:
+                    cpptype: uint64
+                type: integer
+                description: The value of the statistic in the last second
+            last_minute:
+                tags:
+                    cpptype: uint64
+                type: integer
+                description: The value of the statistics in the last minute
+            last_hour:
+                tags:
+                    cpptype: uint64
+                type: integer
+                description: The value of the statistics in the last hour
+resources:
+    settings:
+        description: Global settings for packet capture
+        type: object
+        required:
+        - packet_broker
+        - deduplication
+        additionalProperties: false
+        properties:
+            packet_broker:
+                type: object
+                description: Packet Broker settings
+                required:
+                - type
+                additionalProperties: false
+                properties:
+                    type:
+                        $ref: '#/types/packet_broker_types_type_enum'
+            deduplication:
+                type: object
+                description: Packet deduplication advanced settings
+                required:
+                - entries
+                - timeout
+                - udp_timeout
+                - tcp_timeout
+                - udp_alg_enabled
+                - tcp_alg_enabled
+                - tcp_syn_ack_timeout
+                - tcp_syn_ack_enabled
+                - esp_timeout
+                - esp_alg_enabled
+                additionalProperties: false
+                properties:
+                    entries:
+                        tags:
+                            cpptype: uint32
+                        type: integer
+                        description: Size of internal queues used by packet deduplication
+                            engine
+                    timeout:
+                        type: string
+                        description: Time window within which packet deduplication
+                            is guaranteed. If two duplicate packets are received further
+                            apart than this timeout, they will not be considered duplicates.
+                            The string represents a decimal value of seconds
+                    udp_timeout:
+                        type: string
+                        description: Time window used for UDP packets instead of the
+                            global 'timeout'. The string represents a decimal value
+                            of seconds
+                    tcp_timeout:
+                        type: string
+                        description: Time window used for TCP packets (with IP identification
+                            equal to 0) instead of the global 'timeout'. The string
+                            represents a decimal value of seconds
+                    udp_alg_enabled:
+                        type: boolean
+                        description: Enable/Disable deduplication on UDP packets
+                    tcp_alg_enabled:
+                        type: boolean
+                        description: Enable/Disable deduplication on TCP packets with
+                            IP identification equal to 0
+                    tcp_syn_ack_timeout:
+                        type: string
+                        description: Time window used for TCP SYN/ACK packets (with
+                            IP identification equal to 0) instead of the global 'timeout'.
+                            The string represents a decimal value of seconds
+                    tcp_syn_ack_enabled:
+                        type: boolean
+                        description: Enable/Disable deduplication on TCP SYN/ACK packets
+                            with IP identification equal to 0
+                    esp_timeout:
+                        type: string
+                        description: Time window used for ESP packets (with IP identification
+                            equal to 0) instead of the global 'timeout'. The string
+                            represents a decimal value of seconds
+                    esp_alg_enabled:
+                        type: boolean
+                        description: Enable/Disable deduplication on ESP packets with
+                            IP identification equal to 0
+        links:
+            self:
+                path: $/settings
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/settings'
+            set:
+                method: PUT
+                request:
+                    $ref: '#/resources/settings'
+                response:
+                    $ref: '#/resources/settings'
+    vifg_global_state:
+        description: Global state for Virtual Interface Groups (VIFGs)
+        type: object
+        readOnly: true
+        additionalProperties: false
+        required:
+        - autodiscovery
+        properties:
+            autodiscovery:
+                type: object
+                description: Information about the status of VIFG autodiscovery
+                additionalProperties: false
+                properties:
+                    maximum_reached:
+                        type: boolean
+                        description: True if the maximum number of VIFGs has already
+                            been automatically discovered and no more VIFGs will be
+                            created. False, otherwise. The maximum is currently set
+                            to 2000 (including the 'other vifg')
+        links:
+            self:
+                path: $/vifgs/state
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/vifg_global_state'
+    vifg_settings:
+        description: Global settings for Virtual Interface Groups (VIFGs)
+        type: object
+        additionalProperties: false
+        required:
+        - grouping_type
+        - supported_grouping_types
+        - enable_aggregation
+        - autodiscovery
+        properties:
+            grouping_type:
+                type: string
+                description: The type of grouping used for incoming packets
+            supported_grouping_types:
+                type: array
+                description: Valid values for the field 'grouping_types'
+                readOnly: true
+                items:
+                    type: string
+                    description: Supported grouping types
+                    enum:
+                    - UNKNOWN
+                    - PHYSICAL_INTERFACE
+                    - VLAN
+            enable_aggregation:
+                type: boolean
+                description: Enable or disable VIFG aggregation in downstream processing
+            autodiscovery:
+                type: object
+                description: Global settings for the VIFG autodiscovery feature
+                required:
+                - enabled
+                - default
+                additionalProperties: false
+                properties:
+                    enabled:
+                        type: boolean
+                        description: Enable or disable VIFG autodiscovery
+                    default:
+                        type: object
+                        required:
+                        - filter
+                        - dedup
+                        - flow_export
+                        description: Default values for VIFGs created by autodiscovery
+                        additionalProperties: false
+                        properties:
+                            filter:
+                                $ref: '#/types/input_filter'
+                            dedup:
+                                type: boolean
+                                description: Enable or disable packet deduplication
+                                    on VIFGs created by autodiscovery
+                            flow_export:
+                                $ref: '#/types/flow_export_filter'
+        links:
+            self:
+                path: $/vifgs/settings
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/vifg_settings'
+            set:
+                method: PUT
+                request:
+                    $ref: '#/resources/vifg_settings'
+                response:
+                    $ref: '#/resources/vifg_settings'
+    job_defaults:
+        description: Default values to use when creating a new capture job
+        type: object
+        readOnly: true
+        required:
+        - name
+        - enabled
+        - optimize_for_read
+        - snap_len
+        - capture_from_all_vifgs
+        - retention_rules
+        - indexing
+        additionalProperties: false
+        properties:
+            name:
+                type: string
+                description: Default name of new job
+            enabled:
+                type: boolean
+                description: Default status of the job
+            optimize_for_read:
+                type: boolean
+                description: Default value for optimize_for_read
+            capture_from_all_vifgs:
+                type: boolean
+                description: Default value for whether the capture job should capture
+                    from all VIFGs or not
+            snap_len:
+                tags:
+                    cpptype: uint32
+                type: integer
+                description: Default value for snaplen
+            retention_rules:
+                $ref: '#/types/packet_retention'
+            indexing:
+                $ref: '#/types/job_indexing'
+        links:
+            self:
+                path: $/info/job_defaults
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/job_defaults'
+    packet_broker_types:
+        description: Information about supported packet brokers
+        type: array
+        items:
+            type: object
+            description: Information about a single packet broker
+            required:
+            - type
+            - type_pretty
+            - description
+            additionalProperties: false
+            properties:
+                type:
+                    $ref: '#/types/packet_broker_types_type_enum'
+                type_pretty:
+                    type: string
+                    description: User friendly name for the specific type of packet
+                        broker
+                description:
+                    type: string
+                    description: Description of the specific type of packet broker
+        links:
+            self:
+                path: $/info/packet_broker_types
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/packet_broker_types'
+    phys_interfaces:
+        description: Monitoring interfaces detected on the system
+        type: object
+        required:
+        - items
+        additionalProperties: false
+        properties:
+            items:
+                type: array
+                description: List of monitoring interfaces
+                items:
+                    $ref: '#/resources/phys_interface'
+        links:
+            self:
+                path: $/interfaces
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/phys_interfaces'
+    phys_interface:
+        description: Information about a monitoring interface
+        type: object
+        required:
+        - config
+        additionalProperties: false
+        properties:
+            name:
+                type: string
+                description: The name of the monitoring interface
+                readOnly: true
+            config:
+                type: object
+                required:
+                - alias
+                - enabled
+                - description
+                - speed_duplex
+                description: Configuration of a monitoring interface
+                additionalProperties: false
+                properties:
+                    alias:
+                        description: Alternative name for the interface
+                        type: string
+                    enabled:
+                        description: Used to enable/disable a monitoring interface
+                        type: boolean
+                    description:
+                        description: A description of the monitoring interface
+                        type: string
+                    speed_duplex:
+                        $ref: '#/types/phys_interface_capabilities_enum'
+            state:
+                type: object
+                readOnly: true
+                required:
+                - status
+                - interface_type
+                - mtu
+                - speed_duplex
+                - stats
+                description: Information about the state of a monitoring interface
+                additionalProperties: false
+                properties:
+                    status:
+                        type: string
+                        description: The state of the interface. UP and DOWN provide
+                            link status information. CONNECTED and DISCONNECTED provide
+                            tcp connection information. MISSING is used when the interace
+                            is no longer detected on the system. DISABLED is used
+                            for interfaces that have been manually disabled.
+                        enum:
+                        - UP
+                        - DOWN
+                        - CONNECTED
+                        - DISCONNECTED
+                        - MISSING
+                        - DISABLED
+                        - UNKNOWN
+                    interface_type:
+                        type: string
+                        description: The type of interface. It gives a high level
+                            information about the type of hardware used (FILE is reserved
+                            for internal use)
+                        enum:
+                        - 1G_COPPER
+                        - 1G_FIBER
+                        - 1G_VIRTUAL
+                        - 10G_COPPER
+                        - 10G_FIBER
+                        - 10G_VIRTUAL
+                        - 40G_FIBER
+                        - 40G_VIRTUAL
+                        - 100G_FIBER
+                        - 100G_VIRTUAL
+                        - FILE
+                        - UNKNOWN
+                    mtu:
+                        tags:
+                            cpptype: uint32
+                        type: integer
+                        description: The Maximum Transmission Unit (MTU) of the interface
+                    speed_duplex:
+                        $ref: '#/types/phys_interface_capabilities_enum'
+                    stats:
+                        type: object
+                        description: Statistics for a monitoring interface
+                        readOnly: true
+                        required:
+                        - bytes_total
+                        - packets_total
+                        - packets_dropped
+                        additionalProperties: false
+                        properties:
+                            bytes_total:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Total number of bytes received
+                                            by the interface (including drops)
+                            packets_total:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Total number of packets received
+                                            by the interface (including drops)
+                            packets_dropped:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Number of packets dropped by
+                                            the interface
+        links:
+            self:
+                path: $/interfaces/items/{name}
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/phys_interface'
+            set:
+                method: PUT
+                request:
+                    $ref: '#/resources/phys_interface'
+                response:
+                    $ref: '#/resources/phys_interface'
+            reset_stats:
+                method: POST
+                description: Used to reset the statistics of the monitoring interface
+                path: $/interfaces/items/{name}/reset_stats
+            delete:
+                method: DELETE
+    phys_interface_capabilities:
+        description: Information about supported capabilities of a monitoring interface
+        type: object
+        required:
+        - name
+        - speed_duplex
+        additionalProperties: false
+        properties:
+            name:
+                description: The name of the monitoring interface
+                type: string
+            speed_duplex:
+                type: array
+                description: An array of the speeds supported by the interface
+                items:
+                    $ref: '#/types/phys_interface_capabilities_enum'
+        links:
+            self:
+                path: $/interfaces/items/{name}/capabilities
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/phys_interface_capabilities'
+    vifgs:
+        description: Virtual Interface Groups (VIFGs) configured on the system
+        type: object
+        required:
+        - items
+        additionalProperties: false
+        properties:
+            items:
+                type: array
+                description: List of Virtual Interface Groups (VIFGs)
+                items:
+                    $ref: '#/resources/vifg'
+            count:
+                tags:
+                    cpptype: uint32
+                description: The total number of Virtual Interface Groups (VIFGs)
+                type: integer
+        links:
+            self:
+                path: $/vifgs
+                params:
+                    sortby:
+                        description: 'Fields to use for sorting. Supported values
+                            are: name, description, enabled, interfaces, enable_dedup,
+                            flow_export_enabled, bytes_received, packets_received,
+                            packets_duped'
+                        type: string
+                    sort:
+                        description: Direction of sorting (either 'asc' for ascending
+                            or 'desc' for descending)
+                        type: string
+                        enum:
+                        - asc
+                        - desc
+                    offset:
+                        description: Starting element number when querying for a set
+                            of elements paging
+                        tags:
+                            cpptype: uint32
+                        type: integer
+                    limit:
+                        description: Limit number of elements to return
+                        tags:
+                            cpptype: uint32
+                        type: integer
+                    is_other_vifg:
+                        description: Filter the 'other vifg' from the list of VIFGs
+                        type: boolean
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/vifgs'
+            create:
+                method: POST
+                request:
+                    $ref: '#/resources/vifg'
+                response:
+                    $ref: '#/resources/vifg'
+    vifg:
+        description: Information about a Virtual Interface Group (VIFG)
+        type: object
+        required:
+        - config
+        additionalProperties: false
+        properties:
+            id:
+                tags:
+                    cpptype: uint32
+                type: integer
+                description: The unique ID of the Virtual Interface Group (VIFG)
+                readOnly: true
+            config:
+                type: object
+                required:
+                - name
+                - members
+                - enabled
+                description: Configuration of a Virtual Interface Group (VIFG)
+                additionalProperties: false
+                properties:
+                    name:
+                        type: string
+                        description: Unique name of the VIFG
+                    description:
+                        type: string
+                        description: Description of the VIFG
+                    enabled:
+                        type: boolean
+                        description: Whether or not the VIFG is enabled (disabled
+                            VIFGs will drop all the their traffic)
+                    members:
+                        type: array
+                        description: List of members associated with this VIFG
+                        items:
+                            type: string
+                            description: 'A monitoring interface (in PHYSICAL_INTERFACE
+                                mode) or a VLAN ID (in VLAN mode) that belongs to
+                                the VIFG. The VLAN ID can be one of: an integer (0-4095),
+                                a colon-seperated list of integers to represent QinQ
+                                (1:4:5), or ''UNTAGGED'''
+                    is_other_vifg:
+                        type: boolean
+                        description: Whether or not this VIFG is the 'other vifg'
+                    bandwidth_capacity:
+                        tags:
+                            cpptype: uint64
+                        type: integer
+                        description: Custom value for the capacity of the VIFG (in
+                            Mbps). If set to zero, it will use default values (see
+                            the field bandwidth_capacity in the 'state' object)
+                    filter:
+                        $ref: '#/types/input_filter'
+                    dedup:
+                        type: boolean
+                        description: Whether or not packet deduplication is enabled
+                            on this VIFG
+                    flow_export:
+                        $ref: '#/types/flow_export_filter'
+            state:
+                type: object
+                readOnly: true
+                required:
+                - stats
+                - bandwidth_capacity
+                - mtu
+                description: Information about the state of a Virtual Interface Group
+                    (VIFG)
+                additionalProperties: false
+                properties:
+                    mtu:
+                        tags:
+                            cpptype: uint64
+                        type: integer
+                        description: In PHYSICAL_INTERFACE mode, the max Maximum Transmission
+                            Unit (MTU) of the interfaces that the VIFG collects. In
+                            VLAN mode, the max MTU of all interfaces
+                        readOnly: true
+                    bandwidth_capacity:
+                        tags:
+                            cpptype: uint64
+                        type: integer
+                        description: The (read-only) capacity of the VIFG in Mbps.
+                            In PHYSICAL_INTERFACE mode, it's the sum of the speeds
+                            of the interfaces that the VIFG collects. In VLAN mode,
+                            the sum of the speeds of all interfaces. It can also be
+                            configured to a custom value (see the field bandwidth_capacity
+                            in the 'config' object)
+                    stats:
+                        type: object
+                        description: Statistics of a Virtual Interface Group (VIFG)
+                        readOnly: true
+                        required:
+                        - bytes_received
+                        - packets_received
+                        - packets_duped
+                        additionalProperties: false
+                        properties:
+                            bytes_received:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Number of bytes correctly received
+                                            by VIFG (including duplicates)
+                            packets_received:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Number of packets correctly received
+                                            by VIFG (including duplicates)
+                            packets_duped:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Number of duplicate packets
+        links:
+            self:
+                path: $/vifgs/items/{id}
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/vifg'
+            set:
+                method: PUT
+                request:
+                    $ref: '#/resources/vifg'
+                response:
+                    $ref: '#/resources/vifg'
+            reset_stats:
+                method: POST
+                description: Used to reset the statistics of the Virtual Interface
+                    Group (VIFG)
+                path: $/vifgs/items/{id}/reset_stats
+            delete:
+                method: DELETE
+    jobs:
+        description: Capture jobs configured on the system
+        type: object
+        required:
+        - items
+        additionalProperties: false
+        properties:
+            items:
+                description: List of capture jobs
+                type: array
+                items:
+                    $ref: '#/resources/job'
+        links:
+            self:
+                path: $/jobs
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/jobs'
+            create:
+                method: POST
+                request:
+                    $ref: '#/resources/job'
+                response:
+                    $ref: '#/resources/job'
+    job:
+        description: Information about a capture job
+        type: object
+        required:
+        - config
+        additionalProperties: false
+        properties:
+            id:
+                type: string
+                description: The UUID of the capture job
+                readOnly: true
+            config:
+                type: object
+                description: Configuration of a capture job
+                required:
+                - name
+                - enabled
+                - vifgs
+                - optimize_for_read
+                additionalProperties: false
+                properties:
+                    name:
+                        type: string
+                        description: Name of the job
+                    enabled:
+                        type: boolean
+                        description: Whether the capture job is configured to run
+                            or not
+                    optimize_for_read:
+                        type: boolean
+                        description: Used to enable read optimization
+                    vifgs:
+                        type: array
+                        description: List of VIFGs the capture job is collecting packets
+                            from
+                        items:
+                            tags:
+                                cpptype: uint32
+                            type: integer
+                            description: ID of the VIFG that this capture job captures
+                                from
+                    capture_from_all_vifgs:
+                        type: boolean
+                        description: If enabled, this capture job will ignore the
+                            field 'vifgs' and will capture from all existing VIFGs
+                    filter:
+                        $ref: '#/types/input_filter'
+                    snap_len:
+                        tags:
+                            cpptype: uint32
+                        type: integer
+                        description: It specifies the max number of bytes for every
+                            packet that will be stored to disk. If the packet is longer,
+                            it will be truncated
+                        default: 65535
+                    retention_rules:
+                        $ref: '#/types/packet_retention'
+                    indexing:
+                        $ref: '#/types/job_indexing'
+            state:
+                type: object
+                readOnly: true
+                required:
+                - stats
+                - status
+                description: Information about the state of a capture job
+                additionalProperties: false
+                properties:
+                    stats:
+                        type: object
+                        description: Capture job statistics
+                        required:
+                        - packets_written
+                        - bytes_written
+                        additionalProperties: false
+                        properties:
+                            packets_written:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Number of packets written to
+                                            disk
+                            bytes_written:
+                                $merge:
+                                    source:
+                                        $ref: '#/types/recent_stats'
+                                    with:
+                                        description: Number of bytes written to disk
+                                            (packets only, without overhead)
+                    status:
+                        type: object
+                        description: Generic information on the capture job and its
+                            data
+                        required:
+                        - state
+                        - packet_start_time
+                        - packet_end_time
+                        - capture_size
+                        - capture_disk_space
+                        additionalProperties: false
+                        properties:
+                            state:
+                                type: string
+                                description: State of a capture job
+                                enum:
+                                - UNKNOWN
+                                - STOPPED
+                                - RUNNING
+                            packet_start_time:
+                                type: string
+                                description: The timestamp of the first packet of
+                                    the capture job. The string represents a decimal
+                                    value of seconds since epoch
+                            packet_end_time:
+                                type: string
+                                description: The timestamp of the last packet of the
+                                    capture job. The string represents a decimal value
+                                    of seconds since epoch
+                            capture_size:
+                                tags:
+                                    cpptype: uint64
+                                type: integer
+                                description: The size of all the packets of the capture
+                                    job (packets only, without overhead)
+                            capture_disk_space:
+                                tags:
+                                    cpptype: uint64
+                                type: integer
+                                description: The actual size of the capture job on
+                                    disk (including overhead)
+        links:
+            self:
+                path: $/jobs/items/{id}
+            get:
+                method: GET
+                response:
+                    $ref: '#/resources/job'
+            set:
+                method: PUT
+                request:
+                    $ref: '#/resources/job'
+                response:
+                    $ref: '#/resources/job'
+            delete:
+                method: DELETE
+            clear_packets:
+                method: POST
+                description: Used to clear capture job data
+                path: $/jobs/items/{id}/clear

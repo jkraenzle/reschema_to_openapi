@@ -1,0 +1,106 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Service that handles software updates
+id: http://support.riverbed.com/apis/npm.system_update/2.0
+name: npm.system_update
+provider: riverbed
+resources:
+  image:
+    additionalProperties: false
+    description: Information about the update image
+    links:
+      delete: {method: DELETE}
+      get:
+        method: GET
+        response: {$ref: '#/resources/image'}
+      self: {path: '$/images/items/{id}'}
+    properties:
+      checksum: {description: The SHA-256 checksum of the update image, type: string}
+      id: {description: A unique identifier for the image, readOnly: true, type: integer}
+      progress: {description: The progress of the current upload/fetch operation,
+        type: number}
+      state:
+        description: The state of the update image
+        enum: [UPLOADING, VALIDATING, UPLOAD_ERROR, VALID, INVALID]
+        type: string
+      state_description: {description: A more detailed description of the state, type: string}
+      version: {description: The version of the update image, type: string}
+    required: [state, state_description]
+    type: object
+  images:
+    additionalProperties: false
+    description: List of update images
+    links:
+      fetch:
+        description: Fetch a new update image at the provided url
+        method: POST
+        path: $/images/fetch
+        request:
+          additionalProperties: false
+          description: Fetch parameters
+          properties:
+            url: {description: The url where to fetch the update image from, type: string}
+          required: [url]
+          type: object
+        response: {$ref: '#/resources/image'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/images'}
+      self: {path: $/images}
+      upload:
+        description: 'Uploads a new update image. The accepted content-type is application/octet-stream.
+
+          '
+        method: POST
+        path: $/images/upload
+        request: {additionalProperties: true, description: The update image binary,
+          type: object}
+        response: {$ref: '#/resources/image'}
+        tags:
+          media_types: [application/octet-stream]
+    properties:
+      items:
+        description: An array containing the available update images
+        items: {$ref: '#/resources/image'}
+        type: array
+    type: object
+  update:
+    additionalProperties: false
+    description: The overall status of the update
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/update'}
+      init: {description: 'Initialize the update process. Must be called before the
+          update can be started.
+
+          ', method: POST, path: $/update/init}
+      reset: {description: Uninitialize the update process, method: POST, path: $/update/reset}
+      self: {path: $/update}
+      start: {description: Start the update process, method: POST, path: $/update/start}
+    properties:
+      last_state_time: {description: 'The time of the last state transition, in Unix
+          epoch seconds
+
+          ', type: integer}
+      state:
+        description: The state of the update
+        enum: [IDLE, INITIALIZING, INITIALIZED, RUNNING, FAILED_GRACEFUL, FAILED_CRITICAL]
+        type: string
+      state_description: {description: A more detailed description of the state, type: string}
+      target_version: {description: The version the system will be updated to, type: string}
+      update_history:
+        description: A list of past updates. The first element of the list is an installation
+        items:
+          additionalProperties: false
+          description: Information about a previous update
+          properties:
+            time: {description: 'The time of the update, in Unix epoch seconds
+
+                ', type: integer}
+            version: {description: The version that was installed, type: string}
+          type: object
+        type: array
+    required: [state, state_description, last_state_time, update_history]
+    type: object
+title: Software Update Service
+version: '2.0'

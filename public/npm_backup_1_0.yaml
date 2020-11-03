@@ -1,0 +1,111 @@
+$schema: http://support.riverbed.com/apis/service_def/2.2
+description: Backup, Restore, and Reset Factory operations
+id: http://support.riverbed.com/apis/npm.backup/1.0
+name: npm.backup
+provider: riverbed
+resources:
+  backup:
+    additionalProperties: false
+    description: A single backup of a device
+    links:
+      delete: {method: DELETE}
+      download:
+        description: 'Retrieve the backup file. This link returns binary data.
+
+          '
+        method: GET
+        path: $/backups/items/{id}/file
+        tags:
+          media_types: [application/octet-stream, application/x-gzip]
+      get:
+        method: GET
+        response: {$ref: '#/resources/backup'}
+      restore:
+        description: 'Begin a restore of this backup. The system will reboot as part
+          of this operation.
+
+          '
+        method: POST
+        path: $/backups/items/{id}/restore
+        response: {$ref: '#/resources/restore_status'}
+      self: {path: '$/backups/items/{id}'}
+    properties:
+      backup_time: {description: 'The time the backup was taken, in Unix epoch seconds',
+        readOnly: true, type: integer}
+      description: {description: Description of this backup, maxLength: 250, type: string}
+      hostname: {description: Hostname of the device the backup was created on, readOnly: true,
+        type: string}
+      id: {description: The backup ID, readOnly: true, type: string}
+      model: {description: Model of the device the backup was created on, readOnly: true,
+        type: string}
+      serial: {description: Serial of the device the backup was created on, readOnly: true,
+        type: string}
+      size: {description: 'The size of the backup, in bytes', readOnly: true, type: integer}
+      status:
+        description: Status of the backup
+        enum: [completed, started, failed, uploading]
+        readOnly: true
+        type: string
+      status_message: {description: Extra information about backup status, type: string}
+      sw_version: {description: 'The software version running when the backup was
+          created
+
+          ', readOnly: true, type: string}
+    type: object
+  backups:
+    additionalProperties: false
+    description: List of all available backups
+    links:
+      create:
+        method: POST
+        request: {$ref: '#/resources/backup'}
+        response: {$ref: '#/resources/backup'}
+      get:
+        method: GET
+        response: {$ref: '#/resources/backups'}
+      reset_factory:
+        description: 'Reset the appliance to its initial configuration, wiping out
+          all configuration, logs, and data
+
+          '
+        method: POST
+        path: $/backups/reset_factory
+        response: {$ref: '#/resources/restore_status'}
+      self: {path: $/backups}
+      upload:
+        description: 'Upload a backup file. A backup file is obtained from the download
+          link on a backup resource.  The accepted content-type is application/octet-stream.
+
+          '
+        method: POST
+        path: $/backups/upload
+        response: {$ref: '#/resources/backup'}
+        tags:
+          media_types: [application/octet-stream]
+    properties:
+      items:
+        description: All available backups
+        items: {$ref: '#/resources/backup'}
+        type: array
+    type: object
+  restore_status:
+    additionalProperties: false
+    description: Status of the latest restore operation
+    links:
+      get:
+        method: GET
+        response: {$ref: '#/resources/restore_status'}
+      self: {path: $/restore_status}
+    properties:
+      last_restore_time: {description: 'Time of the last restore, in Unix epoch seconds.
+          Will be 0 if no restore has ever been performed.
+
+          ', type: integer}
+      status:
+        description: Restore status
+        enum: [not_run, started, failed, completed, completed_with_errors]
+        type: string
+      status_message: {description: Further status information, type: string}
+    type: object
+title: Backup and Restore
+version: '1.0'

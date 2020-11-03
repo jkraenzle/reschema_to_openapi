@@ -1,0 +1,236 @@
+components:
+  schemas:
+    auth_info:
+      additionalProperties: false
+      description: 'Information that may be necessary to properly authenticate to
+        the device.
+
+        '
+      properties:
+        login_banner:
+          description: 'A free-form text string that should be displayed to the user
+            prior to logging in, ala /etc/issue on UNIX systems
+
+            '
+          type: string
+        specify_purpose:
+          description: 'Indicates whether or not this device can make use of the purpose
+            string when logging in
+
+            '
+          type: boolean
+        supported_methods:
+          description: List of supported authentication methods
+          items:
+            description: A supported authentication method
+            enum:
+            - BASIC
+            - COOKIE
+            - OAUTH_2_0
+            type: string
+          type: array
+      type: object
+    info:
+      additionalProperties: false
+      description: Device Info
+      properties:
+        device_name:
+          description: Device name
+          type: string
+        hw_version:
+          description: Device hardware version (if applicable)
+          type: string
+        mgmt_addresses:
+          description: 'IP addresses configured/assigned to the management interface(s)
+            of this device.
+
+            '
+          items:
+            description: One management IP address
+            type: string
+          type: array
+        model:
+          description: Device model
+          type: string
+        serial:
+          description: Device serial number (if applicable)
+          type: string
+        sw_version:
+          description: Device software version
+          type: string
+      required:
+      - device_name
+      - model
+      - sw_version
+      type: object
+    ping:
+      additionalProperties: false
+      description: Safe resource for determining if the system is running.
+      type: object
+    services:
+      description: One service
+      properties:
+        id:
+          description: Service identifier / namespace
+          type: string
+        versions:
+          description: API versions supported
+          items:
+            description: One service version
+            links:
+              service_definition:
+                method: GET
+                path:
+                  template: $/../../{name}/{version}
+                  vars:
+                    name: 2/id
+                    version: '0'
+                response:
+                  $ref: http://support.riverbed.com/apis/service_def/2.2
+            type: string
+          type: array
+      type: object
+    session_auth:
+      additionalProperties: false
+      description: Authentication via session-based cookies
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: Access token approach to reaching appliance
+      scheme: bearer
+      type: http
+    oAuth2NoScopes:
+      description: Credential approach to retrieving token
+      flows:
+        clientCredentials:
+          refreshUrl: /mgmt.aaa/1.0/token
+          scopes: {}
+          tokenUrl: /mgmt.aaa/1.0/token
+      type: oauth2
+info:
+  title: Common Resources
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /common/1.0/auth_info:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/auth_info'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - auth_info
+  /common/1.0/info:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/info'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - info
+  /common/1.0/login:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              description: Login details
+              properties:
+                password:
+                  description: Password to log in with
+                  type: string
+                purpose:
+                  description: Reason for logging in
+                  type: string
+                username:
+                  description: Username to log in with
+                  type: string
+              required:
+              - username
+              - password
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  session_id:
+                    description: Value to be used in a session cookie
+                    type: string
+                  session_key:
+                    description: Key to be used in a session cookie
+                    type: string
+                required:
+                - session_key
+                - session_id
+                type: object
+          description: ''
+      summary: login
+      tags:
+      - login
+  /common/1.0/logout:
+    post:
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: logout
+      tags:
+      - login
+  /common/1.0/ping:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ping'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - ping
+  /common/1.0/services:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/services'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - services
+security:
+- oAuth2NoScopes: []
+- bearerAuth: []
+servers:
+- description: Example API base path for URL
+  url: https://{URL}:{Port}/api/
+  variables:
+    Port:
+      default: '443'
+      enum:
+      - '443'
+    URL:
+      default: abc.example.com
