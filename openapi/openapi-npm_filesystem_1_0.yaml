@@ -539,6 +539,13 @@ paths:
       - checksum
   /npm.filesystem/1.0/checksum_status/{+id}:
     get:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -553,6 +560,13 @@ paths:
       - checksum
   /npm.filesystem/1.0/fileop/copy/{+id}:
     post:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -575,6 +589,13 @@ paths:
       - fs
   /npm.filesystem/1.0/fileop/download/{+id}:
     get:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: On success, the server does not provide any body in the response.
@@ -583,6 +604,13 @@ paths:
       - fs
   /npm.filesystem/1.0/fileop/move/{+id}:
     post:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -603,20 +631,6 @@ paths:
       summary: move
       tags:
       - fs
-  /npm.filesystem/1.0/fs:
-    get:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/filesystem'
-                type: array
-          description: ''
-      summary: get
-      tags:
-      - fs
   /npm.filesystem/1.0/fs/{+id}:
     delete:
       parameters:
@@ -632,12 +646,45 @@ paths:
       summary: delete
       tags:
       - fs
+    post:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: On success, the server does not provide any body in the response.
+      summary: create
+      tags:
+      - fs
+  /npm.filesystem/1.0/fs/{+id}{?access,access_rights,owner}:
     get:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
+        schema:
+          type: string
+      - description: access informaton for file
+        in: query
+        name: access
+        required: false
+        schema:
+          type: string
+      - description: permission granted for login user for the file
+        in: query
+        name: access_rights
+        required: false
+        schema:
+          type: string
+      - description: ''
+        in: query
+        name: owner
+        required: false
         schema:
           type: string
       responses:
@@ -652,18 +699,37 @@ paths:
       summary: get
       tags:
       - fs
-    post:
+  /npm.filesystem/1.0/fs{?access,access_rights,owner}:
+    get:
       parameters:
+      - description: access informaton for file
+        in: query
+        name: access
+        required: false
+        schema:
+          type: string
+      - description: permission granted for login user for the file
+        in: query
+        name: access_rights
+        required: false
+        schema:
+          type: string
       - description: ''
-        in: path
-        name: +id
-        required: true
+        in: query
+        name: owner
+        required: false
         schema:
           type: string
       responses:
         '200':
-          description: On success, the server does not provide any body in the response.
-      summary: create
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/filesystem'
+                type: array
+          description: ''
+      summary: get
       tags:
       - fs
   /npm.filesystem/1.0/index/{+id}:
@@ -723,6 +789,13 @@ paths:
       - index
   /npm.filesystem/1.0/index_status/{+id}:
     get:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -770,12 +843,19 @@ paths:
       summary: get
       tags:
       - timeskew
+  /npm.filesystem/1.0/timeskew/{+id}{?packet_count}:
     post:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
+        schema:
+          type: string
+      - description: ''
+        in: query
+        name: packet_count
+        required: false
         schema:
           type: string
       responses:
@@ -792,6 +872,13 @@ paths:
       - timeskew
   /npm.filesystem/1.0/timeskew_status/{+id}:
     get:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:

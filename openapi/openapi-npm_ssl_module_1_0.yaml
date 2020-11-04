@@ -312,20 +312,6 @@ paths:
       summary: limit
       tags:
       - ignored_certificates
-  /npm.ssl_module/1.0/latest_certificates:
-    get:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/latest_certificates'
-                type: array
-          description: ''
-      summary: get
-      tags:
-      - latest_certificates
   /npm.ssl_module/1.0/latest_certificates/bulk_delete:
     post:
       requestBody:
@@ -381,6 +367,46 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/latest_certificate'
+                type: array
+          description: ''
+      summary: get
+      tags:
+      - latest_certificates
+  /npm.ssl_module/1.0/latest_certificates{?has_rsa_key,ignored,topby,topn}:
+    get:
+      parameters:
+      - description: ''
+        in: query
+        name: has_rsa_key
+        required: false
+        schema:
+          type: string
+      - description: ''
+        in: query
+        name: ignored
+        required: false
+        schema:
+          type: string
+      - description: 'Tob by property. Values: ''last_seen'' (default), ''first_seen'',
+          ''valid_from'', ''valid_to'''
+        in: query
+        name: topby
+        required: false
+        schema:
+          type: string
+      - description: Max number of entries returned
+        in: query
+        name: topn
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/latest_certificates'
                 type: array
           description: ''
       summary: get

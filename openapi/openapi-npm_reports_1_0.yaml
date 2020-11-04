@@ -1455,6 +1455,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{id}/access_rights:
     get:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1468,6 +1475,13 @@ paths:
       tags:
       - instances
     put:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1487,6 +1501,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{id}/data:
     get:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1506,6 +1527,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{id}/status:
     get:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1520,6 +1548,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{id}/sync:
     get:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1533,6 +1568,13 @@ paths:
       tags:
       - instances
     put:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1558,6 +1600,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{id}/view:
     get:
+      parameters:
+      - description: ID of the report instance
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: On success, the server does not provide any body in the response.
@@ -1618,6 +1667,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{report_id}/data_defs/bulk_create:
     post:
+      parameters:
+      - description: Report instance to which the data definitions belong.
+        in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1643,6 +1699,13 @@ paths:
       - instances
   /npm.reports/1.0/instances/items/{report_id}/data_defs/bulk_delete:
     post:
+      parameters:
+      - description: Report instance to which the data definitions belong.
+        in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1707,10 +1770,10 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/types/data_def_results'
+                  $ref: '#/components/schemas/data_definition'
                 type: array
           description: ''
-      summary: get_data
+      summary: get
       tags:
       - instances
     put:
@@ -1750,8 +1813,103 @@ paths:
       summary: set
       tags:
       - instances
+  ? /npm.reports/1.0/instances/items/{report_id}/data_defs/items/{id}/data{?limit,offset,start_time,end_time,resolution,top_by,nsamples,sort_by,filter}
+  : get:
+      parameters:
+      - description: Report instance ID to which the data definition belogs.
+        in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+      - description: ID for the data definition. Unique within a single report instance.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Maximum number of returned data rows
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      - description: Start returning data rows from offset
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+      - description: Start time (for live data feeds)
+        in: query
+        name: start_time
+        required: false
+        schema:
+          type: string
+      - description: End time (for live data feeds)
+        in: query
+        name: end_time
+        required: false
+        schema:
+          type: string
+      - description: Resolution (for live data feeds)
+        in: query
+        name: resolution
+        required: false
+        schema:
+          type: string
+      - description: List of columns to top by
+        in: query
+        name: top_by
+        required: false
+        schema:
+          type: string
+      - description: Return avg values as 'sum|nsamples' to allow client to re-aggregate
+          the values
+        in: query
+        name: nsamples
+        required: false
+        schema:
+          type: boolean
+      - description: Sort By column list with sort direction for each column
+        in: query
+        name: sort_by
+        required: false
+        schema:
+          type: string
+      - description: A Steelfilter expression to filter the results
+        in: query
+        name: filter
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/types/data_def_results'
+                type: array
+          description: ''
+      summary: get_data
+      tags:
+      - instances
   /npm.reports/1.0/instances/items/{report_id}/data_defs/items/{id}/status:
     get:
+      parameters:
+      - description: Report instance ID to which the data definition belogs.
+        in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+      - description: ID for the data definition. Unique within a single report instance.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -2346,6 +2504,13 @@ paths:
       - templates
   /npm.reports/1.0/templates/items/{id}/access_rights:
     get:
+      parameters:
+      - description: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -2359,6 +2524,13 @@ paths:
       tags:
       - templates
     put:
+      parameters:
+      - description: ''
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:

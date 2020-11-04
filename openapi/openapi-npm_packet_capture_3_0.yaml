@@ -835,6 +835,13 @@ paths:
       - interfaces
   /npm.packet_capture/3.0/interfaces/items/{name}/reset_stats:
     post:
+      parameters:
+      - description: The name of the monitoring interface
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: On success, the server does not provide any body in the response.
@@ -947,6 +954,13 @@ paths:
       - jobs
   /npm.packet_capture/3.0/jobs/items/{id}/clear:
     post:
+      parameters:
+      - description: The UUID of the capture job
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: On success, the server does not provide any body in the response.
@@ -1097,6 +1111,13 @@ paths:
       - vifgs
   /npm.packet_capture/3.0/vifgs/items/{id}/reset_stats:
     post:
+      parameters:
+      - description: The unique ID of the Virtual Interface Group (VIFG)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: On success, the server does not provide any body in the response.

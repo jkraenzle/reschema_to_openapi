@@ -325,6 +325,13 @@ paths:
       - wta_webapps
   /npm.wta_config/1.0/wta_webapps/since/{time}:
     get:
+      parameters:
+      - description: ''
+        in: path
+        name: time
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:

@@ -25,7 +25,7 @@ components:
           - description: 'Not configured, or does not apply to this interface
 
               '
-            type: 'null'
+            type: string
         description:
           description: Interface description
           type: string
@@ -41,7 +41,7 @@ components:
           - description: 'Not configured, or does not apply to this interface
 
               '
-            type: 'null'
+            type: string
         enable:
           description: Interface enabled
           type: boolean
@@ -108,7 +108,7 @@ components:
           - description: 'Not configured, or does not apply to this interface
 
               '
-            type: 'null'
+            type: string
       type: object
     host_settings:
       description: 'General networking setting for the host machine, including the
@@ -337,13 +337,13 @@ components:
           - description: Auto-negotiation status
             type: boolean
           - description: Auto-negotiation is not relevant for this interface
-            type: 'null'
+            type: string
         duplex:
           anyOf:
           - description: Interface duplex
             type: string
           - description: Duplex is not relevant for this interface
-            type: 'null'
+            type: string
         enabled:
           description: Interface enabled/up
           type: boolean
@@ -385,7 +385,7 @@ components:
           - description: Interface speed
             type: string
           - description: Speed is not relevant for this interface
-            type: 'null'
+            type: string
       readOnly: true
       type: object
   securitySchemes:
@@ -513,6 +513,13 @@ paths:
       - interfaces
   /mgmt.networking/1.1/interfaces/{name}/renew_dhcp:
     post:
+      parameters:
+      - description: Interface name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:

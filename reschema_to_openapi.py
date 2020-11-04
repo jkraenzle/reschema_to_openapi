@@ -102,12 +102,27 @@ def openapischema_propertyupdate (properties):
 					property['properties'] = openapischema_propertyupdate (subproperties)
 				property = openapischema_refreplace (property)
 			elif type == 'timestamp':
-				property ['type'] = "number"
+				property['type'] = 'number'
+			elif type == 'null':
+				property['type'] = 'string'
 
 		# Handle case where reference is directly made without property type
 		else:
 			if '$ref' in property:
 				property = openapischema_refreplace (property)
+		
+		# Handle 'oneOf' or 'anyOf'		
+		if 'oneOf' in property or 'anyOf' in property:
+			if 'oneOf' in property:
+				ofkey = 'oneOf'
+			elif 'anyOf' in property:
+				ofkey = 'anyOf'
+			
+			options = property[ofkey]
+			for option in options:
+				tags = option.pop ('tags', None)
+				if 'type' in option and option['type'] == 'null':
+					option['type'] = 'string'
 
 		# Handle $merge values
 		property_definition = property.pop ('$merge', None)
@@ -140,13 +155,21 @@ def openapischema_update (openapi_schema):
 			if 'properties' in openapi_schema:
 				properties = openapi_schema['properties'].copy ()
 				openapi_schema['properties'] = openapischema_propertyupdate (properties)
-			if 'oneOf' in openapi_schema:
-				if 'properties' in openapi_schema['oneOf']:
-					properties = openapi_schema['oneOf']['properties'].copy ()
-					openapi_schema['oneOf']['properties'] = openapischema_propertyupdate (properties)
-				options = openapi_schema['oneOf']
+			if 'oneOf' in openapi_schema or 'anyOf' in openapi_schema:
+				if 'oneOf' in openapi_schema:
+					ofkey = 'oneOf'
+				elif 'anyOf' in openapi_schema:
+					ofkey = 'anyOf'
+
+				if 'properties' in openapi_schema[ofkey]:
+					properties = openapi_schema[ofkey]['properties'].copy ()
+					openapi_schema[ofkey]['properties'] = openapischema_propertyupdate (properties)
+				options = openapi_schema[ofkey]
 				for option in options:
 					tags = option.pop ('tags', None)
+					if 'type' in option and option['type'] == 'null':
+						option['type'] = 'string'
+						
 		elif type == 'array':
 			schema = openapi_schema.copy ()
 			while type == 'array':
@@ -313,7 +336,7 @@ def openapi_from_reschema (reschema_files):
 				# Already found this so continue; this could be more efficient by building up a data structure while iterating to find the path
 				if link_key == 'self':
 					continue
-				else: # For all other links, use the path provided by 'self' unless 
+				else: # For all other links, use the path provided by 'self' unless 'path' is provided explicitly
 					openapi_subpath = None
 					if 'path' in links[link_key]:
 						subpath = links[link_key]['path']
@@ -322,9 +345,13 @@ def openapi_from_reschema (reschema_files):
 							if 'template' in subpath:
 								template = subpath['template'].strip(' $')
 								openapi_subpath_parameters, openapi_subpath_queryparameters = path_parse (template)
+								openapi_subpath = api_path + template
 						else:
-							openapi_subpath = api_path + subpath.strip(' $')
+							subpath = subpath.strip(' $')
+							openapi_subpath_parameters, openapi_subpath_queryparameters = path_parse (subpath)
+							openapi_subpath = api_path + subpath
 
+					# Find method, action, and request and response information for path
 					method_summary = link_key
 					method_action = links[link_key]['method']
 					openapi_action = method_action.lower ()
@@ -433,19 +460,19 @@ def openapi_from_reschema (reschema_files):
 								{'in':'path', 'name':parameter, 'schema':{'type':'string'}, 'required':True, 'description':description}
 							)
 					if queryparameters != None and len(queryparameters) > 0:
-						if 'parameters' in openapi_paths [path_key][openapi_action] == False:
+						if 'parameters' not in openapi_paths[path_key][openapi_action]:
 							openapi_paths[path_key][openapi_action]['parameters'] = []
 						for queryparameter in queryparameters:
-							if queryparameter in resources[resource_key]['path']['vars']:
-								if 'description' in resources[resource_key]['path']['vars'][queryparameter]:
-									description = resources[resource_key]['path']['vars'][queryparameter]['description']
+							if queryparameter in links[link_key]['path']['vars']:
+								if 'description' in links[link_key]['path']['vars'][queryparameter]:
+									description = links[link_key]['path']['vars'][queryparameter]['description']
 								else:
 									description = ''
-								if 'type' in resources[resource_key]['path']['vars'][queryparameter]:
-									type = resources[resource_key]['path']['vars'][queryparameter]['type']
+								if 'type' in links[link_key]['path']['vars'][queryparameter]:
+									type = links[link_key]['path']['vars'][queryparameter]['type']
 								else:
 									type='string'
-							openapi_paths[path_key][openapi_action]['parameters'].append = (
+							openapi_paths[path_key][openapi_action]['parameters'].append (
 								{'in':'query', 'name':queryparameter, 'schema':{'type':type}, 'required':False, 'description':description}
 							)
 

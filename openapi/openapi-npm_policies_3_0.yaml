@@ -235,19 +235,6 @@ info:
 openapi: 3.0.2
 paths:
   /npm.policies/3.0/alert_cache:
-    get:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/alert_cache'
-                type: array
-          description: ''
-      summary: get
-      tags:
-      - alert_cache
     post:
       requestBody:
         content:
@@ -264,6 +251,39 @@ paths:
         '200':
           description: On success, the server does not provide any body in the response.
       summary: create
+      tags:
+      - alert_cache
+  /npm.policies/3.0/alert_cache{?policy_id,start_time,end_time}:
+    get:
+      parameters:
+      - description: Retrieve cached alerts for this policy ID
+        in: query
+        name: policy_id
+        required: false
+        schema:
+          type: integer
+      - description: Query start time in seconds since 1970
+        in: query
+        name: start_time
+        required: false
+        schema:
+          type: integer
+      - description: Query end time in seconds since 1970
+        in: query
+        name: end_time
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/alert_cache'
+                type: array
+          description: ''
+      summary: get
       tags:
       - alert_cache
 security:
