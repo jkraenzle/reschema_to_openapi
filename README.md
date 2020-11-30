@@ -10,3 +10,4 @@ http-server ./ --cors -a 127.0.0.1 -p 8080
 You should then be able to access the documentation at:
 https://127.0.0.1:8080/openapi/html
 
+Authorization for 'Try It Now' has not been tested.
