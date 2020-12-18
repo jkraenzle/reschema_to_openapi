@@ -14,219 +14,137 @@ components:
               description: Value READ_WRITE implies that the user has read_write access
                 on the object. READ_ONLY implies the user has read only access. NONE
                 implies the user has no access to the object being requested.
-              enum:
-              - NONE
-              - READ_ONLY
-              - READ_WRITE
+              enum: [NONE, READ_ONLY, READ_WRITE]
               readOnly: true
               type: string
-          required:
-          - access_right
+          required: [access_right]
           type: object
-        id:
-          readOnly: true
-          type: integer
-        owner:
-          readOnly: true
-          type: string
+        id: {readOnly: true, type: integer}
+        owner: {readOnly: true, type: string}
         public:
           description: Indicates if an object/resource is public. All public objects/resouce
             are read_only.
           properties:
             access_right:
-              enum:
-              - READ_ONLY
+              enum: [READ_ONLY]
               type: string
-          required:
-          - access_right
+          required: [access_right]
           type: object
         shared:
           description: Property read_only - Specifies a list of roles that have read_only
             access to the resource/object. Property read_write - Specifies a list
             of roles that have read_write access to the resource/object.
           properties:
-            read_only:
-              $ref: '#/components/schemas/roles_obj'
-            read_write:
-              $ref: '#/components/schemas/roles_obj'
+            read_only: {$ref: '#/components/schemas/roles_obj'}
+            read_write: {$ref: '#/components/schemas/roles_obj'}
           type: object
       type: object
     column_list:
-      description: Data column ID.
-      type: string
+      description: Collection of data column IDs.
+      items: {description: Data column ID., type: string}
+      type: array
     data_def_results:
       additionalProperties: false
       description: Data results for one data definition
       properties:
-        columns:
-          $ref: '#/components/schemas/column_list'
-        data:
-          $ref: '#/components/schemas/data_matrix'
-        datasource_id:
-          description: Data source to which the results belong.
-          readOnly: true
-          type: string
-        datasource_storage_key:
-          description: Location within the datasource in which data is stored
-          readOnly: true
-          type: string
-        errors:
-          $ref: '#/components/schemas/run_messages'
-        id:
-          description: Data definition ID to which the results belong.
-          readOnly: true
-          type: integer
+        columns: {$ref: '#/components/schemas/column_list'}
+        data: {$ref: '#/components/schemas/data_matrix'}
+        datasource_id: {description: Data source to which the results belong., readOnly: true,
+          type: string}
+        datasource_storage_key: {description: Location within the datasource in which
+            data is stored, readOnly: true, type: string}
+        errors: {$ref: '#/components/schemas/run_messages'}
+        id: {description: Data definition ID to which the results belong., readOnly: true,
+          type: integer}
         meta:
           additionalProperties: false
           description: Information about a data definition's data results.
           properties:
-            count:
-              description: The number of data rows returned in the current results
-                after filtering
-              type: integer
-            end_time:
-              description: The end time of a live data request. A high-precision time
-                value, based on Unix Epoch time.
-              type: string
-            filter:
-              description: A Steelfilter expression to filter results.
-              type: string
-            filtered:
-              description: Total number of data rows matching the filter.
-              type: integer
-            limit:
-              description: The maximum number of data rows to return. 0 means no limit.
-              type: integer
-            offset:
-              description: Skip the specified number of rows before starting to return
-                data.
-              type: integer
-            resolution:
-              description: The resolution to use for a live data request.
-              type: string
-            sort_by:
-              description: Sort by specified column. Format is a comma separated list,
-                with a column id and direction for each entry (column_id1 desc,column_id2
-                asc)
-              type: string
-            start_time:
-              description: The start time of a live data request. A high-precision
-                time value, based on Unix Epoch time.
-              type: string
-            total:
-              description: Total number of available data rows.
-              type: integer
+            count: {description: The number of data rows returned in the current results
+                after filtering, type: integer}
+            end_time: {description: 'The end time of a live data request. A high-precision
+                time value, based on Unix Epoch time.', type: string}
+            filter: {description: A Steelfilter expression to filter results., type: string}
+            filtered: {description: Total number of data rows matching the filter.,
+              type: integer}
+            limit: {description: The maximum number of data rows to return. 0 means
+                no limit., type: integer}
+            offset: {description: Skip the specified number of rows before starting
+                to return data., type: integer}
+            resolution: {description: The resolution to use for a live data request.,
+              type: string}
+            sort_by: {description: 'Sort by specified column. Format is a comma separated
+                list, with a column id and direction for each entry (column_id1 desc,column_id2
+                asc)', type: string}
+            start_time: {description: 'The start time of a live data request. A high-precision
+                time value, based on Unix Epoch time.', type: string}
+            total: {description: Total number of available data rows., type: integer}
           type: object
-        others:
-          $ref: '#/components/schemas/data_row'
-        reference_id:
-          description: Corresponding data definition ID in the client system
-          readOnly: true
-          type: string
-        summary_max_values:
-          $ref: '#/components/schemas/data_row'
-        summary_min_values:
-          $ref: '#/components/schemas/data_row'
-        totals:
-          $ref: '#/components/schemas/data_row'
-        ts_max_values:
-          $ref: '#/components/schemas/ts_statistical_results'
-        ts_min_values:
-          $ref: '#/components/schemas/ts_statistical_results'
-        ts_percentile_values:
-          $ref: '#/components/schemas/ts_statistical_results'
+        others: {$ref: '#/components/schemas/data_row'}
+        reference_id: {description: Corresponding data definition ID in the client
+            system, readOnly: true, type: string}
+        summary_max_values: {$ref: '#/components/schemas/data_row'}
+        summary_min_values: {$ref: '#/components/schemas/data_row'}
+        totals: {$ref: '#/components/schemas/data_row'}
+        ts_max_values: {$ref: '#/components/schemas/ts_statistical_results'}
+        ts_min_values: {$ref: '#/components/schemas/ts_statistical_results'}
+        ts_percentile_values: {$ref: '#/components/schemas/ts_statistical_results'}
       type: object
     data_def_source:
       description: Data source specificiation for a data definition.
       properties:
-        name:
-          description: Name of the data source for the data definition.
-          type: string
-        origin:
-          description: The origin data source for a query that is performing a sub-query
-            into another data source (e.g., alerting requesting into system_metrics).
-            Required in these cases for data column validation.
-          type: string
-        path:
-          description: Reference path to the requested data from within the data source.
-          type: string
-        reference_id:
-          description: Reference to another data_def which will be used as a source
-            to this one.
-          type: string
-        type:
-          description: Data type requested
-          type: string
-      required:
-      - name
+        name: {description: Name of the data source for the data definition., type: string}
+        origin: {description: 'The origin data source for a query that is performing
+            a sub-query into another data source (e.g., alerting requesting into system_metrics).
+            Required in these cases for data column validation.', type: string}
+        path: {description: Reference path to the requested data from within the data
+            source., type: string}
+        reference_id: {description: Reference to another data_def which will be used
+            as a source to this one., type: string}
+        type: {description: Data type requested, type: string}
+      required: [name]
       type: object
     data_def_status:
       additionalProperties: false
       description: Status for a data definition.
       properties:
-        datasource_id:
-          description: Data source to which the data definition belongs.
-          readOnly: true
-          type: string
-        datasource_storage_key:
-          description: Location within the datasource in which data is stored
-          readOnly: true
-          type: string
-        id:
-          description: Data definition ID to which the status belongs.
-          readOnly: true
-          type: integer
-        messages:
-          $ref: '#/components/schemas/run_messages'
+        datasource_id: {description: Data source to which the data definition belongs.,
+          readOnly: true, type: string}
+        datasource_storage_key: {description: Location within the datasource in which
+            data is stored, readOnly: true, type: string}
+        id: {description: Data definition ID to which the status belongs., readOnly: true,
+          type: integer}
+        messages: {$ref: '#/components/schemas/run_messages'}
         progress:
           additionalProperties: false
           description: Details about the current progress of a running query.
           properties:
-            percent:
-              description: Percentage of the total query that has been executed so
-                far.
-              maximum: 100
-              minimum: 0
-              type: integer
-            remaining_sec:
-              description: Estimated number of seconds remaining in the query.
-              minimum: 0
-              type: integer
+            percent: {description: Percentage of the total query that has been executed
+                so far., maximum: 100, minimum: 0, type: integer}
+            remaining_sec: {description: Estimated number of seconds remaining in
+                the query., minimum: 0, type: integer}
           type: object
-        reference_id:
-          description: Corresponding data definition ID in the client system
-          readOnly: true
-          type: string
+        reference_id: {description: Corresponding data definition ID in the client
+            system, readOnly: true, type: string}
         state:
           description: Current execution state of the data definition.
-          enum:
-          - pending
-          - initializing
-          - executing
-          - completed
-          - error
-          - collecting
+          enum: [pending, initializing, executing, completed, error, collecting]
           type: string
       type: object
     data_definition:
       additionalProperties: true
       description: A single data definition from a report instance
       properties:
-        act_as_source:
-          description: Make this object available to other data requests (using source.reference_id)
-          type: boolean
+        act_as_source: {description: Make this object available to other data requests
+            (using source.reference_id), type: boolean}
         actual_centricity:
           description: Actual centricity used by the back-end data source. Used by
             network flow sources. When AUTO is requested, the back-end sets this to
             HOST or INTERFACE.
-          enum:
-          - HOST
-          - INTERFACE
+          enum: [HOST, INTERFACE]
           type: string
-        actual_filters:
-          $ref: '#/components/schemas/filter_criteria'
-        actual_source:
-          $ref: '#/components/schemas/data_def_source'
+        actual_filters: {$ref: '#/components/schemas/filter_criteria'}
+        actual_source: {$ref: '#/components/schemas/data_def_source'}
         actual_time:
           additionalProperties: false
           description: Actual time frame returned by the data source based on data
@@ -234,190 +152,107 @@ components:
           properties:
             granularities:
               description: Array of actual granularities used in the query.
-              items:
-                description: Actual granularity used in the query.
-                type: string
+              items: {description: Actual granularity used in the query., type: string}
               type: array
-            resolution:
-              description: Actual resolution used in the query.
-              type: string
-            time_ranges:
-              $ref: '#/components/schemas/time_pairs'
-          required: []
+            resolution: {description: Actual resolution used in the query., type: string}
+            time_ranges: {$ref: '#/components/schemas/time_pairs'}
           type: object
-        available_columns:
-          $ref: '#/components/schemas/column_list'
+        available_columns: {$ref: '#/components/schemas/column_list'}
         centricity:
           description: For network flow sources, this parameter hints the back-end
             to calculate metrics from hosts point of view or from interfaces point
             of view.
-          enum:
-          - AUTO
-          - HOST
-          - INTERFACE
+          enum: [AUTO, HOST, INTERFACE]
           type: string
-        columns:
-          $ref: '#/components/schemas/column_list'
-        data:
-          $ref: '#/components/schemas/data_matrix'
-        datasource_id:
-          description: Data source to which the data definition belongs. Globally
-            unique within the system.
-          readOnly: true
-          type: string
-        datasource_storage_key:
-          description: Location within the datasource in which data is stored
-          readOnly: true
-          type: string
-        definition:
-          $ref: '#/components/schemas/data_definition'
-        filters:
-          $ref: '#/components/schemas/filter_criteria'
-        group_by:
-          $ref: '#/components/schemas/column_list'
-        id:
-          description: ID for the data definition. Unique within a single report instance.
-          readOnly: true
-          type: integer
-        limit:
-          description: Limit returned data rows to the specified number.
-          type: integer
-        others:
-          $ref: '#/components/schemas/data_row'
-        reference_id:
-          description: Corresponding data definition ID in the client system
-          type: string
-        report_id:
-          description: Report instance ID to which the data definition belogs.
-          type: integer
-        source:
-          $ref: '#/components/schemas/data_def_source'
+        columns: {$ref: '#/components/schemas/column_list'}
+        data: {$ref: '#/components/schemas/data_matrix'}
+        datasource_id: {description: Data source to which the data definition belongs.
+            Globally unique within the system., readOnly: true, type: string}
+        datasource_storage_key: {description: Location within the datasource in which
+            data is stored, readOnly: true, type: string}
+        definition: {$ref: '#/components/schemas/data_definition'}
+        filters: {$ref: '#/components/schemas/filter_criteria'}
+        group_by: {$ref: '#/components/schemas/column_list'}
+        id: {description: ID for the data definition. Unique within a single report
+            instance., readOnly: true, type: integer}
+        limit: {description: Limit returned data rows to the specified number., type: integer}
+        others: {$ref: '#/components/schemas/data_row'}
+        reference_id: {description: Corresponding data definition ID in the client
+            system, type: string}
+        report_id: {description: Report instance ID to which the data definition belogs.,
+          type: integer}
+        source: {$ref: '#/components/schemas/data_def_source'}
         stats:
           additionalProperties: false
           description: Overall statistics for a data definition.
           properties:
-            completed:
-              description: Date and time when the data definition execution was ended
-                (regardless of final status). High-precision timestamp in Unix Epoch
-                format.
-              readOnly: true
-              type: string
-            created:
-              description: Date and time when the data definition was created. High-precision
-                timestamp in Unix Epoch format.
-              readOnly: true
-              type: string
-            exec_time:
-              description: The time it took to execute. High-precision duration (seconds).
-              readOnly: true
-              type: string
-            executing:
-              description: Date and time when the data definition started executing.
-                High-precision timestamp in Unix Epoch format.
-              readOnly: true
-              type: string
-            init_time:
-              description: The time it took initialize. High-precision duration (seconds).
-              readOnly: true
-              type: string
-            initial_queue_pos:
-              description: The queue position at the time it was first placed in the
-                queue.
-              readOnly: true
-              type: integer
-            initialized:
-              description: Deprecated and unused anymore.
-              readOnly: true
-              type: string
-            initializing:
-              description: Date and time when the data definition started initializing.
-                High-precision timestamp in Unix Epoch format.
-              readOnly: true
-              type: string
-            queue_time:
-              description: The time it took waiting in the queue. High-precision duration
-                (seconds).
-              readOnly: true
-              type: string
-            queued:
-              description: Date and time when the data definition was placed on the
-                queue. High-precision timestamp in Unix Epoch format.
-              readOnly: true
-              type: string
+            completed: {description: Date and time when the data definition execution
+                was ended (regardless of final status). High-precision timestamp in
+                Unix Epoch format., readOnly: true, type: string}
+            created: {description: Date and time when the data definition was created.
+                High-precision timestamp in Unix Epoch format., readOnly: true, type: string}
+            exec_time: {description: The time it took to execute. High-precision duration
+                (seconds)., readOnly: true, type: string}
+            executing: {description: Date and time when the data definition started
+                executing. High-precision timestamp in Unix Epoch format., readOnly: true,
+              type: string}
+            init_time: {description: The time it took initialize. High-precision duration
+                (seconds)., readOnly: true, type: string}
+            initial_queue_pos: {description: The queue position at the time it was
+                first placed in the queue., readOnly: true, type: integer}
+            initialized: {description: Deprecated and unused anymore., readOnly: true,
+              type: string}
+            initializing: {description: Date and time when the data definition started
+                initializing. High-precision timestamp in Unix Epoch format., readOnly: true,
+              type: string}
+            queue_time: {description: The time it took waiting in the queue. High-precision
+                duration (seconds)., readOnly: true, type: string}
+            queued: {description: Date and time when the data definition was placed
+                on the queue. High-precision timestamp in Unix Epoch format., readOnly: true,
+              type: string}
           readOnly: true
           type: object
-        status:
-          $ref: '#/components/schemas/data_def_status'
-        summary_max_values:
-          $ref: '#/components/schemas/data_row'
-        summary_min_values:
-          $ref: '#/components/schemas/data_row'
+        status: {$ref: '#/components/schemas/data_def_status'}
+        summary_max_values: {$ref: '#/components/schemas/data_row'}
+        summary_min_values: {$ref: '#/components/schemas/data_row'}
         time:
           additionalProperties: false
           description: The time frame that was requested for a reporting query.
           properties:
-            duration:
-              description: Time frame duration. When combined with either a start
-                time or end time (but not both), determines the desired report time
-                frame. If specified, and no start/end time is present, it is used
-                with an end time of now.
-              type: string
-            end:
-              description: The start time. This is a high-precision time value in
-                Unix Epoch format.
-              type: string
-            granularity:
-              description: For sources that support multiple data granularity/rollup
+            duration: {description: 'Time frame duration. When combined with either
+                a start time or end time (but not both), determines the desired report
+                time frame. If specified, and no start/end time is present, it is
+                used with an end time of now.', type: string}
+            end: {description: The start time. This is a high-precision time value
+                in Unix Epoch format., type: string}
+            granularity: {description: 'For sources that support multiple data granularity/rollup
                 levels, the preferred granularity. If unspecified, the system will
-                choose a granularity.
-              type: string
-            max_num_bins:
-              description: For auto-resolution, the maximum number of bins that the
-                client supports. The system will not exceed this.
-              maximum: 20000
-              minimum: 1
-              type: integer
-            offset:
-              description: Offset the start/end time by the given amount (e.g., '5
-                min' to offset the start and end time back by 5 minutes).
-              type: string
-            optimal_num_bins:
-              description: For auto-resolution, the preferred number of bins for the
-                client. The system will attempt to pick a resolution as close to this
-                as possible.
-              maximum: 5000
-              minimum: 1
-              type: integer
+                choose a granularity.', type: string}
+            max_num_bins: {description: 'For auto-resolution, the maximum number of
+                bins that the client supports. The system will not exceed this.',
+              maximum: 20000, minimum: 1, type: integer}
+            offset: {description: 'Offset the start/end time by the given amount (e.g.,
+                ''5 min'' to offset the start and end time back by 5 minutes).', type: string}
+            optimal_num_bins: {description: 'For auto-resolution, the preferred number
+                of bins for the client. The system will attempt to pick a resolution
+                as close to this as possible.', maximum: 5000, minimum: 1, type: integer}
             required_resolutions:
               description: Array of resolutions. When auto-resolution is requested,
                 the back end will limit its choice to one of these.
-              items:
-                description: A required resolution.
-                type: string
+              items: {description: A required resolution., type: string}
               type: array
-            resolution:
-              description: The requested resolution bin time-range for returned data
-                (e.g., show in 1-hour bins). System will automatically pick if not
-                specified.
-              type: string
-            retention_time:
-              description: Specifies the time to retain data before rollint it off
-                the query. Required for live data definitions.
-              type: string
-            start:
-              description: The start time. This is a high-precision time value in
-                Unix Epoch format.
-              type: string
-            time_ranges:
-              $ref: '#/components/schemas/time_pairs'
-            timezone:
-              description: FUTURE - Time zone for the time frame. Not yet available.
-              type: string
-          required: []
+            resolution: {description: 'The requested resolution bin time-range for
+                returned data (e.g., show in 1-hour bins). System will automatically
+                pick if not specified.', type: string}
+            retention_time: {description: Specifies the time to retain data before
+                rollint it off the query. Required for live data definitions., type: string}
+            start: {description: The start time. This is a high-precision time value
+                in Unix Epoch format., type: string}
+            time_ranges: {$ref: '#/components/schemas/time_pairs'}
+            timezone: {description: FUTURE - Time zone for the time frame. Not yet
+                available., type: string}
           type: object
-        timeout:
-          description: Maximum time within which to return data.
-          type: string
+        timeout: {description: Maximum time within which to return data., type: string}
         top_by:
           description: Array of sort criteria.
           items:
@@ -425,182 +260,121 @@ components:
             properties:
               direction:
                 description: Direction in which to sort.
-                enum:
-                - asc
-                - desc
+                enum: [asc, desc]
                 type: string
-              id:
-                description: ID to sort by
-                type: string
+              id: {description: ID to sort by, type: string}
             type: object
           type: array
-        total_number_rows:
-          description: Total number of available data rows.
-          type: integer
-        totals:
-          $ref: '#/components/schemas/data_row'
-        ts_max_values:
-          $ref: '#/components/schemas/ts_statistical_results'
-        ts_min_values:
-          $ref: '#/components/schemas/ts_statistical_results'
-        ts_percentile_values:
-          $ref: '#/components/schemas/ts_statistical_results'
-        user_agent:
-          description: User agent string for the client that generated the report.
-          readOnly: true
-          type: string
-        with_max_values:
-          description: Whether to return column max value with the data results when
-            querying.
-          type: boolean
-        with_min_values:
-          description: Whether to return column min value with the data results when
-            querying.
-          type: boolean
+        total_number_rows: {description: Total number of available data rows., type: integer}
+        totals: {$ref: '#/components/schemas/data_row'}
+        ts_max_values: {$ref: '#/components/schemas/ts_statistical_results'}
+        ts_min_values: {$ref: '#/components/schemas/ts_statistical_results'}
+        ts_percentile_values: {$ref: '#/components/schemas/ts_statistical_results'}
+        user_agent: {description: User agent string for the client that generated
+            the report., readOnly: true, type: string}
+        with_max_values: {description: Whether to return column max value with the
+            data results when querying., type: boolean}
+        with_min_values: {description: Whether to return column min value with the
+            data results when querying., type: boolean}
         with_percentile_values:
           description: Whether to return column percentile value with the data results
             when querying.
-          enum:
-          - 80
-          - 85
-          - 90
-          - 95
+          enum: [80, 85, 90, 95]
           maximum: 95
           minimum: 80
           type: integer
-        with_totals:
-          description: Whether to return column totals with the data results when
-            querying.
-          type: boolean
-      required:
-      - source
+        with_totals: {description: Whether to return column totals with the data results
+            when querying., type: boolean}
+      required: [source]
       type: object
     data_definitions:
       additionalProperties: false
       description: Data definitions for a report instance
       properties:
-        items:
-          $ref: '#/components/schemas/data_defs_list'
-        report_id:
-          description: Report instance to which the data definitions belong.
-          type: integer
-      required:
-      - items
+        items: {$ref: '#/components/schemas/data_defs_list'}
+        report_id: {description: Report instance to which the data definitions belong.,
+          type: integer}
+      required: [items]
       type: object
     data_defs_list:
-      $ref: '#/components/schemas/data_definition'
+      description: Array of data definitions.
+      items: {$ref: '#/components/schemas/data_definition'}
+      type: array
     data_matrix:
-      $ref: '#/components/schemas/data_row'
+      description: Array of results data rows within a data definition.
+      items: {$ref: '#/components/schemas/data_row'}
+      type: array
     data_row:
-      type: string
+      description: Row of results data within a data definition.
+      items: {type: string}
+      type: array
     execution_timestamps:
-      type: string
+      description: Report Schedule's next execution times in relative to the Unix
+        Epoch format.
+      items: {type: string}
+      type: array
     filter_criteria:
-      description: A single filter criterion to use on the query data.
-      properties:
-        context:
-          description: Context from which the filter was applied (e.g., user request,
-            data drill-down, etc).
-          enum:
-          - NONE
-          - INTERNAL
-          - USER
-          - DRILL_DOWN
-          type: string
-        id:
-          description: Filter criterion ID.
-          type: string
-        type:
-          $ref: '#/components/schemas/filter_criterion_type'
-        value:
-          description: Query filter text to use.
-          type: string
-      type: object
+      description: Array of filter criteria.
+      items:
+        description: A single filter criterion to use on the query data.
+        properties:
+          context:
+            description: Context from which the filter was applied (e.g., user request,
+              data drill-down, etc).
+            enum: [NONE, INTERNAL, USER, DRILL_DOWN]
+            type: string
+          id: {description: Filter criterion ID., type: string}
+          type: {$ref: '#/components/schemas/filter_criterion_type'}
+          value: {description: Query filter text to use., type: string}
+        type: object
+      type: array
     filter_criterion_type:
       description: The type of filter used on the data.
-      enum:
-      - STEELFILTER
-      - WIRESHARK
-      - BPF
-      tags:
-        cpptype: filter_criterion_type
+      enum: [STEELFILTER, WIRESHARK, BPF]
       type: string
     instance:
       additionalProperties: true
       description: A single report instance
       properties:
-        access_rights:
-          $ref: '#/components/schemas/access_rights_obj'
-        created:
-          description: Date and time at which the report was created. High precision
-            timestamp in Unix Epoch format.
-          type: string
-        data_defs:
-          $ref: '#/components/schemas/data_defs_list'
-        id:
-          description: ID of the report instance
-          readOnly: true
-          type: integer
-        idle_timeout:
-          description: Specifies the time to keep processing live data requests after
-            last access (get info or get data).
-          type: string
-        info:
-          $ref: '#/components/schemas/report_instance_info'
-        last_modified:
-          description: Date and time at which the report was last modified. High precision
-            timestamp in Unix Epoch format.
-          type: string
-        live:
-          description: Whether the instance is a live (continuously updating) instance,
-            rather than a static instance.
-          type: boolean
-        presentation:
-          $ref: '#/components/schemas/report_instance_presentation'
+        access_rights: {$ref: '#/components/schemas/access_rights_obj'}
+        created: {description: Date and time at which the report was created. High
+            precision timestamp in Unix Epoch format., type: string}
+        data_defs: {$ref: '#/components/schemas/data_defs_list'}
+        id: {description: ID of the report instance, readOnly: true, type: integer}
+        idle_timeout: {description: Specifies the time to keep processing live data
+            requests after last access (get info or get data)., type: string}
+        info: {$ref: '#/components/schemas/report_instance_info'}
+        last_modified: {description: Date and time at which the report was last modified.
+            High precision timestamp in Unix Epoch format., type: string}
+        live: {description: 'Whether the instance is a live (continuously updating)
+            instance, rather than a static instance.', type: boolean}
+        presentation: {$ref: '#/components/schemas/report_instance_presentation'}
         priority:
           description: FUTURE - Report instance priority. Not yet used.
-          enum:
-          - low
-          - medium
-          - high
+          enum: [low, medium, high]
           type: string
-        schedule_id:
-          description: Schedule ID which generated the report instance.
-          minimum: 0
-          type: integer
-        schedule_name:
-          description: Schedule name which generated the report instance.
-          type: string
-        template_id:
-          description: Template ID on which the report instance was based.
-          minimum: 0
-          type: integer
-        template_name:
-          description: Template name on which the report instance was based.
-          type: string
-        user_agent:
-          description: User agent string for the client that generated the report.
-          readOnly: true
-          type: string
+        schedule_id: {description: Schedule ID which generated the report instance.,
+          minimum: 0, type: integer}
+        schedule_name: {description: Schedule name which generated the report instance.,
+          type: string}
+        template_id: {description: Template ID on which the report instance was based.,
+          minimum: 0, type: integer}
+        template_name: {description: Template name on which the report instance was
+            based., type: string}
+        user_agent: {description: User agent string for the client that generated
+            the report., readOnly: true, type: string}
         views:
           additionalProperties: false
           description: Indicates which views, PDF or JSON (raw), are available for
             an instance
           properties:
-            pdf:
-              description: Whether rendered PDF is available.
-              readOnly: true
-              type: boolean
-            raw_data:
-              description: Whether raw JSON data is available.
-              readOnly: true
-              type: boolean
-          required:
-          - pdf
-          - raw_data
+            pdf: {description: Whether rendered PDF is available., readOnly: true,
+              type: boolean}
+            raw_data: {description: Whether raw JSON data is available., readOnly: true,
+              type: boolean}
+          required: [pdf, raw_data]
           type: object
-      required:
-      - data_defs
+      required: [data_defs]
       type: object
     instances:
       additionalProperties: false
@@ -609,8 +383,7 @@ components:
       properties:
         items:
           description: Array of report instances
-          items:
-            $ref: '#/components/schemas/instance'
+          items: {$ref: '#/components/schemas/instance'}
           type: array
         meta:
           additionalProperties: false
@@ -623,11 +396,7 @@ components:
                 all instances not shared with any roles that the current authenticated
                 user has access to. "shared", returns all instances shared with one
                 or more roles. "public" returns all objects marked public.
-              enum:
-              - all
-              - private
-              - shared
-              - public
+              enum: [all, private, shared, public]
               type: string
             access_rights:
               description: Filters instances based on access_rights. "all", returns
@@ -636,239 +405,145 @@ components:
                 rights that the authenticated user has access to. "read_write", Returns
                 all instances with read_write rights that the authenticated user has
                 access to.
-              enum:
-              - all
-              - read_only
-              - read_write
+              enum: [all, read_only, read_write]
               type: string
-            count:
-              description: The actual number of reports returned for this request.
-              type: integer
-            description:
-              description: Filters report instances based on the description param
-                passed. Does a case-insensitive substring match.
-              type: string
-            limit:
-              description: Maximum number report instances to be returned.
-              type: integer
-            name:
-              description: Filters report instances based on the name param passed.
-                Does a case-insensitive substring match.
-              type: string
-            offset:
-              description: Start returning report instances from offset specified.
-              type: integer
-            owner:
-              description: Filters report instances based on the owner param passed.
-                Does a case sensitive exact match of each owner, not a substring comparison
-                of each owner. Owners can be passed as comma-separated values. Report
-                instances with at least one of the owners passed in the query string
-                will be matched.
-              type: string
-            schedule_id:
-              description: Filters report instances based on the schedule_id param
-                passed. schedule_id can be passed as comma-separated values. Report
-                instances with one of the schedule_ids passed in the query string
-                param will be matched.
-              type: string
-            schedule_name:
-              description: Filters report instances based on the schedule_name param
-                passed. Does a case-insensitive substring match.
-              type: string
+            count: {description: The actual number of reports returned for this request.,
+              type: integer}
+            description: {description: Filters report instances based on the description
+                param passed. Does a case-insensitive substring match., type: string}
+            limit: {description: Maximum number report instances to be returned.,
+              type: integer}
+            name: {description: Filters report instances based on the name param passed.
+                Does a case-insensitive substring match., type: string}
+            offset: {description: Start returning report instances from offset specified.,
+              type: integer}
+            owner: {description: 'Filters report instances based on the owner param
+                passed. Does a case sensitive exact match of each owner, not a substring
+                comparison of each owner. Owners can be passed as comma-separated
+                values. Report instances with at least one of the owners passed in
+                the query string will be matched.', type: string}
+            schedule_id: {description: Filters report instances based on the schedule_id
+                param passed. schedule_id can be passed as comma-separated values.
+                Report instances with one of the schedule_ids passed in the query
+                string param will be matched., type: string}
+            schedule_name: {description: Filters report instances based on the schedule_name
+                param passed. Does a case-insensitive substring match., type: string}
             sort:
               description: Sort direction.
-              enum:
-              - asc
-              - desc
+              enum: [asc, desc]
               type: string
             sortby:
               description: Sort by specified field.
-              enum:
-              - name
-              - description
-              - owner
-              - created
-              - last_modified
+              enum: [name, description, owner, created, last_modified]
               type: string
             state:
               description: Filter by specified state.
-              enum:
-              - temporary
-              - saved
+              enum: [temporary, saved]
               type: string
-            tag:
-              description: Filters report instances based on the tag param passed.
+            tag: {description: 'Filters report instances based on the tag param passed.
                 Does a case-insensitive exact match of each tag, not a substring comparison
                 of each tag. Tags can be passed as comma-separated values. Report
-                instances with at least one of the passed tags will be matched.
-              type: string
-            template_id:
-              description: Filters report instances based on the template_id param
-                passed. template_id can be passed as comma-separated values. Report
-                instances with one of the template_ids passed in the query string
-                param will be matched.
-              type: string
-            template_name:
-              description: Filters report instances based on the template_name param
-                passed. Does a case-insensitive substring match.
-              type: string
-            total:
-              description: Total number of reports in the system that match the filter
-                criteria.
-              type: integer
+                instances with at least one of the passed tags will be matched.',
+              type: string}
+            template_id: {description: Filters report instances based on the template_id
+                param passed. template_id can be passed as comma-separated values.
+                Report instances with one of the template_ids passed in the query
+                string param will be matched., type: string}
+            template_name: {description: Filters report instances based on the template_name
+                param passed. Does a case-insensitive substring match., type: string}
+            total: {description: Total number of reports in the system that match
+                the filter criteria., type: integer}
           type: object
-      required:
-      - items
+      required: [items]
       type: object
     multiple_ids:
-      description: ID.
-      tags:
-        cpptype: uint32
-      type: integer
+      description: Array of IDs.
+      items: {description: ID., type: integer}
+      type: array
     recurrence_rule:
       additionalProperties: false
       description: Recurrence rule specification for report schedule. Implements(incompletely)
         the Recurrence Rule Specification from iCalendar RFC - http://www.ietf.org/rfc/rfc2445.txt
       properties:
-        allow_past_times:
-          description: Allow calculating rules for times in the past. If not set,
-            or set to false, the result rules will always be in the future regardless
-            of what dtstart is passed.
-          type: boolean
+        allow_past_times: {description: 'Allow calculating rules for times in the
+            past. If not set, or set to false, the result rules will always be in
+            the future regardless of what dtstart is passed.', type: boolean}
         byday:
           description: Specifies days of the week.
           items:
-            enum:
-            - SU
-            - MO
-            - TU
-            - WE
-            - TH
-            - FR
-            - SA
+            enum: [SU, MO, TU, WE, TH, FR, SA]
             type: string
           type: array
         byhour:
           description: Specifies hours of the day.
-          items:
-            maximum: 23
-            minimum: 0
-            type: integer
+          items: {maximum: 23, minimum: 0, type: integer}
           type: array
         byminute:
           description: Specifies minutes within an hour.
-          items:
-            maximum: 59
-            minimum: 0
-            type: integer
+          items: {maximum: 59, minimum: 0, type: integer}
           type: array
         bymonth:
           description: Specifies array of the months of the year.
-          items:
-            maximum: 12
-            minimum: 1
-            type: integer
+          items: {maximum: 12, minimum: 1, type: integer}
           type: array
         bymonthday:
           description: Specifies array of days of the month. 0 is invalid value.
-          items:
-            maximum: 31
-            minimum: -31
-            type: integer
+          items: {maximum: 31, minimum: -31, type: integer}
           type: array
         bysecond:
           description: Specifies seconds within a minute.
-          items:
-            maximum: 59
-            minimum: 0
-            type: integer
+          items: {maximum: 59, minimum: 0, type: integer}
           type: array
         bysetpos:
           description: Specifies the nth occurrence within the set of events specified
             by the rule. 0 is invalid value. It MUST only be used in conjunction with
             another BYxxx rule part.
-          items:
-            maximum: 366
-            minimum: -366
-            type: integer
+          items: {maximum: 366, minimum: -366, type: integer}
           type: array
-        count:
-          description: Specifies the number of occurrences, either until or count
-            must be specified, but not both.
-          type: integer
-        dtstart:
-          description: Specifies when the recurrence begins. High precision timestamp
-            relative to the Unix Epoch.
-          type: string
+        count: {description: 'Specifies the number of occurrences, either until or
+            count must be specified, but not both.', type: integer}
+        dtstart: {description: Specifies when the recurrence begins. High precision
+            timestamp relative to the Unix Epoch., type: string}
         freq:
           description: Type of recurrence rule, to specify repeating events based
             on an interval of freq.
-          enum:
-          - YEARLY
-          - QUARTERLY
-          - MONTHLY
-          - WEEKLY
-          - DAILY
-          - HOURLY
-          - ONETIME
+          enum: [YEARLY, QUARTERLY, MONTHLY, WEEKLY, DAILY, HOURLY, ONETIME]
           type: string
-        interval:
-          description: Specifies how often the recurrence rule repeats.
-          type: integer
-        timezone:
-          description: 'Specifies when the time zone. Example: Europe/Budapest. If
-            not specified Etc/Universal is used.'
-          type: string
-        until:
-          description: Specifies when the recurrence ends, either until or count must
-            be specified, but not both. High precision timestamp relative to the Unix
-            Epoch.
-          type: string
-      required:
-      - freq
+        interval: {description: Specifies how often the recurrence rule repeats.,
+          type: integer}
+        timezone: {description: 'Specifies when the time zone. Example: Europe/Budapest.
+            If not specified Etc/Universal is used.', type: string}
+        until: {description: 'Specifies when the recurrence ends, either until or
+            count must be specified, but not both. High precision timestamp relative
+            to the Unix Epoch.', type: string}
+      required: [freq]
       type: object
     report_instance_info:
       additionalProperties: true
       description: General information for a report instance
       properties:
-        description:
-          description: Description of the report instance
-          type: string
-        name:
-          description: Name of the report instance
-          type: string
-        report_id:
-          description: ID of the report instance
-          readOnly: true
-          type: integer
+        description: {description: Description of the report instance, type: string}
+        name: {description: Name of the report instance, type: string}
+        report_id: {description: ID of the report instance, readOnly: true, type: integer}
         state:
           description: Persistence state of the report instance
-          enum:
-          - temporary
-          - saved
-          - transient
+          enum: [temporary, saved, transient]
           type: string
-        tags:
-          $ref: '#/components/schemas/tags_obj'
-      required: []
+        tags: {$ref: '#/components/schemas/tags_obj'}
       type: object
     report_instance_presentation:
       additionalProperties: true
       description: Client presentation information for a report instance
       properties:
-        report_id:
-          description: Instance ID to which the presentation belongs.
-          readOnly: true
-          type: integer
+        report_id: {description: Instance ID to which the presentation belongs., readOnly: true,
+          type: integer}
       type: object
     roles_obj:
       properties:
         roles:
-          items:
-            type: integer
+          items: {type: integer}
           type: array
-      required:
-      - roles
+      required: [roles]
       type: object
     rpt_tags:
       additionalProperties: false
@@ -880,410 +555,254 @@ components:
             additionalProperties: true
             description: A single set of report tags.
             properties:
-              owner:
-                description: Owner of the tag set.
-                type: string
-              tags:
-                $ref: '#/components/schemas/tags_obj'
-            required:
-            - owner
-            - tags
+              owner: {description: Owner of the tag set., type: string}
+              tags: {$ref: '#/components/schemas/tags_obj'}
+            required: [owner, tags]
             type: object
           type: array
-      required:
-      - items
+      required: [items]
       type: object
     run_message:
       additionalProperties: true
       description: Runtime status message for a data definition.
       properties:
         details:
-          additionalProperties:
-            type: string
+          additionalProperties: {type: string}
           description: Additional message details.
           type: object
-        id:
-          description: Machine-parsable message or error code.
-          type: string
-        module_id:
-          description: The system module that generated the message.
-          type: string
-        nested:
-          $ref: '#/components/schemas/run_message'
-        text:
-          description: Message text.
-          type: string
-      tags:
-        cpptype: run_message
+        id: {description: Machine-parsable message or error code., type: string}
+        module_id: {description: The system module that generated the message., type: string}
+        nested: {$ref: '#/components/schemas/run_message'}
+        text: {description: Message text., type: string}
       type: object
     run_messages:
-      $ref: '#/components/schemas/run_message'
+      description: Array of runtime status messages for a data definition.
+      items: {$ref: '#/components/schemas/run_message'}
+      type: array
     schedule:
       additionalProperties: true
       description: A single report schedule.
       properties:
-        access_rights:
-          $ref: '#/components/schemas/access_rights_obj'
-        created:
-          type: string
-        enabled:
-          type: boolean
-        err_message:
-          $ref: '#/components/schemas/run_message'
-        execute_on:
-          $ref: '#/components/schemas/execution_timestamps'
-        executing:
-          description: Flag indicating if the schedule is executing at the moment
-          readOnly: true
-          type: boolean
-        executing_job_id:
-          type: integer
-        id:
-          readOnly: true
-          type: integer
-        info:
-          $ref: '#/components/schemas/schedule_info'
-        last_executed:
-          type: string
-        last_modified:
-          type: string
-        notification_attachment_name:
-          type: string
-        notification_enabled:
-          type: boolean
-        notification_message:
-          type: string
-        num_instances:
-          description: Number of snapshots already generated by this schedule
-          readOnly: true
-          type: integer
-        rrule:
-          $ref: '#/components/schemas/recurrence_rule'
+        access_rights: {$ref: '#/components/schemas/access_rights_obj'}
+        created: {type: string}
+        enabled: {type: boolean}
+        err_message: {$ref: '#/components/schemas/run_message'}
+        execute_on: {$ref: '#/components/schemas/execution_timestamps'}
+        executing: {description: Flag indicating if the schedule is executing at the
+            moment, readOnly: true, type: boolean}
+        executing_job_id: {type: integer}
+        id: {readOnly: true, type: integer}
+        info: {$ref: '#/components/schemas/schedule_info'}
+        last_executed: {type: string}
+        last_modified: {type: string}
+        notification_attachment_name: {type: string}
+        notification_enabled: {type: boolean}
+        notification_message: {type: string}
+        num_instances: {description: Number of snapshots already generated by this
+            schedule, readOnly: true, type: integer}
+        rrule: {$ref: '#/components/schemas/recurrence_rule'}
         subscription:
           additionalProperties: true
           properties:
             recipient_ids:
               description: List of pre-defined recipient IDs.
-              items:
-                type: integer
+              items: {type: integer}
               type: array
-            subscription_id:
-              readOnly: true
-              type: integer
+            subscription_id: {readOnly: true, type: integer}
             to:
               description: List of emails.
-              items:
-                type: string
+              items: {type: string}
               type: array
           type: object
-        template_id:
-          type: integer
-        template_name:
-          description: Name of the report template used for this schedule
-          readOnly: true
-          type: string
+        template_id: {type: integer}
+        template_name: {description: Name of the report template used for this schedule,
+          readOnly: true, type: string}
         time:
           additionalProperties: false
           description: Snapshot execution time range
           properties:
-            duration:
-              description: 'Lenght of time duration. Example: 1 hour.'
-              type: string
+            duration: {description: 'Lenght of time duration. Example: 1 hour.', type: string}
             snap_to_previous:
               description: Calendar unit to snap the end of time range to.
-              enum:
-              - NONE
-              - MINUTE
-              - HOUR
-              - DAY
-              - WEEK
-              - MONTH
-              - QUARTER
-              - YEAR
+              enum: [NONE, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR]
               type: string
-          required:
-          - duration
-          - snap_to_previous
+          required: [duration, snap_to_previous]
           type: object
-      required:
-      - enabled
-      - info
-      - template_id
-      - rrule
-      - time
+      required: [enabled, info, template_id, rrule, time]
       type: object
     schedule_ids:
-      description: Report schedule ID.
-      tags:
-        cpptype: uint32
-      type: integer
+      description: Array of report schedule IDs.
+      items: {description: Report schedule ID., type: integer}
+      type: array
     schedule_info:
       additionalProperties: true
       description: Information on a scheduled report
       properties:
-        description:
-          type: string
-        name:
-          type: string
-        schedule_id:
-          readOnly: true
-          type: integer
-        tags:
-          $ref: '#/components/schemas/tags_obj'
-      required:
-      - name
+        description: {type: string}
+        name: {type: string}
+        schedule_id: {readOnly: true, type: integer}
+        tags: {$ref: '#/components/schemas/tags_obj'}
+      required: [name]
       type: object
     schedules:
       additionalProperties: false
       description: List of scheduled reports
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/schedule'
+          items: {$ref: '#/components/schemas/schedule'}
           type: array
         meta:
           additionalProperties: false
           description: Meta data of the data set returned when a list of schedules
             are fetched.
           properties:
-            access:
-              description: Schedules filtered by this access param in the query string
-              type: string
-            access_rights:
-              description: Schedules filtered by this access_rights param in the query
-                string
-              type: string
-            count:
-              description: The actual number of rows returned as for this request.
-              type: integer
-            description:
-              description: Schedules filtered by this description param in the query
-                string
-              type: string
-            limit:
-              description: The maximum number rows to return. 0 means no limit.
-              type: integer
-            name:
-              description: Schedules filtered by this name param in the query string
-              type: string
-            offset:
-              description: Number of schedules to be skipped as specified by offset.
-                Offset value of 0 will be ignored.
-              type: integer
-            owner:
-              description: Schedules filtered by this owner param in the query string
-              type: string
-            sort:
-              description: Schedules sorted on param in the query string
-              type: string
-            sortby:
-              description: Schedules sorted by ascending or descending
-              type: string
-            tag:
-              description: Schedules filtered by this tag/tags param in the query
-                string
-              type: string
-            template_id:
-              type: string
-            template_name:
-              description: Schedules filtered by this template name param in the query
-                string
-              type: string
-            total:
-              description: Total number of rows that exists for the requested resource
-              type: integer
+            access: {description: Schedules filtered by this access param in the query
+                string, type: string}
+            access_rights: {description: Schedules filtered by this access_rights
+                param in the query string, type: string}
+            count: {description: The actual number of rows returned as for this request.,
+              type: integer}
+            description: {description: Schedules filtered by this description param
+                in the query string, type: string}
+            limit: {description: The maximum number rows to return. 0 means no limit.,
+              type: integer}
+            name: {description: Schedules filtered by this name param in the query
+                string, type: string}
+            offset: {description: Number of schedules to be skipped as specified by
+                offset. Offset value of 0 will be ignored., type: integer}
+            owner: {description: Schedules filtered by this owner param in the query
+                string, type: string}
+            sort: {description: Schedules sorted on param in the query string, type: string}
+            sortby: {description: Schedules sorted by ascending or descending, type: string}
+            tag: {description: Schedules filtered by this tag/tags param in the query
+                string, type: string}
+            template_id: {type: string}
+            template_name: {description: Schedules filtered by this template name
+                param in the query string, type: string}
+            total: {description: Total number of rows that exists for the requested
+                resource, type: integer}
           type: object
-      required:
-      - items
+      required: [items]
       type: object
     tags_obj:
       description: Container for a set of report tags.
       properties:
         items:
           description: Array of report tags.
-          items:
-            description: Report tag.
-            type: string
+          items: {description: Report tag., type: string}
           type: array
       type: object
     template:
       additionalProperties: true
       description: A single report template
       properties:
-        access_rights:
-          $ref: '#/components/schemas/access_rights_obj'
-        created:
-          type: string
-        id:
-          readOnly: true
-          type: integer
-        info:
-          $ref: '#/components/schemas/template_info'
-        last_modified:
-          type: string
-        num_schedules:
-          description: Number of schedules already generated by this template
-          type: integer
-      required:
-      - info
+        access_rights: {$ref: '#/components/schemas/access_rights_obj'}
+        created: {type: string}
+        id: {readOnly: true, type: integer}
+        info: {$ref: '#/components/schemas/template_info'}
+        last_modified: {type: string}
+        num_schedules: {description: Number of schedules already generated by this
+            template, type: integer}
+      required: [info]
       type: object
     template_ids:
-      description: Report template ID
-      tags:
-        cpptype: uint32
-      type: integer
+      description: Array of report template IDs
+      items: {description: Report template ID, type: integer}
+      type: array
     template_info:
       additionalProperties: true
       description: Information about a report template
       properties:
-        built_in:
-          readOnly: true
-          type: boolean
+        built_in: {readOnly: true, type: boolean}
         client_source:
-          enum:
-          - ALLOY_CLIENT
-          - WEB_UI
+          enum: [ALLOY_CLIENT, WEB_UI]
           type: string
-        description:
-          type: string
-        name:
-          type: string
-        navigator:
-          type: boolean
-        schedulable:
-          type: boolean
-        tags:
-          $ref: '#/components/schemas/tags_obj'
-        template_id:
-          readOnly: true
-          type: integer
+        description: {type: string}
+        name: {type: string}
+        navigator: {type: boolean}
+        schedulable: {type: boolean}
+        tags: {$ref: '#/components/schemas/tags_obj'}
+        template_id: {readOnly: true, type: integer}
         type:
-          enum:
-          - INTERACTIVE
-          - DASHBOARD
-          - REPORT
-          - FAVORITES
-          - HIDDEN
+          enum: [INTERACTIVE, DASHBOARD, REPORT, FAVORITES, HIDDEN]
           type: string
-      required:
-      - name
-      - client_source
+      required: [name, client_source]
       type: object
     templates:
       additionalProperties: false
       description: List of system report templates
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/template'
+          items: {$ref: '#/components/schemas/template'}
           type: array
         meta:
           additionalProperties: false
           description: Meta data of the data set returned when a list of templates
             are fetched.
           properties:
-            access:
-              description: Templates filtered by this access param in the query string
-              type: string
-            access_rights:
-              description: Templates filtered by this access_rights param in the query
-                string
-              type: string
-            built_in:
-              description: Templates filtered by this built_in param in the query
-                string
-              type: boolean
-            client_source:
-              description: Templates filtered by this client_source param in the query
-                string
-              type: string
-            count:
-              description: The actual number of rows returned as for this request.
-              type: integer
-            description:
-              description: Templates filtered by this description param in the query
-                string
-              type: string
-            limit:
-              description: The maximum number rows to return. 0 means no limit.
-              type: integer
-            name:
-              description: Templates filtered by this name param in the query string
-              type: string
-            navigator:
-              description: Templates filtered by this navigator param in the query
-                string
-              type: boolean
-            offset:
-              description: Number of templates to be skipped as specified by offset.
-                Offset value of 0 will be ignored.
-              type: integer
-            owner:
-              description: Templates filtered by this owner param in the query string
-              type: string
-            schedulable:
-              description: Templates filtered by this schedulable param in the query
-                string
-              type: boolean
-            sort:
-              description: Templates sorted on param in the query string
-              type: string
-            sortby:
-              description: Templates sorted by ascending or descending
-              type: string
-            tag:
-              description: Templates filtered by this tag/tags param in the query
-                string
-              type: string
-            total:
-              description: Total number of rows that exists for the requested resource
-              type: integer
-            type:
-              description: Templates filtered by this type param in the query string
-              type: string
+            access: {description: Templates filtered by this access param in the query
+                string, type: string}
+            access_rights: {description: Templates filtered by this access_rights
+                param in the query string, type: string}
+            built_in: {description: Templates filtered by this built_in param in the
+                query string, type: boolean}
+            client_source: {description: Templates filtered by this client_source
+                param in the query string, type: string}
+            count: {description: The actual number of rows returned as for this request.,
+              type: integer}
+            description: {description: Templates filtered by this description param
+                in the query string, type: string}
+            limit: {description: The maximum number rows to return. 0 means no limit.,
+              type: integer}
+            name: {description: Templates filtered by this name param in the query
+                string, type: string}
+            navigator: {description: Templates filtered by this navigator param in
+                the query string, type: boolean}
+            offset: {description: Number of templates to be skipped as specified by
+                offset. Offset value of 0 will be ignored., type: integer}
+            owner: {description: Templates filtered by this owner param in the query
+                string, type: string}
+            schedulable: {description: Templates filtered by this schedulable param
+                in the query string, type: boolean}
+            sort: {description: Templates sorted on param in the query string, type: string}
+            sortby: {description: Templates sorted by ascending or descending, type: string}
+            tag: {description: Templates filtered by this tag/tags param in the query
+                string, type: string}
+            total: {description: Total number of rows that exists for the requested
+                resource, type: integer}
+            type: {description: Templates filtered by this type param in the query
+                string, type: string}
           type: object
-      required:
-      - items
+      required: [items]
       type: object
     time_pairs:
-      additionalProperties: false
-      description: A time range pair, consisting of a start and end time.
-      properties:
-        end:
-          description: The ending time. This is a high-precision time value in Unix
-            Epoch format.
-          type: string
-        start:
-          description: The start time. This is a high-precision time value in Unix
-            Epoch format.
-          type: string
-      required:
-      - start
-      - end
-      type: object
+      description: Array of time range pairs.
+      items:
+        additionalProperties: false
+        description: A time range pair, consisting of a start and end time.
+        properties:
+          end: {description: The ending time. This is a high-precision time value
+              in Unix Epoch format., type: string}
+          start: {description: The start time. This is a high-precision time value
+              in Unix Epoch format., type: string}
+        required: [start, end]
+        type: object
+      type: array
     ts_statistical_results:
-      additionalProperties: false
-      description: One result from a statistical or compatibility function
-      properties:
-        group_by:
-          $ref: '#/components/schemas/data_row'
-        metric:
-          description: The metric column ID
-          type: string
-        value:
-          description: The result value
-          type: string
-      required:
-      - value
-      - metric
-      - group_by
-      type: object
+      description: Array of statistical result rows.
+      items:
+        additionalProperties: false
+        description: One result from a statistical or compatibility function
+        properties:
+          group_by: {$ref: '#/components/schemas/data_row'}
+          metric: {description: The metric column ID, type: string}
+          value: {description: The result value, type: string}
+        required: [value, metric, group_by]
+        type: object
+      type: array
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -1292,9 +811,7 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  title: Report Manager API
-  version: '1.0'
+info: {title: Report Manager API, version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.reports/1.0/instances:
@@ -1304,13 +821,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instances'
+                items: {$ref: '#/components/schemas/instances'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - instances
+      tags: [instances]
     post:
       requestBody:
         content:
@@ -1318,8 +833,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/instance'
+                  items: {$ref: '#/components/schemas/instance'}
                   type: array
               type: object
         required: true
@@ -1328,30 +842,26 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/bulk_delete:
     post:
       requestBody:
         content:
           application/json:
             schema:
-              description: Report instance ID
-              tags:
-                cpptype: uint32
-              type: integer
+              description: Array of report instance IDs
+              items: {description: Report instance ID, type: integer}
+              type: array
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: bulk_delete
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/bulk_delete_matching:
     post:
       requestBody:
@@ -1361,32 +871,21 @@ paths:
               additionalProperties: false
               description: Parameters to filter report instances
               properties:
-                older_than:
-                  description: High precision timestamp in Unix Epoch format. Matches
-                    report instances older than the provided timestamp.
-                  type: string
-                schedule_id:
-                  description: Matches if the report instance was created as part
-                    of the specified schedule ID.
-                  minimum: 0
-                  type: integer
-                template_id:
-                  description: Matches if the report instance is based on the specified
-                    template ID.
-                  minimum: 0
-                  type: integer
-                user:
-                  description: Performs a case-insensitive exact match against the
-                    owner of each report instance.
-                  type: string
+                older_than: {description: High precision timestamp in Unix Epoch format.
+                    Matches report instances older than the provided timestamp., type: string}
+                schedule_id: {description: Matches if the report instance was created
+                    as part of the specified schedule ID., minimum: 0, type: integer}
+                template_id: {description: Matches if the report instance is based
+                    on the specified template ID., minimum: 0, type: integer}
+                user: {description: Performs a case-insensitive exact match against
+                    the owner of each report instance., type: string}
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: bulk_delete_matching
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{id}:
     delete:
       parameters:
@@ -1394,50 +893,43 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - instances
+      tags: [instances]
     get:
       parameters:
       - description: ID of the report instance
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - instances
+      tags: [instances]
     put:
       parameters:
       - description: ID of the report instance
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/instance'
+                  items: {$ref: '#/components/schemas/instance'}
                   type: array
               type: object
         required: true
@@ -1446,13 +938,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{id}/access_rights:
     get:
       parameters:
@@ -1460,45 +950,39 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/access_rights_obj'
+                items: {$ref: '#/components/schemas/access_rights_obj'}
                 type: array
           description: ''
       summary: get_rights
-      tags:
-      - instances
+      tags: [instances]
     put:
       parameters:
       - description: ID of the report instance
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/access_rights_obj'
+                  items: {$ref: '#/components/schemas/access_rights_obj'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set_rights
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{id}/data:
     get:
       parameters:
@@ -1506,8 +990,7 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
@@ -1517,14 +1000,12 @@ paths:
                 properties:
                   data_defs:
                     description: Array of data definition result sets.
-                    items:
-                      $ref: '#/types/data_def_results'
+                    items: {$ref: '#/components/schemas/data_def_results'}
                     type: array
                 type: object
           description: Data for all data definitions within a report instance.
       summary: get_data
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{id}/status:
     get:
       parameters:
@@ -1532,20 +1013,17 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/data_def_status'
+                items: {$ref: '#/components/schemas/data_def_status'}
                 type: array
           description: Array of data definition statuses.
       summary: get_status
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{id}/sync:
     get:
       parameters:
@@ -1553,36 +1031,31 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: sync
-      tags:
-      - instances
+      tags: [instances]
     put:
       parameters:
       - description: ID of the report instance
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/instance'
+                  items: {$ref: '#/components/schemas/instance'}
                   type: array
               type: object
         required: true
@@ -1591,13 +1064,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: replace_sync
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{id}/view:
     get:
       parameters:
@@ -1605,14 +1076,12 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: get_view
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/data_defs:
     get:
       parameters:
@@ -1620,36 +1089,31 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/data_definitions'
+                items: {$ref: '#/components/schemas/data_definitions'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - instances
+      tags: [instances]
     post:
       parameters:
       - description: Report instance to which the data definitions belong.
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/data_definition'
+                  items: {$ref: '#/components/schemas/data_definition'}
                   type: array
               type: object
         required: true
@@ -1658,13 +1122,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/data_definition'
+                items: {$ref: '#/components/schemas/data_definition'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/data_defs/bulk_create:
     post:
       parameters:
@@ -1672,16 +1134,14 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/data_defs_list'
+                  items: {$ref: '#/components/schemas/data_defs_list'}
                   type: array
               type: object
         required: true
@@ -1690,13 +1150,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/data_defs_list'
+                items: {$ref: '#/components/schemas/data_defs_list'}
                 type: array
           description: ''
       summary: bulk_create
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/data_defs/bulk_delete:
     post:
       parameters:
@@ -1704,16 +1162,14 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/multiple_ids'
+                  items: {$ref: '#/components/schemas/multiple_ids'}
                   type: array
               type: object
         required: true
@@ -1722,13 +1178,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/multiple_ids'
+                items: {$ref: '#/components/schemas/multiple_ids'}
                 type: array
           description: ''
       summary: bulk_delete
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/data_defs/items/{id}:
     delete:
       parameters:
@@ -1736,68 +1190,58 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: ID for the data definition. Unique within a single report instance.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - instances
+      tags: [instances]
     get:
       parameters:
       - description: Report instance ID to which the data definition belogs.
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: ID for the data definition. Unique within a single report instance.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/data_definition'
+                items: {$ref: '#/components/schemas/data_definition'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - instances
+      tags: [instances]
     put:
       parameters:
       - description: Report instance ID to which the data definition belogs.
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: ID for the data definition. Unique within a single report instance.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/data_definition'
+                  items: {$ref: '#/components/schemas/data_definition'}
                   type: array
               type: object
         required: true
@@ -1806,95 +1250,80 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/data_definition'
+                items: {$ref: '#/components/schemas/data_definition'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - instances
-  ? /npm.reports/1.0/instances/items/{report_id}/data_defs/items/{id}/data{?limit,offset,start_time,end_time,resolution,top_by,nsamples,sort_by,filter}
-  : get:
+      tags: [instances]
+  /npm.reports/1.0/instances/items/{report_id}/data_defs/items/{id}/data:
+    get:
       parameters:
       - description: Report instance ID to which the data definition belogs.
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: ID for the data definition. Unique within a single report instance.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: Maximum number of returned data rows
         in: query
         name: limit
         required: false
-        schema:
-          type: integer
+        schema: {type: integer}
       - description: Start returning data rows from offset
         in: query
         name: offset
         required: false
-        schema:
-          type: integer
+        schema: {type: integer}
       - description: Start time (for live data feeds)
         in: query
         name: start_time
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       - description: End time (for live data feeds)
         in: query
         name: end_time
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       - description: Resolution (for live data feeds)
         in: query
         name: resolution
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       - description: List of columns to top by
         in: query
         name: top_by
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       - description: Return avg values as 'sum|nsamples' to allow client to re-aggregate
           the values
         in: query
         name: nsamples
         required: false
-        schema:
-          type: boolean
+        schema: {type: boolean}
       - description: Sort By column list with sort direction for each column
         in: query
         name: sort_by
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       - description: A Steelfilter expression to filter the results
         in: query
         name: filter
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/data_def_results'
+                items: {$ref: '#/components/schemas/data_def_results'}
                 type: array
           description: ''
       summary: get_data
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/data_defs/items/{id}/status:
     get:
       parameters:
@@ -1902,26 +1331,22 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: ID for the data definition. Unique within a single report instance.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/data_def_status'
+                items: {$ref: '#/components/schemas/data_def_status'}
                 type: array
           description: ''
       summary: get_status
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/info:
     get:
       parameters:
@@ -1929,45 +1354,39 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/report_instance_info'
+                items: {$ref: '#/components/schemas/report_instance_info'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - instances
+      tags: [instances]
     put:
       parameters:
       - description: ID of the report instance
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/report_instance_info'
+                  items: {$ref: '#/components/schemas/report_instance_info'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/items/{report_id}/presentation:
     get:
       parameters:
@@ -1975,45 +1394,39 @@ paths:
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/report_instance_presentation'
+                items: {$ref: '#/components/schemas/report_instance_presentation'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - instances
+      tags: [instances]
     put:
       parameters:
       - description: Instance ID to which the presentation belongs.
         in: path
         name: report_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/report_instance_presentation'
+                  items: {$ref: '#/components/schemas/report_instance_presentation'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/snapshots_disk_usage:
     get:
       responses:
@@ -2023,35 +1436,22 @@ paths:
               schema:
                 additionalProperties: false
                 properties:
-                  current_size_kb:
-                    description: Current snapshots disk usage (collected hourly, or
-                      by manual update)
-                    readOnly: true
-                    tags:
-                      cpptype: uint32
-                    type: integer
-                  quota_size_kb:
-                    description: Maximum quota for all disk snapshots
-                    readOnly: true
-                    tags:
-                      cpptype: uint32
-                    type: integer
-                required:
-                - quota_size_kb
-                - current_size_kb
+                  current_size_kb: {description: 'Current snapshots disk usage (collected
+                      hourly, or by manual update)', readOnly: true, type: integer}
+                  quota_size_kb: {description: Maximum quota for all disk snapshots,
+                    readOnly: true, type: integer}
+                required: [quota_size_kb, current_size_kb]
                 type: object
           description: Current size and allowed quota of snapshots
       summary: snapshots_disk_usage
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/snapshots_disk_usage/refresh:
     post:
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: refresh
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/stream:
     post:
       requestBody:
@@ -2060,8 +1460,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/instance'
+                  items: {$ref: '#/components/schemas/instance'}
                   type: array
               type: object
         required: true
@@ -2070,13 +1469,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: stream
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/sync:
     post:
       requestBody:
@@ -2085,8 +1482,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/instance'
+                  items: {$ref: '#/components/schemas/instance'}
                   type: array
               type: object
         required: true
@@ -2095,13 +1491,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/instance'
+                items: {$ref: '#/components/schemas/instance'}
                 type: array
           description: ''
       summary: create_sync
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/instances/tags:
     get:
       responses:
@@ -2109,13 +1503,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/rpt_tags'
+                items: {$ref: '#/components/schemas/rpt_tags'}
                 type: array
           description: ''
       summary: get_tags
-      tags:
-      - instances
+      tags: [instances]
   /npm.reports/1.0/schedules:
     get:
       responses:
@@ -2123,13 +1515,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/schedules'
+                items: {$ref: '#/components/schemas/schedules'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - schedules
+      tags: [schedules]
     post:
       requestBody:
         content:
@@ -2137,8 +1527,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/schedule'
+                  items: {$ref: '#/components/schemas/schedule'}
                   type: array
               type: object
         required: true
@@ -2147,13 +1536,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/schedule'
+                items: {$ref: '#/components/schemas/schedule'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/schedules/bulk_delete:
     post:
       requestBody:
@@ -2162,8 +1549,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/schedule_ids'
+                  items: {$ref: '#/components/schemas/schedule_ids'}
                   type: array
               type: object
         required: true
@@ -2172,13 +1558,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/schedule_ids'
+                items: {$ref: '#/components/schemas/schedule_ids'}
                 type: array
           description: ''
       summary: bulk_delete
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/schedules/execute_rrule:
     post:
       requestBody:
@@ -2187,8 +1571,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/recurrence_rule'
+                  items: {$ref: '#/components/schemas/recurrence_rule'}
                   type: array
               type: object
         required: true
@@ -2197,13 +1580,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/execution_timestamps'
+                items: {$ref: '#/components/schemas/execution_timestamps'}
                 type: array
           description: ''
       summary: execute_rrule
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/schedules/export:
     get:
       responses:
@@ -2211,13 +1592,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/schedules'
+                items: {$ref: '#/components/schemas/schedules'}
                 type: array
           description: ''
       summary: export
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/schedules/items/{id}:
     delete:
       parameters:
@@ -2225,50 +1604,43 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - schedules
+      tags: [schedules]
     get:
       parameters:
       - description: ''
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/schedule'
+                items: {$ref: '#/components/schemas/schedule'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - schedules
+      tags: [schedules]
     put:
       parameters:
       - description: ''
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/schedule'
+                  items: {$ref: '#/components/schemas/schedule'}
                   type: array
               type: object
         required: true
@@ -2277,13 +1649,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/schedule'
+                items: {$ref: '#/components/schemas/schedule'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/schedules/items/{schedule_id}/info:
     get:
       parameters:
@@ -2291,45 +1661,39 @@ paths:
         in: path
         name: schedule_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/schedule_info'
+                items: {$ref: '#/components/schemas/schedule_info'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - schedules
+      tags: [schedules]
     put:
       parameters:
       - description: ''
         in: path
         name: schedule_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/schedule_info'
+                  items: {$ref: '#/components/schemas/schedule_info'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/schedules/tags:
     get:
       responses:
@@ -2337,13 +1701,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/rpt_tags'
+                items: {$ref: '#/components/schemas/rpt_tags'}
                 type: array
           description: ''
       summary: get_tags
-      tags:
-      - schedules
+      tags: [schedules]
   /npm.reports/1.0/templates:
     get:
       responses:
@@ -2351,13 +1713,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/templates'
+                items: {$ref: '#/components/schemas/templates'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - templates
+      tags: [templates]
     post:
       requestBody:
         content:
@@ -2365,8 +1725,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/template'
+                  items: {$ref: '#/components/schemas/template'}
                   type: array
               type: object
         required: true
@@ -2375,13 +1734,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/template'
+                items: {$ref: '#/components/schemas/template'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/built_in_version:
     get:
       responses:
@@ -2390,13 +1747,11 @@ paths:
             application/json:
               schema:
                 properties:
-                  version:
-                    type: string
+                  version: {type: string}
                 type: object
           description: ''
       summary: built_in_version
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/bulk_delete:
     post:
       requestBody:
@@ -2405,8 +1760,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/template_ids'
+                  items: {$ref: '#/components/schemas/template_ids'}
                   type: array
               type: object
         required: true
@@ -2415,13 +1769,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/template_ids'
+                items: {$ref: '#/components/schemas/template_ids'}
                 type: array
           description: ''
       summary: bulk_delete
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/export:
     get:
       responses:
@@ -2429,13 +1781,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/templates'
+                items: {$ref: '#/components/schemas/templates'}
                 type: array
           description: ''
       summary: export
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/items/{id}:
     delete:
       parameters:
@@ -2443,50 +1793,43 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - templates
+      tags: [templates]
     get:
       parameters:
       - description: ''
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/template'
+                items: {$ref: '#/components/schemas/template'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - templates
+      tags: [templates]
     put:
       parameters:
       - description: ''
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/template'
+                  items: {$ref: '#/components/schemas/template'}
                   type: array
               type: object
         required: true
@@ -2495,13 +1838,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/template'
+                items: {$ref: '#/components/schemas/template'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/items/{id}/access_rights:
     get:
       parameters:
@@ -2509,45 +1850,39 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/access_rights_obj'
+                items: {$ref: '#/components/schemas/access_rights_obj'}
                 type: array
           description: ''
       summary: get_rights
-      tags:
-      - templates
+      tags: [templates]
     put:
       parameters:
       - description: ''
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/access_rights_obj'
+                  items: {$ref: '#/components/schemas/access_rights_obj'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set_rights
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/items/{template_id}/info:
     get:
       parameters:
@@ -2555,45 +1890,39 @@ paths:
         in: path
         name: template_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/template_info'
+                items: {$ref: '#/components/schemas/template_info'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - templates
+      tags: [templates]
     put:
       parameters:
       - description: ''
         in: path
         name: template_id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/template_info'
+                  items: {$ref: '#/components/schemas/template_info'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set
-      tags:
-      - templates
+      tags: [templates]
   /npm.reports/1.0/templates/tags:
     get:
       responses:
@@ -2601,13 +1930,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/rpt_tags'
+                items: {$ref: '#/components/schemas/rpt_tags'}
                 type: array
           description: ''
       summary: get_tags
-      tags:
-      - templates
+      tags: [templates]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -2617,7 +1944,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

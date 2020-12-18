@@ -8,71 +8,43 @@ components:
           additionalProperties: false
           description: Configuration of a clip.
           properties:
-            description:
-              description: Description of this clip configuration.
-              type: string
-            end_time:
-              description: Clip end time.
-              type: string
+            description: {description: Description of this clip configuration., type: string}
+            end_time: {description: Clip end time., type: string}
             filters:
               additionalProperties: false
               description: Collection of filter criteria.
               properties:
-                items:
-                  $ref: '#/components/schemas/filters_list'
+                items: {$ref: '#/components/schemas/filters_list'}
               type: object
-            job_id:
-              description: Job UUID on which the clip is applied.
-              type: string
-            start_time:
-              description: Clip start time.
-              type: string
+            job_id: {description: Job UUID on which the clip is applied., type: string}
+            start_time: {description: Clip start time., type: string}
           type: object
-        id:
-          description: Clip unique identifier.
-          readOnly: true
-          type: string
+        id: {description: Clip unique identifier., readOnly: true, type: string}
         index_stats:
           additionalProperties: false
           description: Collection of microflow index statistics.
           properties:
             items:
               description: Array of microflow index statistics.
-              items:
-                $ref: '#/components/schemas/index_info_stat'
+              items: {$ref: '#/components/schemas/index_info_stat'}
               type: array
           type: object
         status:
           additionalProperties: false
           description: Status of a clip.
           properties:
-            creation_time:
-              description: Clip creation time.
-              readOnly: true
-              type: string
-            estimated_size:
-              description: Estimated size for this clip in packet storage.
-              readOnly: true
-              type: integer
-            locked:
-              description: '''true'' if packets and the index for this clip are locked,
-                ''false'' otherwise.'
-              type: boolean
-            modification_time:
-              description: Clip last modified time.
-              readOnly: true
-              type: string
-            packets_dropped:
-              description: Statistics for the number of packets that arrived at the
-                capture port but could not be written successfully to the packet storage
-                for this clip.
-              readOnly: true
-              type: integer
-            packets_written:
-              description: Statistics for the number of packets successfully written
-                to the packet storage for this clip.
-              readOnly: true
-              type: integer
+            creation_time: {description: Clip creation time., readOnly: true, type: string}
+            estimated_size: {description: Estimated size for this clip in packet storage.,
+              readOnly: true, type: integer}
+            locked: {description: '''true'' if packets and the index for this clip
+                are locked, ''false'' otherwise.', type: boolean}
+            modification_time: {description: Clip last modified time., readOnly: true,
+              type: string}
+            packets_dropped: {description: Statistics for the number of packets that
+                arrived at the capture port but could not be written successfully
+                to the packet storage for this clip., readOnly: true, type: integer}
+            packets_written: {description: Statistics for the number of packets successfully
+                written to the packet storage for this clip., readOnly: true, type: integer}
           type: object
       type: object
     clips:
@@ -81,65 +53,41 @@ components:
       properties:
         items:
           description: Array of clips.
-          items:
-            $ref: '#/components/schemas/clip'
+          items: {$ref: '#/components/schemas/clip'}
           type: array
       type: object
     filters_list:
-      additionalProperties: false
-      description: Filter
-      properties:
-        context:
-          description: Context from which the filter was applied (e.g., user request,
-            data drill-down, etc).
-          enum:
-          - NONE
-          - INTERNAL
-          - USER
-          - DRILL_DOWN
-          type: string
-        id:
-          description: Filter criterion ID.
-          type: string
-        type:
-          description: The type of filter used on the data.
-          enum:
-          - BPF
-          - STEELFILTER
-          - WIRESHARK
-          type: string
-        value:
-          description: Query filter text to use.
-          type: string
-      required:
-      - id
-      - type
-      - value
-      type: object
+      description: Array of filter criteria.
+      items:
+        additionalProperties: false
+        description: Filter
+        properties:
+          context:
+            description: Context from which the filter was applied (e.g., user request,
+              data drill-down, etc).
+            enum: [NONE, INTERNAL, USER, DRILL_DOWN]
+            type: string
+          id: {description: Filter criterion ID., type: string}
+          type:
+            description: The type of filter used on the data.
+            enum: [BPF, STEELFILTER, WIRESHARK]
+            type: string
+          value: {description: Query filter text to use., type: string}
+        required: [id, type, value]
+        type: object
+      type: array
     index_info_stat:
       additionalProperties: false
       description: Microflow index statistics.
       properties:
-        end_time:
-          description: End time for an indexed interval.
-          type: string
-        start_time:
-          description: Start time for an indexed interval.
-          type: string
-        version:
-          description: Microflow index version.
-          type: string
-      required:
-      - version
-      - start_time
-      - end_time
+        end_time: {description: End time for an indexed interval., type: string}
+        start_time: {description: Start time for an indexed interval., type: string}
+        version: {description: Microflow index version., type: string}
+      required: [version, start_time, end_time]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -148,10 +96,7 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: Capture Jobs Clips API
-  title: Clips API
-  version: '1.0'
+info: {description: Capture Jobs Clips API, title: Clips API, version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.clips/1.0/clips:
@@ -161,13 +106,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/clips'
+                items: {$ref: '#/components/schemas/clips'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - clips
+      tags: [clips]
     post:
       requestBody:
         content:
@@ -175,8 +118,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/clip'
+                  items: {$ref: '#/components/schemas/clip'}
                   type: array
               type: object
         required: true
@@ -185,13 +127,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/clip'
+                items: {$ref: '#/components/schemas/clip'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - clips
+      tags: [clips]
   /npm.clips/1.0/clips/items/{id}:
     delete:
       parameters:
@@ -199,50 +139,43 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - clips
+      tags: [clips]
     get:
       parameters:
       - description: Clip unique identifier.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/clip'
+                items: {$ref: '#/components/schemas/clip'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - clips
+      tags: [clips]
     put:
       parameters:
       - description: Clip unique identifier.
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/clip'
+                  items: {$ref: '#/components/schemas/clip'}
                   type: array
               type: object
         required: true
@@ -251,13 +184,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/clip'
+                items: {$ref: '#/components/schemas/clip'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - clips
+      tags: [clips]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -267,7 +198,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

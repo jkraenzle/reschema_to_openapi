@@ -4,52 +4,27 @@ components:
       additionalProperties: false
       description: A single backup of a device
       properties:
-        backup_time:
-          description: The time the backup was taken, in Unix epoch seconds
-          readOnly: true
-          type: integer
-        description:
-          description: Description of this backup
-          maxLength: 250
-          type: string
-        hostname:
-          description: Hostname of the device the backup was created on
-          readOnly: true
-          type: string
-        id:
-          description: The backup ID
-          readOnly: true
-          type: string
-        model:
-          description: Model of the device the backup was created on
-          readOnly: true
-          type: string
-        serial:
-          description: Serial of the device the backup was created on
-          readOnly: true
-          type: string
-        size:
-          description: The size of the backup, in bytes
-          readOnly: true
-          type: integer
+        backup_time: {description: 'The time the backup was taken, in Unix epoch seconds',
+          readOnly: true, type: integer}
+        description: {description: Description of this backup, maxLength: 250, type: string}
+        hostname: {description: Hostname of the device the backup was created on,
+          readOnly: true, type: string}
+        id: {description: The backup ID, readOnly: true, type: string}
+        model: {description: Model of the device the backup was created on, readOnly: true,
+          type: string}
+        serial: {description: Serial of the device the backup was created on, readOnly: true,
+          type: string}
+        size: {description: 'The size of the backup, in bytes', readOnly: true, type: integer}
         status:
           description: Status of the backup
-          enum:
-          - completed
-          - started
-          - failed
-          - uploading
+          enum: [completed, started, failed, uploading]
           readOnly: true
           type: string
-        status_message:
-          description: Extra information about backup status
-          type: string
-        sw_version:
-          description: 'The software version running when the backup was created
+        status_message: {description: Extra information about backup status, type: string}
+        sw_version: {description: 'The software version running when the backup was
+            created
 
-            '
-          readOnly: true
-          type: string
+            ', readOnly: true, type: string}
       type: object
     backups:
       additionalProperties: false
@@ -57,39 +32,26 @@ components:
       properties:
         items:
           description: All available backups
-          items:
-            $ref: '#/components/schemas/backup'
+          items: {$ref: '#/components/schemas/backup'}
           type: array
       type: object
     restore_status:
       additionalProperties: false
       description: Status of the latest restore operation
       properties:
-        last_restore_time:
-          description: 'Time of the last restore, in Unix epoch seconds. Will be 0
-            if no restore has ever been performed.
+        last_restore_time: {description: 'Time of the last restore, in Unix epoch
+            seconds. Will be 0 if no restore has ever been performed.
 
-            '
-          type: integer
+            ', type: integer}
         status:
           description: Restore status
-          enum:
-          - not_run
-          - started
-          - failed
-          - completed
-          - completed_with_errors
+          enum: [not_run, started, failed, completed, completed_with_errors]
           type: string
-        status_message:
-          description: Further status information
-          type: string
+        status_message: {description: Further status information, type: string}
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -98,10 +60,8 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: Backup, Restore, and Reset Factory operations
-  title: Backup and Restore
-  version: '1.0'
+info: {description: 'Backup, Restore, and Reset Factory operations', title: Backup
+    and Restore, version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.backup/1.0/backups:
@@ -111,13 +71,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/backups'
+                items: {$ref: '#/components/schemas/backups'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - backups
+      tags: [backups]
     post:
       requestBody:
         content:
@@ -125,8 +83,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/backup'
+                  items: {$ref: '#/components/schemas/backup'}
                   type: array
               type: object
         required: true
@@ -135,13 +92,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/backup'
+                items: {$ref: '#/components/schemas/backup'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - backups
+      tags: [backups]
   /npm.backup/1.0/backups/items/{id}:
     delete:
       parameters:
@@ -149,34 +104,29 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - backups
+      tags: [backups]
     get:
       parameters:
       - description: The backup ID
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/backup'
+                items: {$ref: '#/components/schemas/backup'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - backups
+      tags: [backups]
   /npm.backup/1.0/backups/items/{id}/file:
     get:
       parameters:
@@ -184,14 +134,12 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: download
-      tags:
-      - backups
+      tags: [backups]
   /npm.backup/1.0/backups/items/{id}/restore:
     post:
       parameters:
@@ -199,20 +147,17 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/restore_status'
+                items: {$ref: '#/components/schemas/restore_status'}
                 type: array
           description: ''
       summary: restore
-      tags:
-      - backups
+      tags: [backups]
   /npm.backup/1.0/backups/reset_factory:
     post:
       responses:
@@ -220,13 +165,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/restore_status'
+                items: {$ref: '#/components/schemas/restore_status'}
                 type: array
           description: ''
       summary: reset_factory
-      tags:
-      - backups
+      tags: [backups]
   /npm.backup/1.0/backups/upload:
     post:
       responses:
@@ -234,13 +177,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/backup'
+                items: {$ref: '#/components/schemas/backup'}
                 type: array
           description: ''
       summary: upload
-      tags:
-      - backups
+      tags: [backups]
   /npm.backup/1.0/restore_status:
     get:
       responses:
@@ -248,13 +189,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/restore_status'
+                items: {$ref: '#/components/schemas/restore_status'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - restore_status
+      tags: [restore_status]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -264,7 +203,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

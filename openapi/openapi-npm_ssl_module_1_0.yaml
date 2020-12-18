@@ -2,165 +2,102 @@ components:
   schemas:
     certs_bulk_deleter:
       properties:
-        delete_all:
-          description: Delete all objects in the given config
-          type: boolean
+        delete_all: {description: Delete all objects in the given config, type: boolean}
         delete_ids:
           description: List of certificate ids to delete
-          items:
-            type: string
+          items: {type: string}
           type: array
       type: object
     ignored_certificate:
       additionalProperties: false
       description: This resource deals with an ignored certificate
       properties:
-        id:
-          description: A unique id for the certificate
-          type: string
+        id: {description: A unique id for the certificate, type: string}
       type: object
     ignored_certificates:
       additionalProperties: true
       description: This resource deals with ignored certificates
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/ignored_certificate'
+          items: {$ref: '#/components/schemas/ignored_certificate'}
           type: array
-        limit:
-          $ref: '#/components/schemas/ignored_certs_limit'
+        limit: {$ref: '#/components/schemas/ignored_certs_limit'}
       type: object
     ignored_certs_limit:
       additionalProperties: true
       properties:
-        current:
-          description: The current number of certificates ignored
-          type: integer
-        max:
-          description: The max number of certificates that can be ignored
-          type: integer
+        current: {description: The current number of certificates ignored, type: integer}
+        max: {description: The max number of certificates that can be ignored, type: integer}
       type: object
     latest_certificate:
       additionalProperties: false
       description: This resource deals with a certificate
       properties:
-        first_seen:
-          description: Time at which this certificate was first seen
-          type: string
-        has_rsa_key:
-          description: True if the certificate is expired
-          type: boolean
-        id:
-          description: A unique id for the certificate
-          type: string
-        ignored:
-          description: True if the certificate is ignored
-          type: boolean
+        first_seen: {description: Time at which this certificate was first seen, type: string}
+        has_rsa_key: {description: True if the certificate is expired, type: boolean}
+        id: {description: A unique id for the certificate, type: string}
+        ignored: {description: True if the certificate is ignored, type: boolean}
         issuer:
           description: Certificate 'Issuer' details
           properties:
-            common_name:
-              description: '''Issuer'' common name'
-              type: string
-            country:
-              description: '''Issuer'' country'
-              type: string
-            organization:
-              description: '''Issuer'' organization'
-              type: string
+            common_name: {description: '''Issuer'' common name', type: string}
+            country: {description: '''Issuer'' country', type: string}
+            organization: {description: '''Issuer'' organization', type: string}
           type: object
-        last_seen:
-          description: Time at which this certificate was last seen
-          type: string
-        serial_number:
-          description: Certificate 'Serial Number'
-          type: string
+        last_seen: {description: Time at which this certificate was last seen, type: string}
+        serial_number: {description: Certificate 'Serial Number', type: string}
         servers:
           items:
             description: Certificate server endpoint
             properties:
-              host:
-                description: The IP address of the server
-                type: string
-              port:
-                description: The TCP port of the server
-                type: integer
+              host: {description: The IP address of the server, type: string}
+              port: {description: The TCP port of the server, type: integer}
             type: object
           type: array
-        status:
-          description: Certificate current status (Valid, Invalid, Expired, Revoked)
-          type: string
+        status: {description: 'Certificate current status (Valid, Invalid, Expired,
+            Revoked)', type: string}
         subject:
           description: Certificate 'Subject' details
           properties:
-            common_name:
-              description: '''Subject'' common name'
-              type: string
-            country:
-              description: '''Subject'' country'
-              type: string
-            locality:
-              description: '''Subject'' locality'
-              type: string
-            organization:
-              description: '''Subject'' organization'
-              type: string
-            organization_unit:
-              description: '''Subject'' organization unit'
-              type: string
-            state:
-              description: '''Subject'' state'
-              type: string
+            common_name: {description: '''Subject'' common name', type: string}
+            country: {description: '''Subject'' country', type: string}
+            locality: {description: '''Subject'' locality', type: string}
+            organization: {description: '''Subject'' organization', type: string}
+            organization_unit: {description: '''Subject'' organization unit', type: string}
+            state: {description: '''Subject'' state', type: string}
           type: object
-        valid_from:
-          description: Certificate 'Not Before'
-          type: string
-        valid_to:
-          description: Certificate 'Not After'
-          type: string
+        valid_from: {description: Certificate 'Not Before', type: string}
+        valid_to: {description: Certificate 'Not After', type: string}
       type: object
     latest_certificates:
       additionalProperties: true
       description: This resource deals with the list of latest certificate processed
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/latest_certificate'
+          items: {$ref: '#/components/schemas/latest_certificate'}
           type: array
-        total:
-          description: The number of total requested certificates
-          type: integer
+        total: {description: The number of total requested certificates, type: integer}
       type: object
     latest_certs_bulk_deleter:
       properties:
-        delete_all:
-          description: Delete all objects in the given config
-          type: boolean
-        delete_all_ignored:
-          description: Delete all ignored certificates in the given config
-          type: boolean
+        delete_all: {description: Delete all objects in the given config, type: boolean}
+        delete_all_ignored: {description: Delete all ignored certificates in the given
+            config, type: boolean}
         delete_ids:
           description: List of certificate ids to delete
-          items:
-            type: string
+          items: {type: string}
           type: array
       type: object
     ssl_module:
       additionalProperties: false
       description: This resource deals with SSL Module configuration
       properties:
-        enabled:
-          description: Enable/disable SSL Module.
-          type: boolean
-      required:
-      - enabled
+        enabled: {description: Enable/disable SSL Module., type: boolean}
+      required: [enabled]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -169,10 +106,7 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: NPM APIs for SSL Module
-  title: NPM SSL Module APIs
-  version: '1.0'
+info: {description: NPM APIs for SSL Module, title: NPM SSL Module APIs, version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.ssl_module/1.0/ignored_certificates:
@@ -182,13 +116,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/ignored_certificates'
+                items: {$ref: '#/components/schemas/ignored_certificates'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
     post:
       requestBody:
         content:
@@ -196,8 +128,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/ignored_certificate'
+                  items: {$ref: '#/components/schemas/ignored_certificate'}
                   type: array
               type: object
         required: true
@@ -206,13 +137,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/ignored_certificate'
+                items: {$ref: '#/components/schemas/ignored_certificate'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
   /npm.ssl_module/1.0/ignored_certificates/bulk_create:
     post:
       requestBody:
@@ -221,8 +150,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/ignored_certificates'
+                  items: {$ref: '#/components/schemas/ignored_certificates'}
                   type: array
               type: object
         required: true
@@ -231,13 +159,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/ignored_certificates'
+                items: {$ref: '#/components/schemas/ignored_certificates'}
                 type: array
           description: ''
       summary: bulk_create
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
   /npm.ssl_module/1.0/ignored_certificates/bulk_delete:
     post:
       requestBody:
@@ -246,8 +172,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/certs_bulk_deleter'
+                  items: {$ref: '#/components/schemas/certs_bulk_deleter'}
                   type: array
               type: object
         required: true
@@ -256,13 +181,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/certs_bulk_deleter'
+                items: {$ref: '#/components/schemas/certs_bulk_deleter'}
                 type: array
           description: ''
       summary: bulk_delete
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
   /npm.ssl_module/1.0/ignored_certificates/items/{id}:
     delete:
       parameters:
@@ -270,34 +193,29 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
     get:
       parameters:
       - description: A unique id for the certificate
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/ignored_certificate'
+                items: {$ref: '#/components/schemas/ignored_certificate'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
   /npm.ssl_module/1.0/ignored_certificates/limit:
     get:
       responses:
@@ -305,13 +223,45 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/ignored_certs_limit'
+                items: {$ref: '#/components/schemas/ignored_certs_limit'}
                 type: array
           description: ''
       summary: limit
-      tags:
-      - ignored_certificates
+      tags: [ignored_certificates]
+  /npm.ssl_module/1.0/latest_certificates:
+    get:
+      parameters:
+      - description: ''
+        in: query
+        name: has_rsa_key
+        required: false
+        schema: {type: string}
+      - description: ''
+        in: query
+        name: ignored
+        required: false
+        schema: {type: string}
+      - description: 'Tob by property. Values: ''last_seen'' (default), ''first_seen'',
+          ''valid_from'', ''valid_to'''
+        in: query
+        name: topby
+        required: false
+        schema: {type: string}
+      - description: Max number of entries returned
+        in: query
+        name: topn
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items: {$ref: '#/components/schemas/latest_certificates'}
+                type: array
+          description: ''
+      summary: get
+      tags: [latest_certificates]
   /npm.ssl_module/1.0/latest_certificates/bulk_delete:
     post:
       requestBody:
@@ -320,8 +270,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/latest_certs_bulk_deleter'
+                  items: {$ref: '#/components/schemas/latest_certs_bulk_deleter'}
                   type: array
               type: object
         required: true
@@ -330,13 +279,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/latest_certs_bulk_deleter'
+                items: {$ref: '#/components/schemas/latest_certs_bulk_deleter'}
                 type: array
           description: ''
       summary: bulk_delete
-      tags:
-      - latest_certificates
+      tags: [latest_certificates]
   /npm.ssl_module/1.0/latest_certificates/items/{id}:
     delete:
       parameters:
@@ -344,74 +291,29 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - latest_certificates
+      tags: [latest_certificates]
     get:
       parameters:
       - description: A unique id for the certificate
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/latest_certificate'
+                items: {$ref: '#/components/schemas/latest_certificate'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - latest_certificates
-  /npm.ssl_module/1.0/latest_certificates{?has_rsa_key,ignored,topby,topn}:
-    get:
-      parameters:
-      - description: ''
-        in: query
-        name: has_rsa_key
-        required: false
-        schema:
-          type: string
-      - description: ''
-        in: query
-        name: ignored
-        required: false
-        schema:
-          type: string
-      - description: 'Tob by property. Values: ''last_seen'' (default), ''first_seen'',
-          ''valid_from'', ''valid_to'''
-        in: query
-        name: topby
-        required: false
-        schema:
-          type: string
-      - description: Max number of entries returned
-        in: query
-        name: topn
-        required: false
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/latest_certificates'
-                type: array
-          description: ''
-      summary: get
-      tags:
-      - latest_certificates
+      tags: [latest_certificates]
   /npm.ssl_module/1.0/ssl_module:
     get:
       responses:
@@ -419,13 +321,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/ssl_module'
+                items: {$ref: '#/components/schemas/ssl_module'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - ssl_module
+      tags: [ssl_module]
     put:
       requestBody:
         content:
@@ -433,8 +333,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/ssl_module'
+                  items: {$ref: '#/components/schemas/ssl_module'}
                   type: array
               type: object
         required: true
@@ -443,13 +342,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/ssl_module'
+                items: {$ref: '#/components/schemas/ssl_module'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - ssl_module
+      tags: [ssl_module]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -459,7 +356,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

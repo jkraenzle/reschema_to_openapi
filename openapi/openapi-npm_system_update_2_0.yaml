@@ -4,34 +4,18 @@ components:
       additionalProperties: false
       description: Information about the update image
       properties:
-        checksum:
-          description: The SHA-256 checksum of the update image
-          type: string
-        id:
-          description: A unique identifier for the image
-          readOnly: true
-          type: integer
-        progress:
-          description: The progress of the current upload/fetch operation
-          type: number
+        checksum: {description: The SHA-256 checksum of the update image, type: string}
+        id: {description: A unique identifier for the image, readOnly: true, type: integer}
+        progress: {description: The progress of the current upload/fetch operation,
+          type: number}
         state:
           description: The state of the update image
-          enum:
-          - UPLOADING
-          - VALIDATING
-          - UPLOAD_ERROR
-          - VALID
-          - INVALID
+          enum: [UPLOADING, VALIDATING, UPLOAD_ERROR, VALID, INVALID]
           type: string
-        state_description:
-          description: A more detailed description of the state
-          type: string
-        version:
-          description: The version of the update image
-          type: string
-      required:
-      - state
-      - state_description
+        state_description: {description: A more detailed description of the state,
+          type: string}
+        version: {description: The version of the update image, type: string}
+      required: [state, state_description]
       type: object
     images:
       additionalProperties: false
@@ -39,35 +23,24 @@ components:
       properties:
         items:
           description: An array containing the available update images
-          items:
-            $ref: '#/components/schemas/image'
+          items: {$ref: '#/components/schemas/image'}
           type: array
       type: object
     update:
       additionalProperties: false
       description: The overall status of the update
       properties:
-        last_state_time:
-          description: 'The time of the last state transition, in Unix epoch seconds
+        last_state_time: {description: 'The time of the last state transition, in
+            Unix epoch seconds
 
-            '
-          type: integer
+            ', type: integer}
         state:
           description: The state of the update
-          enum:
-          - IDLE
-          - INITIALIZING
-          - INITIALIZED
-          - RUNNING
-          - FAILED_GRACEFUL
-          - FAILED_CRITICAL
+          enum: [IDLE, INITIALIZING, INITIALIZED, RUNNING, FAILED_GRACEFUL, FAILED_CRITICAL]
           type: string
-        state_description:
-          description: A more detailed description of the state
-          type: string
-        target_version:
-          description: The version the system will be updated to
-          type: string
+        state_description: {description: A more detailed description of the state,
+          type: string}
+        target_version: {description: The version the system will be updated to, type: string}
         update_history:
           description: A list of past updates. The first element of the list is an
             installation
@@ -75,28 +48,17 @@ components:
             additionalProperties: false
             description: Information about a previous update
             properties:
-              time:
-                description: 'The time of the update, in Unix epoch seconds
+              time: {description: 'The time of the update, in Unix epoch seconds
 
-                  '
-                type: integer
-              version:
-                description: The version that was installed
-                type: string
+                  ', type: integer}
+              version: {description: The version that was installed, type: string}
             type: object
           type: array
-      required:
-      - state
-      - state_description
-      - last_state_time
-      - update_history
+      required: [state, state_description, last_state_time, update_history]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -105,10 +67,8 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: Service that handles software updates
-  title: Software Update Service
-  version: '2.0'
+info: {description: Service that handles software updates, title: Software Update
+    Service, version: '2.0'}
 openapi: 3.0.2
 paths:
   /npm.system_update/2.0/images:
@@ -118,13 +78,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/images'
+                items: {$ref: '#/components/schemas/images'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - images
+      tags: [images]
   /npm.system_update/2.0/images/fetch:
     post:
       requestBody:
@@ -134,11 +92,8 @@ paths:
               additionalProperties: false
               description: Fetch parameters
               properties:
-                url:
-                  description: The url where to fetch the update image from
-                  type: string
-              required:
-              - url
+                url: {description: The url where to fetch the update image from, type: string}
+              required: [url]
               type: object
         required: true
       responses:
@@ -146,13 +101,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/image'
+                items: {$ref: '#/components/schemas/image'}
                 type: array
           description: ''
       summary: fetch
-      tags:
-      - images
+      tags: [images]
   /npm.system_update/2.0/images/items/{id}:
     delete:
       parameters:
@@ -160,56 +113,47 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - images
+      tags: [images]
     get:
       parameters:
       - description: A unique identifier for the image
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/image'
+                items: {$ref: '#/components/schemas/image'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - images
+      tags: [images]
   /npm.system_update/2.0/images/upload:
     post:
       requestBody:
         content:
           application/json:
-            schema:
-              additionalProperties: true
-              description: The update image binary
-              type: object
+            schema: {additionalProperties: true, description: The update image binary,
+              type: object}
         required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/image'
+                items: {$ref: '#/components/schemas/image'}
                 type: array
           description: ''
       summary: upload
-      tags:
-      - images
+      tags: [images]
   /npm.system_update/2.0/update:
     get:
       responses:
@@ -217,37 +161,32 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/update'
+                items: {$ref: '#/components/schemas/update'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - update
+      tags: [update]
   /npm.system_update/2.0/update/init:
     post:
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: init
-      tags:
-      - update
+      tags: [update]
   /npm.system_update/2.0/update/reset:
     post:
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: reset
-      tags:
-      - update
+      tags: [update]
   /npm.system_update/2.0/update/start:
     post:
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: start
-      tags:
-      - update
+      tags: [update]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -257,7 +196,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

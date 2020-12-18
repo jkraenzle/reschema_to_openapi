@@ -4,14 +4,9 @@ components:
       additionalProperties: false
       description: Filter settings used for Flow Export
       properties:
-        enabled:
-          description: Enable or disable Flow Export filtering
-          type: boolean
-        filter:
-          $ref: '#/components/schemas/input_filter'
-      required:
-      - enabled
-      - filter
+        enabled: {description: Enable or disable Flow Export filtering, type: boolean}
+        filter: {$ref: '#/components/schemas/input_filter'}
+      required: [enabled, filter]
       type: object
     input_filter:
       additionalProperties: false
@@ -19,17 +14,10 @@ components:
       properties:
         type:
           description: The type of filter to be processed
-          enum:
-          - UNKNOWN
-          - STEELFILTER
-          - BPF
+          enum: [UNKNOWN, STEELFILTER, BPF]
           type: string
-        value:
-          description: String representation of the filter
-          type: string
-      required:
-      - type
-      - value
+        value: {description: String representation of the filter, type: string}
+      required: [type, value]
       type: object
     job:
       additionalProperties: false
@@ -39,46 +27,27 @@ components:
           additionalProperties: false
           description: Configuration of a capture job
           properties:
-            capture_from_all_vifgs:
-              description: If enabled, this capture job will ignore the field 'vifgs'
-                and will capture from all existing VIFGs
-              type: boolean
-            enabled:
-              description: Whether the capture job is configured to run or not
-              type: boolean
-            filter:
-              $ref: '#/components/schemas/input_filter'
-            indexing:
-              $ref: '#/components/schemas/job_indexing'
-            name:
-              description: Name of the job
-              type: string
-            optimize_for_read:
-              description: Used to enable read optimization
-              type: boolean
-            retention_rules:
-              $ref: '#/components/schemas/packet_retention'
-            snap_len:
-              default: 65535
-              description: It specifies the max number of bytes for every packet that
-                will be stored to disk. If the packet is longer, it will be truncated
-              type: integer
+            capture_from_all_vifgs: {description: 'If enabled, this capture job will
+                ignore the field ''vifgs'' and will capture from all existing VIFGs',
+              type: boolean}
+            enabled: {description: Whether the capture job is configured to run or
+                not, type: boolean}
+            filter: {$ref: '#/components/schemas/input_filter'}
+            indexing: {$ref: '#/components/schemas/job_indexing'}
+            name: {description: Name of the job, type: string}
+            optimize_for_read: {description: Used to enable read optimization, type: boolean}
+            retention_rules: {$ref: '#/components/schemas/packet_retention'}
+            snap_len: {default: 65535, description: 'It specifies the max number of
+                bytes for every packet that will be stored to disk. If the packet
+                is longer, it will be truncated', type: integer}
             vifgs:
               description: List of VIFGs the capture job is collecting packets from
-              items:
-                description: ID of the VIFG that this capture job captures from
-                type: integer
+              items: {description: ID of the VIFG that this capture job captures from,
+                type: integer}
               type: array
-          required:
-          - name
-          - enabled
-          - vifgs
-          - optimize_for_read
+          required: [name, enabled, vifgs, optimize_for_read]
           type: object
-        id:
-          description: The UUID of the capture job
-          readOnly: true
-          type: string
+        id: {description: The UUID of the capture job, readOnly: true, type: string}
         state:
           additionalProperties: false
           description: Information about the state of a capture job
@@ -89,102 +58,62 @@ components:
               properties:
                 bytes_written:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
                 packets_written:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
-              required:
-              - packets_written
-              - bytes_written
+                  - {$ref: '#/components/schemas/recent_stats'}
+              required: [packets_written, bytes_written]
               type: object
             status:
               additionalProperties: false
               description: Generic information on the capture job and its data
               properties:
-                capture_disk_space:
-                  description: The actual size of the capture job on disk (including
-                    overhead)
-                  type: integer
-                capture_size:
-                  description: The size of all the packets of the capture job (packets
-                    only, without overhead)
-                  type: integer
-                packet_end_time:
-                  description: The timestamp of the last packet of the capture job.
-                    The string represents a decimal value of seconds since epoch
-                  type: string
-                packet_start_time:
-                  description: The timestamp of the first packet of the capture job.
-                    The string represents a decimal value of seconds since epoch
-                  type: string
+                capture_disk_space: {description: The actual size of the capture job
+                    on disk (including overhead), type: integer}
+                capture_size: {description: 'The size of all the packets of the capture
+                    job (packets only, without overhead)', type: integer}
+                packet_end_time: {description: The timestamp of the last packet of
+                    the capture job. The string represents a decimal value of seconds
+                    since epoch, type: string}
+                packet_start_time: {description: The timestamp of the first packet
+                    of the capture job. The string represents a decimal value of seconds
+                    since epoch, type: string}
                 state:
                   description: State of a capture job
-                  enum:
-                  - UNKNOWN
-                  - STOPPED
-                  - RUNNING
+                  enum: [UNKNOWN, STOPPED, RUNNING]
                   type: string
-              required:
-              - state
-              - packet_start_time
-              - packet_end_time
-              - capture_size
-              - capture_disk_space
+              required: [state, packet_start_time, packet_end_time, capture_size,
+                capture_disk_space]
               type: object
           readOnly: true
-          required:
-          - stats
-          - status
+          required: [stats, status]
           type: object
-      required:
-      - config
+      required: [config]
       type: object
     job_defaults:
       additionalProperties: false
       description: Default values to use when creating a new capture job
       properties:
-        capture_from_all_vifgs:
-          description: Default value for whether the capture job should capture from
-            all VIFGs or not
-          type: boolean
-        enabled:
-          description: Default status of the job
-          type: boolean
-        indexing:
-          $ref: '#/components/schemas/job_indexing'
-        name:
-          description: Default name of new job
-          type: string
-        optimize_for_read:
-          description: Default value for optimize_for_read
-          type: boolean
-        retention_rules:
-          $ref: '#/components/schemas/packet_retention'
-        snap_len:
-          description: Default value for snaplen
-          type: integer
+        capture_from_all_vifgs: {description: Default value for whether the capture
+            job should capture from all VIFGs or not, type: boolean}
+        enabled: {description: Default status of the job, type: boolean}
+        indexing: {$ref: '#/components/schemas/job_indexing'}
+        name: {description: Default name of new job, type: string}
+        optimize_for_read: {description: Default value for optimize_for_read, type: boolean}
+        retention_rules: {$ref: '#/components/schemas/packet_retention'}
+        snap_len: {description: Default value for snaplen, type: integer}
       readOnly: true
-      required:
-      - name
-      - enabled
-      - optimize_for_read
-      - snap_len
-      - capture_from_all_vifgs
-      - retention_rules
-      - indexing
+      required: [name, enabled, optimize_for_read, snap_len, capture_from_all_vifgs,
+        retention_rules, indexing]
       type: object
     job_indexing:
       additionalProperties: false
       description: Parameters for Microflow indexing
       properties:
-        enabled:
-          description: Enable or disable Microflow indexing on the capture job
-          type: boolean
-        retention_rules:
-          $ref: '#/components/schemas/packet_retention'
-      required:
-      - enabled
-      - retention_rules
+        enabled: {description: Enable or disable Microflow indexing on the capture
+            job, type: boolean}
+        retention_rules: {$ref: '#/components/schemas/packet_retention'}
+      required: [enabled, retention_rules]
       type: object
     jobs:
       additionalProperties: false
@@ -192,69 +121,49 @@ components:
       properties:
         items:
           description: List of capture jobs
-          items:
-            $ref: '#/components/schemas/job'
+          items: {$ref: '#/components/schemas/job'}
           type: array
-      required:
-      - items
+      required: [items]
       type: object
     packet_broker_types:
-      additionalProperties: false
-      description: Information about a single packet broker
-      properties:
-        description:
-          description: Description of the specific type of packet broker
-          type: string
-        type:
-          $ref: '#/components/schemas/packet_broker_types_type_enum'
-        type_pretty:
-          description: User friendly name for the specific type of packet broker
-          type: string
-      required:
-      - type
-      - type_pretty
-      - description
-      type: object
+      description: Information about supported packet brokers
+      items:
+        additionalProperties: false
+        description: Information about a single packet broker
+        properties:
+          description: {description: Description of the specific type of packet broker,
+            type: string}
+          type: {$ref: '#/components/schemas/packet_broker_types_type_enum'}
+          type_pretty: {description: User friendly name for the specific type of packet
+              broker, type: string}
+        required: [type, type_pretty, description]
+        type: object
+      type: array
     packet_broker_types_type_enum:
       description: Enumerative for supported packet brokers
-      enum:
-      - NONE
-      - UNKNOWN
-      - CPACKET_TS_ONLY
-      - CPACKET_TS_AND_SLICE
-      - GIGAMON_HEADER
-      - GIGAMON_TRAILER
-      - GIGAMON_TRAILER_X12
-      - ANUE
-      - ARISTA
-      - ARISTA_BEFORE_FCS
+      enum: [NONE, UNKNOWN, CPACKET_TS_ONLY, CPACKET_TS_AND_SLICE, GIGAMON_HEADER,
+        GIGAMON_TRAILER, GIGAMON_TRAILER_X12, ANUE, ARISTA, ARISTA_BEFORE_FCS]
       type: string
     packet_retention:
       additionalProperties: false
       description: Packet storage retention rules
       properties:
-        max_disk_space:
-          description: Maximum disk space for captured packets (i.e. the capture job
-            cannot store more than N bytes worth of packets). Value in bytes. If equal
-            to zero or not set, the paramter will be ignored
-          type: integer
-        max_retention_time:
-          description: Maximum retention time for captured packets (i.e. the capture
-            job cannot store more than N seconds worth of packets). The string represents
-            a decimal velue of seconds since epoch. If equal to zero or not set, the
-            parameter will be ignored
-          type: string
-        min_disk_space:
-          description: Minimum disk space for captured packets (i.e. best effort to
-            have at least N bytes worth of packets in the capture job). Value in bytes.
-            If equal to zero or not set, the parameter will be ignored
-          type: integer
-        min_retention_time:
-          description: Minimum retention time for captured packets (i.e. best effort
-            to have at least N seconds worth of packets in the capture job). The string
-            represents a decimal value of seconds since epoch. If equal to zero or
-            not set, the parameter will be ignored
-          type: string
+        max_disk_space: {description: 'Maximum disk space for captured packets (i.e.
+            the capture job cannot store more than N bytes worth of packets). Value
+            in bytes. If equal to zero or not set, the paramter will be ignored',
+          type: integer}
+        max_retention_time: {description: 'Maximum retention time for captured packets
+            (i.e. the capture job cannot store more than N seconds worth of packets).
+            The string represents a decimal velue of seconds since epoch. If equal
+            to zero or not set, the parameter will be ignored', type: string}
+        min_disk_space: {description: 'Minimum disk space for captured packets (i.e.
+            best effort to have at least N bytes worth of packets in the capture job).
+            Value in bytes. If equal to zero or not set, the parameter will be ignored',
+          type: integer}
+        min_retention_time: {description: 'Minimum retention time for captured packets
+            (i.e. best effort to have at least N seconds worth of packets in the capture
+            job). The string represents a decimal value of seconds since epoch. If
+            equal to zero or not set, the parameter will be ignored', type: string}
       type: object
     phys_interface:
       additionalProperties: false
@@ -264,27 +173,16 @@ components:
           additionalProperties: false
           description: Configuration of a monitoring interface
           properties:
-            alias:
-              description: Alternative name for the interface
-              type: string
-            description:
-              description: A description of the monitoring interface
-              type: string
-            enabled:
-              description: Used to enable/disable a monitoring interface
-              type: boolean
-            speed_duplex:
-              $ref: '#/components/schemas/phys_interface_capabilities_enum'
-          required:
-          - alias
-          - enabled
-          - description
-          - speed_duplex
+            alias: {description: Alternative name for the interface, type: string}
+            description: {description: A description of the monitoring interface,
+              type: string}
+            enabled: {description: Used to enable/disable a monitoring interface,
+              type: boolean}
+            speed_duplex: {$ref: '#/components/schemas/phys_interface_capabilities_enum'}
+          required: [alias, enabled, description, speed_duplex]
           type: object
-        name:
-          description: The name of the monitoring interface
-          readOnly: true
-          type: string
+        name: {description: The name of the monitoring interface, readOnly: true,
+          type: string}
         state:
           additionalProperties: false
           description: Information about the state of a monitoring interface
@@ -292,104 +190,58 @@ components:
             interface_type:
               description: The type of interface. It gives a high level information
                 about the type of hardware used (FILE is reserved for internal use)
-              enum:
-              - 1G_COPPER
-              - 1G_FIBER
-              - 1G_VIRTUAL
-              - 10G_COPPER
-              - 10G_FIBER
-              - 10G_VIRTUAL
-              - 40G_FIBER
-              - 40G_VIRTUAL
-              - 100G_FIBER
-              - 100G_VIRTUAL
-              - FILE
-              - UNKNOWN
+              enum: [1G_COPPER, 1G_FIBER, 1G_VIRTUAL, 10G_COPPER, 10G_FIBER, 10G_VIRTUAL,
+                40G_FIBER, 40G_VIRTUAL, 100G_FIBER, 100G_VIRTUAL, FILE, UNKNOWN]
               type: string
-            mtu:
-              description: The Maximum Transmission Unit (MTU) of the interface
-              type: integer
-            speed_duplex:
-              $ref: '#/components/schemas/phys_interface_capabilities_enum'
+            mtu: {description: The Maximum Transmission Unit (MTU) of the interface,
+              type: integer}
+            speed_duplex: {$ref: '#/components/schemas/phys_interface_capabilities_enum'}
             stats:
               additionalProperties: false
               description: Statistics for a monitoring interface
               properties:
                 bytes_total:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
                 packets_dropped:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
                 packets_total:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
               readOnly: true
-              required:
-              - bytes_total
-              - packets_total
-              - packets_dropped
+              required: [bytes_total, packets_total, packets_dropped]
               type: object
             status:
               description: The state of the interface. UP and DOWN provide link status
                 information. CONNECTED and DISCONNECTED provide tcp connection information.
                 MISSING is used when the interace is no longer detected on the system.
                 DISABLED is used for interfaces that have been manually disabled.
-              enum:
-              - UP
-              - DOWN
-              - CONNECTED
-              - DISCONNECTED
-              - MISSING
-              - DISABLED
-              - UNKNOWN
+              enum: [UP, DOWN, CONNECTED, DISCONNECTED, MISSING, DISABLED, UNKNOWN]
               type: string
           readOnly: true
-          required:
-          - status
-          - interface_type
-          - mtu
-          - speed_duplex
-          - stats
+          required: [status, interface_type, mtu, speed_duplex, stats]
           type: object
-      required:
-      - config
+      required: [config]
       type: object
     phys_interface_capabilities:
       additionalProperties: false
       description: Information about supported capabilities of a monitoring interface
       properties:
-        name:
-          description: The name of the monitoring interface
-          type: string
+        name: {description: The name of the monitoring interface, type: string}
         speed_duplex:
           description: An array of the speeds supported by the interface
-          items:
-            $ref: '#/components/schemas/phys_interface_capabilities_enum'
+          items: {$ref: '#/components/schemas/phys_interface_capabilities_enum'}
           type: array
-      required:
-      - name
-      - speed_duplex
+      required: [name, speed_duplex]
       type: object
     phys_interface_capabilities_enum:
       description: The types of supported speed/duplex configurations. AUTONEG_* values
         will try to autonegotiate the corresponding speed in Mbps (AUTNEG will negotiate
         them all). All other values will force a specific speed in Mbps (FD full duplex,
         HD half duplex)
-      enum:
-      - UNKNOWN
-      - AUTONEG
-      - AUTONEG_10
-      - AUTONEG_100
-      - AUTONEG_1000
-      - 10_HD
-      - 10_FD
-      - 100_HD
-      - 100_FD
-      - 1000_FD
-      - 10000_FD
-      - 40000_FD
-      - 100000_FD
+      enum: [UNKNOWN, AUTONEG, AUTONEG_10, AUTONEG_100, AUTONEG_1000, 10_HD, 10_FD,
+        100_HD, 100_FD, 1000_FD, 10000_FD, 40000_FD, 100000_FD]
       type: string
     phys_interfaces:
       additionalProperties: false
@@ -397,31 +249,22 @@ components:
       properties:
         items:
           description: List of monitoring interfaces
-          items:
-            $ref: '#/components/schemas/phys_interface'
+          items: {$ref: '#/components/schemas/phys_interface'}
           type: array
-      required:
-      - items
+      required: [items]
       type: object
     recent_stats:
       additionalProperties: false
       description: Statistics about last second/minute/hour (and total)
       properties:
-        last_hour:
-          description: The value of the statistics in the last hour
-          type: integer
-        last_minute:
-          description: The value of the statistics in the last minute
-          type: integer
-        last_second:
-          description: The value of the statistic in the last second
-          type: integer
-        total:
-          description: Total number of the statistic
-          type: integer
+        last_hour: {description: The value of the statistics in the last hour, type: integer}
+        last_minute: {description: The value of the statistics in the last minute,
+          type: integer}
+        last_second: {description: The value of the statistic in the last second,
+          type: integer}
+        total: {description: Total number of the statistic, type: integer}
       readOnly: true
-      required:
-      - total
+      required: [total]
       type: object
     settings:
       additionalProperties: false
@@ -431,73 +274,44 @@ components:
           additionalProperties: false
           description: Packet deduplication advanced settings
           properties:
-            entries:
-              description: Size of internal queues used by packet deduplication engine
-              type: integer
-            esp_alg_enabled:
-              description: Enable/Disable deduplication on ESP packets with IP identification
-                equal to 0
-              type: boolean
-            esp_timeout:
-              description: Time window used for ESP packets (with IP identification
+            entries: {description: Size of internal queues used by packet deduplication
+                engine, type: integer}
+            esp_alg_enabled: {description: Enable/Disable deduplication on ESP packets
+                with IP identification equal to 0, type: boolean}
+            esp_timeout: {description: Time window used for ESP packets (with IP identification
                 equal to 0) instead of the global 'timeout'. The string represents
-                a decimal value of seconds
-              type: string
-            tcp_alg_enabled:
-              description: Enable/Disable deduplication on TCP packets with IP identification
-                equal to 0
-              type: boolean
-            tcp_syn_ack_enabled:
-              description: Enable/Disable deduplication on TCP SYN/ACK packets with
-                IP identification equal to 0
-              type: boolean
-            tcp_syn_ack_timeout:
-              description: Time window used for TCP SYN/ACK packets (with IP identification
+                a decimal value of seconds, type: string}
+            tcp_alg_enabled: {description: Enable/Disable deduplication on TCP packets
+                with IP identification equal to 0, type: boolean}
+            tcp_syn_ack_enabled: {description: Enable/Disable deduplication on TCP
+                SYN/ACK packets with IP identification equal to 0, type: boolean}
+            tcp_syn_ack_timeout: {description: Time window used for TCP SYN/ACK packets
+                (with IP identification equal to 0) instead of the global 'timeout'.
+                The string represents a decimal value of seconds, type: string}
+            tcp_timeout: {description: Time window used for TCP packets (with IP identification
                 equal to 0) instead of the global 'timeout'. The string represents
-                a decimal value of seconds
-              type: string
-            tcp_timeout:
-              description: Time window used for TCP packets (with IP identification
-                equal to 0) instead of the global 'timeout'. The string represents
-                a decimal value of seconds
-              type: string
-            timeout:
-              description: Time window within which packet deduplication is guaranteed.
-                If two duplicate packets are received further apart than this timeout,
-                they will not be considered duplicates. The string represents a decimal
-                value of seconds
-              type: string
-            udp_alg_enabled:
-              description: Enable/Disable deduplication on UDP packets
-              type: boolean
-            udp_timeout:
-              description: Time window used for UDP packets instead of the global
-                'timeout'. The string represents a decimal value of seconds
-              type: string
-          required:
-          - entries
-          - timeout
-          - udp_timeout
-          - tcp_timeout
-          - udp_alg_enabled
-          - tcp_alg_enabled
-          - tcp_syn_ack_timeout
-          - tcp_syn_ack_enabled
-          - esp_timeout
-          - esp_alg_enabled
+                a decimal value of seconds, type: string}
+            timeout: {description: 'Time window within which packet deduplication
+                is guaranteed. If two duplicate packets are received further apart
+                than this timeout, they will not be considered duplicates. The string
+                represents a decimal value of seconds', type: string}
+            udp_alg_enabled: {description: Enable/Disable deduplication on UDP packets,
+              type: boolean}
+            udp_timeout: {description: Time window used for UDP packets instead of
+                the global 'timeout'. The string represents a decimal value of seconds,
+              type: string}
+          required: [entries, timeout, udp_timeout, tcp_timeout, udp_alg_enabled,
+            tcp_alg_enabled, tcp_syn_ack_timeout, tcp_syn_ack_enabled, esp_timeout,
+            esp_alg_enabled]
           type: object
         packet_broker:
           additionalProperties: false
           description: Packet Broker settings
           properties:
-            type:
-              $ref: '#/components/schemas/packet_broker_types_type_enum'
-          required:
-          - type
+            type: {$ref: '#/components/schemas/packet_broker_types_type_enum'}
+          required: [type]
           type: object
-      required:
-      - packet_broker
-      - deduplication
+      required: [packet_broker, deduplication]
       type: object
     vifg:
       additionalProperties: false
@@ -507,94 +321,62 @@ components:
           additionalProperties: false
           description: Configuration of a Virtual Interface Group (VIFG)
           properties:
-            bandwidth_capacity:
-              description: Custom value for the capacity of the VIFG (in Mbps). If
-                set to zero, it will use default values (see the field bandwidth_capacity
-                in the 'state' object)
-              type: integer
-            dedup:
-              description: Whether or not packet deduplication is enabled on this
-                VIFG
-              type: boolean
-            description:
-              description: Description of the VIFG
-              type: string
-            enabled:
-              description: Whether or not the VIFG is enabled (disabled VIFGs will
-                drop all the their traffic)
-              type: boolean
-            filter:
-              $ref: '#/components/schemas/input_filter'
-            flow_export:
-              $ref: '#/components/schemas/flow_export_filter'
-            is_other_vifg:
-              description: Whether or not this VIFG is the 'other vifg'
-              type: boolean
+            bandwidth_capacity: {description: 'Custom value for the capacity of the
+                VIFG (in Mbps). If set to zero, it will use default values (see the
+                field bandwidth_capacity in the ''state'' object)', type: integer}
+            dedup: {description: Whether or not packet deduplication is enabled on
+                this VIFG, type: boolean}
+            description: {description: Description of the VIFG, type: string}
+            enabled: {description: Whether or not the VIFG is enabled (disabled VIFGs
+                will drop all the their traffic), type: boolean}
+            filter: {$ref: '#/components/schemas/input_filter'}
+            flow_export: {$ref: '#/components/schemas/flow_export_filter'}
+            is_other_vifg: {description: Whether or not this VIFG is the 'other vifg',
+              type: boolean}
             members:
               description: List of members associated with this VIFG
-              items:
-                description: 'A monitoring interface (in PHYSICAL_INTERFACE mode)
-                  or a VLAN ID (in VLAN mode) that belongs to the VIFG. The VLAN ID
-                  can be one of: an integer (0-4095), a colon-seperated list of integers
-                  to represent QinQ (1:4:5), or ''UNTAGGED'''
-                type: string
+              items: {description: 'A monitoring interface (in PHYSICAL_INTERFACE
+                  mode) or a VLAN ID (in VLAN mode) that belongs to the VIFG. The
+                  VLAN ID can be one of: an integer (0-4095), a colon-seperated list
+                  of integers to represent QinQ (1:4:5), or ''UNTAGGED''', type: string}
               type: array
-            name:
-              description: Unique name of the VIFG
-              type: string
-          required:
-          - name
-          - members
-          - enabled
+            name: {description: Unique name of the VIFG, type: string}
+          required: [name, members, enabled]
           type: object
-        id:
-          description: The unique ID of the Virtual Interface Group (VIFG)
-          readOnly: true
-          type: integer
+        id: {description: The unique ID of the Virtual Interface Group (VIFG), readOnly: true,
+          type: integer}
         state:
           additionalProperties: false
           description: Information about the state of a Virtual Interface Group (VIFG)
           properties:
-            bandwidth_capacity:
-              description: The (read-only) capacity of the VIFG in Mbps. In PHYSICAL_INTERFACE
-                mode, it's the sum of the speeds of the interfaces that the VIFG collects.
-                In VLAN mode, the sum of the speeds of all interfaces. It can also
-                be configured to a custom value (see the field bandwidth_capacity
-                in the 'config' object)
-              type: integer
-            mtu:
-              description: In PHYSICAL_INTERFACE mode, the max Maximum Transmission
+            bandwidth_capacity: {description: 'The (read-only) capacity of the VIFG
+                in Mbps. In PHYSICAL_INTERFACE mode, it''s the sum of the speeds of
+                the interfaces that the VIFG collects. In VLAN mode, the sum of the
+                speeds of all interfaces. It can also be configured to a custom value
+                (see the field bandwidth_capacity in the ''config'' object)', type: integer}
+            mtu: {description: 'In PHYSICAL_INTERFACE mode, the max Maximum Transmission
                 Unit (MTU) of the interfaces that the VIFG collects. In VLAN mode,
-                the max MTU of all interfaces
-              readOnly: true
-              type: integer
+                the max MTU of all interfaces', readOnly: true, type: integer}
             stats:
               additionalProperties: false
               description: Statistics of a Virtual Interface Group (VIFG)
               properties:
                 bytes_received:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
                 packets_duped:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
                 packets_received:
                   allOf:
-                  - $ref: '#/components/schemas/recent_stats'
+                  - {$ref: '#/components/schemas/recent_stats'}
               readOnly: true
-              required:
-              - bytes_received
-              - packets_received
-              - packets_duped
+              required: [bytes_received, packets_received, packets_duped]
               type: object
           readOnly: true
-          required:
-          - stats
-          - bandwidth_capacity
-          - mtu
+          required: [stats, bandwidth_capacity, mtu]
           type: object
-      required:
-      - config
+      required: [config]
       type: object
     vifg_global_state:
       additionalProperties: false
@@ -604,15 +386,13 @@ components:
           additionalProperties: false
           description: Information about the status of VIFG autodiscovery
           properties:
-            maximum_reached:
-              description: True if the maximum number of VIFGs has already been automatically
-                discovered and no more VIFGs will be created. False, otherwise. The
-                maximum is currently set to 2000 (including the 'other vifg')
-              type: boolean
+            maximum_reached: {description: 'True if the maximum number of VIFGs has
+                already been automatically discovered and no more VIFGs will be created.
+                False, otherwise. The maximum is currently set to 2000 (including
+                the ''other vifg'')', type: boolean}
           type: object
       readOnly: true
-      required:
-      - autodiscovery
+      required: [autodiscovery]
       type: object
     vifg_settings:
       additionalProperties: false
@@ -626,70 +406,44 @@ components:
               additionalProperties: false
               description: Default values for VIFGs created by autodiscovery
               properties:
-                dedup:
-                  description: Enable or disable packet deduplication on VIFGs created
-                    by autodiscovery
-                  type: boolean
-                filter:
-                  $ref: '#/components/schemas/input_filter'
-                flow_export:
-                  $ref: '#/components/schemas/flow_export_filter'
-              required:
-              - filter
-              - dedup
-              - flow_export
+                dedup: {description: Enable or disable packet deduplication on VIFGs
+                    created by autodiscovery, type: boolean}
+                filter: {$ref: '#/components/schemas/input_filter'}
+                flow_export: {$ref: '#/components/schemas/flow_export_filter'}
+              required: [filter, dedup, flow_export]
               type: object
-            enabled:
-              description: Enable or disable VIFG autodiscovery
-              type: boolean
-          required:
-          - enabled
-          - default
+            enabled: {description: Enable or disable VIFG autodiscovery, type: boolean}
+          required: [enabled, default]
           type: object
-        enable_aggregation:
-          description: Enable or disable VIFG aggregation in downstream processing
-          type: boolean
-        grouping_type:
-          description: The type of grouping used for incoming packets
-          type: string
+        enable_aggregation: {description: Enable or disable VIFG aggregation in downstream
+            processing, type: boolean}
+        grouping_type: {description: The type of grouping used for incoming packets,
+          type: string}
         supported_grouping_types:
           description: Valid values for the field 'grouping_types'
           items:
             description: Supported grouping types
-            enum:
-            - UNKNOWN
-            - PHYSICAL_INTERFACE
-            - VLAN
+            enum: [UNKNOWN, PHYSICAL_INTERFACE, VLAN]
             type: string
           readOnly: true
           type: array
-      required:
-      - grouping_type
-      - supported_grouping_types
-      - enable_aggregation
-      - autodiscovery
+      required: [grouping_type, supported_grouping_types, enable_aggregation, autodiscovery]
       type: object
     vifgs:
       additionalProperties: false
       description: Virtual Interface Groups (VIFGs) configured on the system
       properties:
-        count:
-          description: The total number of Virtual Interface Groups (VIFGs)
-          type: integer
+        count: {description: The total number of Virtual Interface Groups (VIFGs),
+          type: integer}
         items:
           description: List of Virtual Interface Groups (VIFGs)
-          items:
-            $ref: '#/components/schemas/vifg'
+          items: {$ref: '#/components/schemas/vifg'}
           type: array
-      required:
-      - items
+      required: [items]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -698,10 +452,7 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: NPM Packet Capture API
-  title: NPM Packet Capture
-  version: '3.0'
+info: {description: NPM Packet Capture API, title: NPM Packet Capture, version: '3.0'}
 openapi: 3.0.2
 paths:
   /npm.packet_capture/3.0/info/job_defaults:
@@ -711,13 +462,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/job_defaults'
+                items: {$ref: '#/components/schemas/job_defaults'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - info
+      tags: [info]
   /npm.packet_capture/3.0/info/packet_broker_types:
     get:
       responses:
@@ -725,13 +474,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/packet_broker_types'
+                items: {$ref: '#/components/schemas/packet_broker_types'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - info
+      tags: [info]
   /npm.packet_capture/3.0/interfaces:
     get:
       responses:
@@ -739,13 +486,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/phys_interfaces'
+                items: {$ref: '#/components/schemas/phys_interfaces'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - interfaces
+      tags: [interfaces]
   /npm.packet_capture/3.0/interfaces/items/{name}:
     delete:
       parameters:
@@ -753,50 +498,43 @@ paths:
         in: path
         name: name
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - interfaces
+      tags: [interfaces]
     get:
       parameters:
       - description: The name of the monitoring interface
         in: path
         name: name
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/phys_interface'
+                items: {$ref: '#/components/schemas/phys_interface'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - interfaces
+      tags: [interfaces]
     put:
       parameters:
       - description: The name of the monitoring interface
         in: path
         name: name
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/phys_interface'
+                  items: {$ref: '#/components/schemas/phys_interface'}
                   type: array
               type: object
         required: true
@@ -805,13 +543,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/phys_interface'
+                items: {$ref: '#/components/schemas/phys_interface'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - interfaces
+      tags: [interfaces]
   /npm.packet_capture/3.0/interfaces/items/{name}/capabilities:
     get:
       parameters:
@@ -819,20 +555,17 @@ paths:
         in: path
         name: name
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/phys_interface_capabilities'
+                items: {$ref: '#/components/schemas/phys_interface_capabilities'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - interfaces
+      tags: [interfaces]
   /npm.packet_capture/3.0/interfaces/items/{name}/reset_stats:
     post:
       parameters:
@@ -840,14 +573,12 @@ paths:
         in: path
         name: name
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: reset_stats
-      tags:
-      - interfaces
+      tags: [interfaces]
   /npm.packet_capture/3.0/jobs:
     get:
       responses:
@@ -855,13 +586,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/jobs'
+                items: {$ref: '#/components/schemas/jobs'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - jobs
+      tags: [jobs]
     post:
       requestBody:
         content:
@@ -869,8 +598,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/job'
+                  items: {$ref: '#/components/schemas/job'}
                   type: array
               type: object
         required: true
@@ -879,13 +607,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/job'
+                items: {$ref: '#/components/schemas/job'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - jobs
+      tags: [jobs]
   /npm.packet_capture/3.0/jobs/items/{id}:
     delete:
       parameters:
@@ -893,50 +619,43 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - jobs
+      tags: [jobs]
     get:
       parameters:
       - description: The UUID of the capture job
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/job'
+                items: {$ref: '#/components/schemas/job'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - jobs
+      tags: [jobs]
     put:
       parameters:
       - description: The UUID of the capture job
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/job'
+                  items: {$ref: '#/components/schemas/job'}
                   type: array
               type: object
         required: true
@@ -945,13 +664,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/job'
+                items: {$ref: '#/components/schemas/job'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - jobs
+      tags: [jobs]
   /npm.packet_capture/3.0/jobs/items/{id}/clear:
     post:
       parameters:
@@ -959,14 +676,12 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: clear_packets
-      tags:
-      - jobs
+      tags: [jobs]
   /npm.packet_capture/3.0/settings:
     get:
       responses:
@@ -974,13 +689,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/settings'
+                items: {$ref: '#/components/schemas/settings'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - settings
+      tags: [settings]
     put:
       requestBody:
         content:
@@ -988,8 +701,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/settings'
+                  items: {$ref: '#/components/schemas/settings'}
                   type: array
               type: object
         required: true
@@ -998,13 +710,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/settings'
+                items: {$ref: '#/components/schemas/settings'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - settings
+      tags: [settings]
   /npm.packet_capture/3.0/vifgs:
     get:
       responses:
@@ -1012,13 +722,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifgs'
+                items: {$ref: '#/components/schemas/vifgs'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - vifgs
+      tags: [vifgs]
     post:
       requestBody:
         content:
@@ -1026,8 +734,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/vifg'
+                  items: {$ref: '#/components/schemas/vifg'}
                   type: array
               type: object
         required: true
@@ -1036,13 +743,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifg'
+                items: {$ref: '#/components/schemas/vifg'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - vifgs
+      tags: [vifgs]
   /npm.packet_capture/3.0/vifgs/items/{id}:
     delete:
       parameters:
@@ -1050,50 +755,43 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - vifgs
+      tags: [vifgs]
     get:
       parameters:
       - description: The unique ID of the Virtual Interface Group (VIFG)
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifg'
+                items: {$ref: '#/components/schemas/vifg'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - vifgs
+      tags: [vifgs]
     put:
       parameters:
       - description: The unique ID of the Virtual Interface Group (VIFG)
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/vifg'
+                  items: {$ref: '#/components/schemas/vifg'}
                   type: array
               type: object
         required: true
@@ -1102,13 +800,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifg'
+                items: {$ref: '#/components/schemas/vifg'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - vifgs
+      tags: [vifgs]
   /npm.packet_capture/3.0/vifgs/items/{id}/reset_stats:
     post:
       parameters:
@@ -1116,14 +812,12 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: reset_stats
-      tags:
-      - vifgs
+      tags: [vifgs]
   /npm.packet_capture/3.0/vifgs/settings:
     get:
       responses:
@@ -1131,13 +825,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifg_settings'
+                items: {$ref: '#/components/schemas/vifg_settings'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - vifgs
+      tags: [vifgs]
     put:
       requestBody:
         content:
@@ -1145,8 +837,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/vifg_settings'
+                  items: {$ref: '#/components/schemas/vifg_settings'}
                   type: array
               type: object
         required: true
@@ -1155,13 +846,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifg_settings'
+                items: {$ref: '#/components/schemas/vifg_settings'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - vifgs
+      tags: [vifgs]
   /npm.packet_capture/3.0/vifgs/state:
     get:
       responses:
@@ -1169,13 +858,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/vifg_global_state'
+                items: {$ref: '#/components/schemas/vifg_global_state'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - vifgs
+      tags: [vifgs]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -1185,7 +872,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

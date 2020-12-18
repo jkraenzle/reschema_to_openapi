@@ -7,28 +7,28 @@ import yaml
 # ---- YAML helper functions -----
 # Define YAML Loader, as default Loader is not safe
 class YAMLLoader(yaml.SafeLoader):
-    """YAML Loader with `!include` constructor."""
+	"""YAML Loader with `!include` constructor."""
 
-    def __init__(self, stream: IO) -> None:
-        """Initialise Loader."""
+	def __init__(self, stream: IO) -> None:
+		"""Initialise Loader."""
 
-        try:
-            self._root = os.path.split(stream.name)[0]
-        except AttributeError:
-            self._root = os.path.curdir
+		try:
+			self._root = os.path.split(stream.name)[0]
+		except AttributeError:
+			self._root = os.path.curdir
 
-        super().__init__(stream)
+		super().__init__(stream)
 
 
 def construct_include(loader: YAMLLoader, node: yaml.Node) -> Any:
-    """Include file referenced at node."""
+	"""Include file referenced at node."""
 
-    filename = os.path.abspath(os.path.join(loader._root, loader.construct_scalar(node)))
-    extension = os.path.splitext(filename)[1].lstrip('.')
+	filename = os.path.abspath(os.path.join(loader._root, loader.construct_scalar(node)))
+	extension = os.path.splitext(filename)[1].lstrip('.')
 
-    with open(filename, 'r') as f:
-        if extension in ('yaml', 'yml'):
-            return yaml.load(f, YAMLLoader)
+	with open(filename, 'r') as f:
+		if extension in ('yaml', 'yml'):
+			return yaml.load(f, YAMLLoader)
 
 
 yaml.add_constructor('!include', construct_include, YAMLLoader)
@@ -59,15 +59,21 @@ def yamlwrite (data, fn):
 
 # -----
 
+def openapi_refreplace (ref):
+
+	if ref.find ('#/types', 0) != -1:
+		newref = ref.replace ('#/types', '#/components/schemas')
+	elif ref.find ('#/resources', 0) != -1:
+		newref = ref.replace ('#/resources', '#/components/schemas')
+	else:
+		newref = ref
+
+	return newref
+
 def openapischema_refreplace (property):
 	propertyref = property.pop ('$ref', None)
 	if propertyref != None:
-		if propertyref.find ('#/types', 0) != -1:
-			openapi_propertyref = propertyref.replace ('#/types', '#/components/schemas')
-		elif propertyref.find ('#/resources', 0) != -1:
-			openapi_propertyref = propertyref.replace ('#/resources', '#/components/schemas')
-		else:
-			openapi_propertyref = propertyref
+		openapi_propertyref = openapi_refreplace (propertyref)
 		property['$ref'] = openapi_propertyref
 
 	return property	
@@ -80,6 +86,11 @@ def openapischema_propertyupdate (properties):
 		tags = property.pop ('tags', None)
 		# Remove 'relations' for now
 		relations = property.pop ('relations', None)
+
+		# Remove required if there are no entries
+		if 'required' in property:
+			if len(property['required']) == 0:
+				required = property.pop ('required', None)
 
 		# Iterate and update references in properties, subproperties, and array objects
 		if 'type' in property:
@@ -95,7 +106,9 @@ def openapischema_propertyupdate (properties):
 				tags = property.pop ('tags', None)
 				relations = property.pop ('relations', None)
 
-				property = openapischema_refreplace (property)
+				if '$ref' in property:
+					property = openapischema_refreplace (property)
+
 			elif type == 'object':
 				if 'properties' in property:
 					subproperties = property['properties'].copy () 
@@ -151,7 +164,14 @@ def openapischema_propertyupdate (properties):
 def openapischema_update (openapi_schema):
 	if 'type' in openapi_schema:
 		type = openapi_schema['type']
-		if type == 'object':
+		if type == 'object' or type == 'string' or type == 'integer':
+			if 'tags' in openapi_schema:
+				tags = openapi_schema.pop ('tags', None)
+			 # Remove required if there are no entries
+			if 'required' in openapi_schema:
+				if len(openapi_schema['required']) == 0:
+					required = openapi_schema.pop ('required', None)
+
 			if 'properties' in openapi_schema:
 				properties = openapi_schema['properties'].copy ()
 				openapi_schema['properties'] = openapischema_propertyupdate (properties)
@@ -172,26 +192,37 @@ def openapischema_update (openapi_schema):
 						
 		elif type == 'array':
 			schema = openapi_schema.copy ()
+
 			while type == 'array':
+				save_schema = None
 				if 'items' in schema:
+					save_schema = schema
 					schema = schema ['items']
 				if 'type' in schema:
 					type = schema['type']
 					if type == 'object':
 						if 'properties' in schema:
 							properties = schema['properties']
+							schema['properties'] = openapischema_propertyupdate (properties)
 				else:
 					# Handle the case with no 'type' object but just '$ref'
 					if '$ref' in schema:
 						schema = openapischema_refreplace (schema)
-						break
-				# For now, remove relations
+						type = 'none'
+
+				# For now, remove relations and tags
 				if 'relations' in schema:
 					relations = schema.pop ('relations', None)
-						
-			if type == 'object':
-				schema['properties'] = openapischema_propertyupdate (properties)
-			openapi_schema = schema
+				if 'tags' in schema:
+					tags = schema.pop ('tags', None)
+
+				if save_schema != None:
+					save_schema ['items'] = schema
+
+			if save_schema != None:			
+				openapi_schema = save_schema
+			else:
+				openapi_schema = schema
 
 	return openapi_schema
 
@@ -301,7 +332,6 @@ def openapi_from_reschema (reschema_files):
 
 			# Add this resource as a schema
 			openapi_schemas [resource_key] = openapi_schema
-			
 
 			# Second, handle default path for resources using popped link data
 			# Find the root path from the 'self' data
@@ -360,7 +390,7 @@ def openapi_from_reschema (reschema_files):
 					if has_request:
 						if '$ref' in links[link_key]['request']:
 							method_requestref = links[link_key]['request']['$ref']
-							openapi_requestref = method_requestref.replace('#/resources', '#/components/schemas')
+							openapi_requestref = openapi_refreplace (method_requestref)
 							openapi_request = {
 								'required': True,
 								'content': {
@@ -393,7 +423,7 @@ def openapi_from_reschema (reschema_files):
 					if has_response:
 						if '$ref' in links[link_key]['response']:
 							method_responseref = links[link_key]['response']['$ref']
-							openapi_responseref = method_responseref.replace('#/resources', '#/components/schemas')
+							openapi_responseref = openapi_refreplace(method_responseref)
 							openapi_response = {
 								'200': {
 									'description': '',
@@ -421,10 +451,17 @@ def openapi_from_reschema (reschema_files):
 							response_schema = links[link_key]['response'].copy () 						
 							openapi_response_schema = openapi_response['200']['content']['application/json']['schema'].copy ()
 							for setting in response_schema:
-								if setting not in ['description']:
+								if setting not in ['description', 'properties', 'items']:
 									openapi_response_schema [setting] = response_schema [setting]
 								elif setting == 'description':
 									openapi_response['200']['description'] = response_schema ['description']
+								elif setting == 'properties':
+									openapi_response_schema ['properties'] = openapischema_propertyupdate (response_schema ['properties'])
+								elif setting == 'items':
+									openapi_response_schema ['items'] = response_schema ['items']
+									if '$ref' in openapi_response_schema ['items']:
+										openapi_response_schema ['items']['$ref'] = openapi_refreplace (openapi_response_schema['items']['$ref'])
+								
 							openapi_response['200']['content']['application/json']['schema'] = openapi_response_schema
 		
 					if openapi_subpath != None:
@@ -435,6 +472,11 @@ def openapi_from_reschema (reschema_files):
 						path_key = openapi_path
 						parameters = openapi_path_parameters
 						queryparameters = openapi_path_queryparameters
+
+					# Clean path to not include queryparameters
+					path_key = path_key.split('?', 1)[0]
+					if path_key[-1] == '{':
+						path_key = path_key[:-1]
 
 					# Create the path if it does not exist, or re-use it if it does
 					path_method_and_tags = {openapi_action: {'summary': method_summary, 'tags': [resource_tag]}} 

@@ -10,52 +10,37 @@ components:
           properties:
             access_right:
               description: Access right type.
-              enum:
-              - NONE
-              - READ_ONLY
-              - READ_WRITE
+              enum: [NONE, READ_ONLY, READ_WRITE]
               readOnly: true
               type: string
-          required:
-          - access_right
+          required: [access_right]
           type: object
-        id:
-          description: Resource unique identifier.
-          type: string
-        owner:
-          description: Owner of the object.
-          readOnly: true
-          type: string
+        id: {description: Resource unique identifier., type: string}
+        owner: {description: Owner of the object., readOnly: true, type: string}
         public:
           description: Indicates if an object/resource is public. All public objects/resources
             are read_only.
           properties:
             access_right:
               description: Access right type.
-              enum:
-              - READ_ONLY
+              enum: [READ_ONLY]
               type: string
-          required:
-          - access_right
+          required: [access_right]
           type: object
         shared:
           description: Property read_only - Specifies a list of roles that have read_only
             access to the resource/object. Property read_write - Specifies a list
             of roles that have read_write access to the resource/object.
           properties:
-            read_only:
-              $ref: '#/components/schemas/roles_obj'
-            read_write:
-              $ref: '#/components/schemas/roles_obj'
+            read_only: {$ref: '#/components/schemas/roles_obj'}
+            read_write: {$ref: '#/components/schemas/roles_obj'}
           type: object
       type: object
     async_error:
       additionalProperties: false
       description: Asynchronous task error object.
       properties:
-        error_id:
-          description: Error code.
-          type: string
+        error_id: {description: Error code., type: string}
         error_metrics:
           description: Array of key/value error metrics, used for detailed error responses
             from async tasks.
@@ -63,137 +48,84 @@ components:
             additionalProperties: false
             description: Individual error key/value.
             properties:
-              key:
-                description: Error metric ID.
-                type: string
-              value:
-                description: Error metric value.
-                type: string
-            required:
-            - key
-            - value
+              key: {description: Error metric ID., type: string}
+              value: {description: Error metric value., type: string}
+            required: [key, value]
             type: object
           type: array
-        error_text:
-          description: Error text.
-          type: string
-      required:
-      - error_id
-      - error_text
+        error_text: {description: Error text., type: string}
+      required: [error_id, error_text]
       type: object
     async_task_status:
       additionalProperties: false
       description: The status of an asynchronous task started via API calls.
       properties:
-        elapsed_time:
-          description: Duration of the task in microseconds.
-          type: integer
-        error:
-          $ref: '#/components/schemas/async_error'
-        message:
-          description: Message suitable for reporting completion status to a human
-            user, returned only when <progress> returns 100.
-          type: string
-        progress:
-          description: Integer percent completed indicator, which MUST return 100
-            *only* when the operation has been completed (either successfully or unsuccessfully).
-          maximum: 100
-          minimum: 0
-          type: integer
-        resource_uri:
-          description: a URI upon which the client may perform GET operations to get
-            the final representation of the resource that triggered the asynchronous
-            job.
-          type: string
+        elapsed_time: {description: Duration of the task in microseconds., type: integer}
+        error: {$ref: '#/components/schemas/async_error'}
+        message: {description: 'Message suitable for reporting completion status to
+            a human user, returned only when <progress> returns 100.', type: string}
+        progress: {description: 'Integer percent completed indicator, which MUST return
+            100 *only* when the operation has been completed (either successfully
+            or unsuccessfully).', maximum: 100, minimum: 0, type: integer}
+        resource_uri: {description: a URI upon which the client may perform GET operations
+            to get the final representation of the resource that triggered the asynchronous
+            job., type: string}
         status:
           description: Asynchronous task status code.
-          enum:
-          - SUCCESS
-          - FAILURE
+          enum: [SUCCESS, FAILURE]
           type: string
-        uri:
-          description: URI upon which the client may perform GET operations to poll
-            for completion. Each accepted asynchronous operation will receive a unique
-            status URI, so that multiple operations may be initiated and tracked at
-            once.
-          type: string
-      required:
-      - uri
-      - progress
+        uri: {description: 'URI upon which the client may perform GET operations to
+            poll for completion. Each accepted asynchronous operation will receive
+            a unique status URI, so that multiple operations may be initiated and
+            tracked at once.', type: string}
+      required: [uri, progress]
       type: object
     checksum:
       additionalProperties: false
       description: Status of a checksum computation on a trace file.
       properties:
-        id:
-          description: Resource unique identifier.
-          type: string
+        id: {description: Resource unique identifier., type: string}
         method:
           description: Checksum algorithm used.
-          enum:
-          - SHA256
+          enum: [SHA256]
           type: string
-        value:
-          description: Trace file's checksum.
-          type: string
-      required:
-      - id
-      - value
-      - method
+        value: {description: Trace file's checksum., type: string}
+      required: [id, value, method]
       type: object
     file:
       additionalProperties: false
       description: File or directory object.
       properties:
-        dir:
-          $ref: '#/components/schemas/file_system_dir'
-        file:
-          $ref: '#/components/schemas/virtualfile'
-        id:
-          description: Unique path/name for the file/directory
-          type: string
+        dir: {$ref: '#/components/schemas/file_system_dir'}
+        file: {$ref: '#/components/schemas/virtualfile'}
+        id: {description: Unique path/name for the file/directory, type: string}
         type:
           description: Type discriminator for filesystem items.
-          enum:
-          - FILE
-          - DIRECTORY
+          enum: [FILE, DIRECTORY]
           type: string
-      required:
-      - id
-      - type
+      required: [id, type]
       type: object
     file_system_dir:
       additionalProperties: false
       description: Details about a directory.
       properties:
-        created:
-          description: Creation time in Unix time format.
-          type: string
-        description:
-          description: Directory description used as an alias name.
-          type: string
-        dirs:
-          $ref: '#/components/schemas/filesystem'
+        created: {description: Creation time in Unix time format., type: string}
+        description: {description: Directory description used as an alias name., type: string}
+        dirs: {$ref: '#/components/schemas/filesystem'}
         files:
           additionalProperties: false
           description: Collection of trace and virtual files on the device.
           properties:
-            items:
-              $ref: '#/components/schemas/file_system_files_list'
+            items: {$ref: '#/components/schemas/file_system_files_list'}
           type: object
-        id:
-          description: Directory unique identifier.
-          type: string
-        modified:
-          description: Modification time in Unix time format.
-          type: string
-      required:
-      - id
-      - files
-      - dirs
+        id: {description: Directory unique identifier., type: string}
+        modified: {description: Modification time in Unix time format., type: string}
+      required: [id, files, dirs]
       type: object
     file_system_files_list:
-      $ref: '#/components/schemas/virtualfile'
+      description: Array of trace and virtual files.
+      items: {$ref: '#/components/schemas/virtualfile'}
+      type: array
     file_system_linked_files:
       additionalProperties: false
       description: Collection of linked sources associated to the virtual file.
@@ -204,24 +136,17 @@ components:
             additionalProperties: false
             description: Details about a linked source.
             properties:
-              default_source:
-                description: The default source is the reference source in a multisegment
-                  file collection and it is used as reference for the time skew calculation.
-                type: boolean
-              description:
-                description: A simple description field associated with the linked
-                  source.
-                type: string
-              path:
-                description: Linked source path. It could be either an absolute path
-                  (fs/ID) or a relative path starting from the aggregated file folder.
-                type: string
-              timeskew:
-                description: It is the packets timestamps offset associated with the
-                  linked source.
-                type: integer
-            required:
-            - path
+              default_source: {description: The default source is the reference source
+                  in a multisegment file collection and it is used as reference for
+                  the time skew calculation., type: boolean}
+              description: {description: A simple description field associated with
+                  the linked source., type: string}
+              path: {description: Linked source path. It could be either an absolute
+                  path (fs/ID) or a relative path starting from the aggregated file
+                  folder., type: string}
+              timeskew: {description: It is the packets timestamps offset associated
+                  with the linked source., type: integer}
+            required: [path]
             type: object
           type: array
       type: object
@@ -229,17 +154,12 @@ components:
       additionalProperties: false
       description: Info about a new multisegment or merged file.
       properties:
-        linked_sources:
-          $ref: '#/components/schemas/file_system_linked_files'
+        linked_sources: {$ref: '#/components/schemas/file_system_linked_files'}
         type:
           description: Linked file type.
-          enum:
-          - MULTISEGMENT_FILE
-          - MERGED_FILE
+          enum: [MULTISEGMENT_FILE, MERGED_FILE]
           type: string
-      required:
-      - type
-      - linked_sources
+      required: [type, linked_sources]
       type: object
     filesystem:
       additionalProperties: false
@@ -247,175 +167,104 @@ components:
       properties:
         items:
           description: Array of directories.
-          items:
-            $ref: '#/components/schemas/file_system_dir'
+          items: {$ref: '#/components/schemas/file_system_dir'}
           type: array
       type: object
     index:
       additionalProperties: false
       description: Status of a microflow index on a trace file.
       properties:
-        error:
-          $ref: '#/components/schemas/async_error'
-        id:
-          description: Index unique identifier.
-          type: string
-        size:
-          description: Size of index on the OS file system.
-          type: integer
+        error: {$ref: '#/components/schemas/async_error'}
+        id: {description: Index unique identifier., type: string}
+        size: {description: Size of index on the OS file system., type: integer}
         stats:
           additionalProperties: false
           description: Collection of microflow index statistics.
           properties:
             items:
               description: Array of microflow index statistics.
-              items:
-                $ref: '#/components/schemas/index_info_stat'
+              items: {$ref: '#/components/schemas/index_info_stat'}
               type: array
           type: object
         status:
           description: Running state of an index.
-          enum:
-          - DONE
-          - RUNNING
-          - STOPPED
-          - ERROR
+          enum: [DONE, RUNNING, STOPPED, ERROR]
           type: string
-      required:
-      - id
-      - status
-      - stats
+      required: [id, status, stats]
       type: object
     index_info_stat:
       additionalProperties: false
       description: Microflow index statistics.
       properties:
-        end_time:
-          description: End time for an indexed interval.
-          type: string
-        start_time:
-          description: Start time for an indexed interval.
-          type: string
-        version:
-          description: Microflow index version.
-          type: string
-      required:
-      - version
-      - start_time
-      - end_time
+        end_time: {description: End time for an indexed interval., type: string}
+        start_time: {description: Start time for an indexed interval., type: string}
+        version: {description: Microflow index version., type: string}
+      required: [version, start_time, end_time]
       type: object
     roles_obj:
       description: Collections of roles object.
       properties:
         roles:
           description: Array of roles.
-          items:
-            description: Role value.
-            type: integer
+          items: {description: Role value., type: integer}
           type: array
-      required:
-      - roles
+      required: [roles]
       type: object
     timeskew:
       additionalProperties: false
       description: Status of a timeskew estimate on a multi-segment virtual file.
       properties:
-        id:
-          description: Resource unique identifier.
-          type: string
+        id: {description: Resource unique identifier., type: string}
         results:
           additionalProperties: false
           description: Collection of linked sources details.
           properties:
             items:
               description: Array of linked sources.
-              items:
-                $ref: '#/components/schemas/ts_linked_file'
+              items: {$ref: '#/components/schemas/ts_linked_file'}
               type: array
           type: object
-      required:
-      - id
-      - results
+      required: [id, results]
       type: object
     ts_linked_file:
       additionalProperties: false
       description: Time skew information for linked source.
       properties:
-        path:
-          description: Path of the linked source.
-          type: string
-        timeskew:
-          description: Estimated time skew compared to the default source.
-          type: integer
-      required:
-      - path
-      - timeskew
+        path: {description: Path of the linked source., type: string}
+        timeskew: {description: Estimated time skew compared to the default source.,
+          type: integer}
+      required: [path, timeskew]
       type: object
     virtualfile:
       additionalProperties: false
       description: Details about a trace or virtual file.
       properties:
-        access_rights:
-          $ref: '#/components/schemas/access_rights'
-        created:
-          description: Creation time in Unix time format.
-          type: string
+        access_rights: {$ref: '#/components/schemas/access_rights'}
+        created: {description: Creation time in Unix time format., type: string}
         format:
           description: File time format.
-          enum:
-          - PCAP_US
-          - PCAP_NS
-          - PCAPNG_US
-          - PCAPNG_NS
-          - UNKNOWN
+          enum: [PCAP_US, PCAP_NS, PCAPNG_US, PCAPNG_NS, UNKNOWN]
           type: string
-        id:
-          description: File unique identifier (path-like string).
-          type: string
-        index:
-          $ref: '#/components/schemas/index'
+        id: {description: File unique identifier (path-like string)., type: string}
+        index: {$ref: '#/components/schemas/index'}
         link_type:
           description: Link layer type.
-          enum:
-          - NONE
-          - EN10MB
-          - JUNIPER_ETHER
-          - RAW
-          - IEEE802_11_RADIO
-          - PPI
-          - PPP_WITH_DIR
-          - LINUX_SLL
-          - C_HDLC
-          - UNKNOWN
+          enum: [NONE, EN10MB, JUNIPER_ETHER, RAW, IEEE802_11_RADIO, PPI, PPP_WITH_DIR,
+            LINUX_SLL, C_HDLC, UNKNOWN]
           type: string
-        linked_sources:
-          $ref: '#/components/schemas/file_system_linked_files'
-        modified:
-          description: Modification time in Unix time format.
-          type: string
-        size:
-          description: File size in bytes.
-          type: integer
+        linked_sources: {$ref: '#/components/schemas/file_system_linked_files'}
+        modified: {description: Modification time in Unix time format., type: string}
+        size: {description: File size in bytes., type: integer}
         type:
           description: File type.
-          enum:
-          - MULTISEGMENT_FILE
-          - MERGED_FILE
-          - PCAP_FILE
-          - PCAPNG_FILE
-          - ERF_FILE
-          - UNKNOWN_FILE
+          enum: [MULTISEGMENT_FILE, MERGED_FILE, PCAP_FILE, PCAPNG_FILE, ERF_FILE,
+            UNKNOWN_FILE]
           type: string
-      required:
-      - type
-      - id
+      required: [type, id]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -424,10 +273,7 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: Probe user filesystem API
-  title: Probe user filesystem API
-  version: '1.0'
+info: {description: Probe user filesystem API, title: Probe user filesystem API, version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.filesystem/1.0/access_rights/{+id}:
@@ -437,36 +283,31 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/access_rights'
+                items: {$ref: '#/components/schemas/access_rights'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - access_rights
+      tags: [access_rights]
     put:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/access_rights'
+                  items: {$ref: '#/components/schemas/access_rights'}
                   type: array
               type: object
         required: true
@@ -475,13 +316,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/access_rights'
+                items: {$ref: '#/components/schemas/access_rights'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - access_rights
+      tags: [access_rights]
   /npm.filesystem/1.0/checksum/{+id}:
     delete:
       parameters:
@@ -489,54 +328,46 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - checksum
+      tags: [checksum]
     get:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/checksum'
+                items: {$ref: '#/components/schemas/checksum'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - checksum
+      tags: [checksum]
     post:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/async_task_status'
+                items: {$ref: '#/components/schemas/async_task_status'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - checksum
+      tags: [checksum]
   /npm.filesystem/1.0/checksum_status/{+id}:
     get:
       parameters:
@@ -544,20 +375,17 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/async_task_status'
+                items: {$ref: '#/components/schemas/async_task_status'}
                 type: array
           description: ''
       summary: status
-      tags:
-      - checksum
+      tags: [checksum]
   /npm.filesystem/1.0/fileop/copy/{+id}:
     post:
       parameters:
@@ -565,8 +393,7 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
@@ -574,19 +401,15 @@ paths:
               additionalProperties: false
               description: Information required to copy a filesystem item.
               properties:
-                destination:
-                  description: Resource's destination id.
-                  type: string
-              required:
-              - destination
+                destination: {description: Resource's destination id., type: string}
+              required: [destination]
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: copy
-      tags:
-      - fs
+      tags: [fs]
   /npm.filesystem/1.0/fileop/download/{+id}:
     get:
       parameters:
@@ -594,14 +417,12 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: download
-      tags:
-      - fs
+      tags: [fs]
   /npm.filesystem/1.0/fileop/move/{+id}:
     post:
       parameters:
@@ -609,8 +430,7 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
@@ -618,19 +438,43 @@ paths:
               additionalProperties: false
               description: Information required to move a filesystem item.
               properties:
-                destination:
-                  description: Resource's destination id.
-                  type: string
-              required:
-              - destination
+                destination: {description: Resource's destination id., type: string}
+              required: [destination]
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: move
-      tags:
-      - fs
+      tags: [fs]
+  /npm.filesystem/1.0/fs:
+    get:
+      parameters:
+      - description: access informaton for file
+        in: query
+        name: access
+        required: false
+        schema: {type: string}
+      - description: permission granted for login user for the file
+        in: query
+        name: access_rights
+        required: false
+        schema: {type: string}
+      - description: ''
+        in: query
+        name: owner
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items: {$ref: '#/components/schemas/filesystem'}
+                type: array
+          description: ''
+      summary: get
+      tags: [fs]
   /npm.filesystem/1.0/fs/{+id}:
     delete:
       parameters:
@@ -638,100 +482,56 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
+      responses:
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
+      summary: delete
+      tags: [fs]
+    get:
+      parameters:
+      - description: ''
+        in: path
+        name: +id
+        required: true
+        schema: {type: string}
+      - description: access informaton for file
+        in: query
+        name: access
+        required: false
+        schema: {type: string}
+      - description: permission granted for login user for the file
+        in: query
+        name: access_rights
+        required: false
+        schema: {type: string}
+      - description: ''
+        in: query
+        name: owner
+        required: false
+        schema: {type: string}
       responses:
         '200':
-          description: On success, the server does not provide any body in the response.
-      summary: delete
-      tags:
-      - fs
+          content:
+            application/json:
+              schema:
+                items: {$ref: '#/components/schemas/file'}
+                type: array
+          description: ''
+      summary: get
+      tags: [fs]
     post:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: create
-      tags:
-      - fs
-  /npm.filesystem/1.0/fs/{+id}{?access,access_rights,owner}:
-    get:
-      parameters:
-      - description: ''
-        in: path
-        name: +id
-        required: true
-        schema:
-          type: string
-      - description: access informaton for file
-        in: query
-        name: access
-        required: false
-        schema:
-          type: string
-      - description: permission granted for login user for the file
-        in: query
-        name: access_rights
-        required: false
-        schema:
-          type: string
-      - description: ''
-        in: query
-        name: owner
-        required: false
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/file'
-                type: array
-          description: ''
-      summary: get
-      tags:
-      - fs
-  /npm.filesystem/1.0/fs{?access,access_rights,owner}:
-    get:
-      parameters:
-      - description: access informaton for file
-        in: query
-        name: access
-        required: false
-        schema:
-          type: string
-      - description: permission granted for login user for the file
-        in: query
-        name: access_rights
-        required: false
-        schema:
-          type: string
-      - description: ''
-        in: query
-        name: owner
-        required: false
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/filesystem'
-                type: array
-          description: ''
-      summary: get
-      tags:
-      - fs
+      tags: [fs]
   /npm.filesystem/1.0/index/{+id}:
     delete:
       parameters:
@@ -739,54 +539,46 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - index
+      tags: [index]
     get:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/index'
+                items: {$ref: '#/components/schemas/index'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - index
+      tags: [index]
     post:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/async_task_status'
+                items: {$ref: '#/components/schemas/async_task_status'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - index
+      tags: [index]
   /npm.filesystem/1.0/index_status/{+id}:
     get:
       parameters:
@@ -794,20 +586,17 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/async_task_status'
+                items: {$ref: '#/components/schemas/async_task_status'}
                 type: array
           description: ''
       summary: status
-      tags:
-      - index
+      tags: [index]
   /npm.filesystem/1.0/timeskew/{+id}:
     delete:
       parameters:
@@ -815,61 +604,51 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - timeskew
+      tags: [timeskew]
     get:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/timeskew'
+                items: {$ref: '#/components/schemas/timeskew'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - timeskew
-  /npm.filesystem/1.0/timeskew/{+id}{?packet_count}:
+      tags: [timeskew]
     post:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       - description: ''
         in: query
         name: packet_count
         required: false
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/async_task_status'
+                items: {$ref: '#/components/schemas/async_task_status'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - timeskew
+      tags: [timeskew]
   /npm.filesystem/1.0/timeskew_status/{+id}:
     get:
       parameters:
@@ -877,20 +656,17 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/types/async_task_status'
+                items: {$ref: '#/components/schemas/async_task_status'}
                 type: array
           description: ''
       summary: status
-      tags:
-      - timeskew
+      tags: [timeskew]
   /npm.filesystem/1.0/virtualfile/{+id}:
     post:
       parameters:
@@ -898,50 +674,44 @@ paths:
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/file_system_virtual_file_import'
+                  items: {$ref: '#/components/schemas/file_system_virtual_file_import'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: create
-      tags:
-      - virtualfile
+      tags: [virtualfile]
     put:
       parameters:
       - description: ''
         in: path
         name: +id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/file_system_virtual_file_import'
+                  items: {$ref: '#/components/schemas/file_system_virtual_file_import'}
                   type: array
               type: object
         required: true
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: set
-      tags:
-      - virtualfile
+      tags: [virtualfile]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -951,7 +721,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

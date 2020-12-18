@@ -6,33 +6,21 @@ components:
       properties:
         availability:
           allOf:
-          - $ref: '#/components/schemas/chassis_availability'
-        columns:
-          description: 'The number of columns of disk slots on the chassis. ''0''
-            is at the left.
+          - {$ref: '#/components/schemas/chassis_availability'}
+        columns: {description: 'The number of columns of disk slots on the chassis.
+            ''0'' is at the left.
 
-            '
-          minimum: 0
-          readOnly: true
-          type: integer
-        headunit:
-          description: Indicates whether this is the head unit chassis.
-          readOnly: true
-          type: boolean
+            ', minimum: 0, readOnly: true, type: integer}
+        headunit: {description: Indicates whether this is the head unit chassis.,
+          readOnly: true, type: boolean}
         health:
           allOf:
-          - $ref: '#/components/schemas/health_status'
-        model:
-          readOnly: true
-          type: string
-        rows:
-          description: 'The number of rows of disk slots on the chassis. ''0'' is
-            at the top.
+          - {$ref: '#/components/schemas/health_status'}
+        model: {readOnly: true, type: string}
+        rows: {description: 'The number of rows of disk slots on the chassis. ''0''
+            is at the top.
 
-            '
-          minimum: 0
-          readOnly: true
-          type: integer
+            ', minimum: 0, readOnly: true, type: integer}
         sensor_status:
           additionalProperties: false
           description: 'Status of the sensors on the chassis
@@ -40,192 +28,124 @@ components:
             '
           properties:
             cpus:
-              items:
-                $ref: '#/components/schemas/cpu'
+              items: {$ref: '#/components/schemas/cpu'}
               type: array
             exhaust_air_sensors:
-              items:
-                $ref: '#/components/schemas/exhaust_air_sensor'
+              items: {$ref: '#/components/schemas/exhaust_air_sensor'}
               type: array
             intake_air_sensors:
-              items:
-                $ref: '#/components/schemas/intake_air_sensor'
+              items: {$ref: '#/components/schemas/intake_air_sensor'}
               type: array
             power_supplies:
-              items:
-                $ref: '#/components/schemas/power_supply'
+              items: {$ref: '#/components/schemas/power_supply'}
               type: array
             raid_controllers:
-              items:
-                $ref: '#/components/schemas/raid_controller'
+              items: {$ref: '#/components/schemas/raid_controller'}
               type: array
             storage_unit_controllers:
-              items:
-                $ref: '#/components/schemas/storage_unit_controller'
+              items: {$ref: '#/components/schemas/storage_unit_controller'}
               type: array
             system_fans:
-              items:
-                $ref: '#/components/schemas/system_fan'
+              items: {$ref: '#/components/schemas/system_fan'}
               type: array
           type: object
         serial_number:
           allOf:
-          - $ref: '#/components/schemas/device_id'
+          - {$ref: '#/components/schemas/device_id'}
         unused_slots:
           description: A list of positions in the disk grid that are unused.
           items:
-            items:
-              type: integer
+            items: {type: integer}
             type: array
           type: array
       type: object
     chassis_availability:
-      enum:
-      - ok
-      - missing
-      - foreign
-      - invalid
+      enum: [ok, missing, foreign, invalid]
       type: string
     chassis_list:
       additionalProperties: false
       description: Collection of chassis
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/chassis'
+          items: {$ref: '#/components/schemas/chassis'}
           type: array
       type: object
     cpu:
       additionalProperties: false
       properties:
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-        temperature:
-          $ref: '#/components/schemas/sensor_temperature'
-      required:
-      - status
-      - name
-      - status_msg
-      - temperature
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+        temperature: {$ref: '#/components/schemas/sensor_temperature'}
+      required: [status, name, status_msg, temperature]
       type: object
-    device_id:
-      type: string
+    device_id: {type: string}
     device_identity:
       additionalProperties: false
       properties:
-        device_id:
-          type: string
-        manufacturer:
-          type: string
-        model:
-          type: string
-      required:
-      - device_id
+        device_id: {type: string}
+        manufacturer: {type: string}
+        model: {type: string}
+      required: [device_id]
       type: object
     device_type:
-      enum:
-      - disk
-      - chassis
+      enum: [disk, chassis]
       type: string
     disk:
       additionalProperties: false
       properties:
-        blink:
-          description: Set to true to blink the drive for identification.
-          type: boolean
+        blink: {description: Set to true to blink the drive for identification., type: boolean}
         chassis:
           allOf:
-          - $ref: '#/components/schemas/device_id'
+          - {$ref: '#/components/schemas/device_id'}
         device_type:
-          enum:
-          - disk
+          enum: [disk]
           readOnly: true
           type: string
-        disk_type:
-          description: Disk technology
-          readOnly: true
-          type: string
+        disk_type: {description: Disk technology, readOnly: true, type: string}
         health:
           allOf:
-          - $ref: '#/components/schemas/health_status'
-        id:
-          description: 'A unique identifier for this disk''s slot on this system.
+          - {$ref: '#/components/schemas/health_status'}
+        id: {description: 'A unique identifier for this disk''s slot on this system.
 
-            '
-          readOnly: true
-          type: string
+            ', readOnly: true, type: string}
         location:
           allOf:
-          - $ref: '#/components/schemas/disk_location'
-        model:
-          description: Model string of the disk
-          readOnly: true
-          type: string
-        serial_number:
-          description: Unique identifier of the disk
-          readOnly: true
-          type: string
-        size_mb:
-          description: Size of the disk in mebibytes
-          readOnly: true
-          type: integer
+          - {$ref: '#/components/schemas/disk_location'}
+        model: {description: Model string of the disk, readOnly: true, type: string}
+        serial_number: {description: Unique identifier of the disk, readOnly: true,
+          type: string}
+        size_mb: {description: Size of the disk in mebibytes, readOnly: true, type: integer}
         status:
           allOf:
-          - $ref: '#/components/schemas/disk_status'
-      required:
-      - id
-      - blink
+          - {$ref: '#/components/schemas/disk_status'}
+      required: [id, blink]
       type: object
     disk_location:
       additionalProperties: false
       properties:
-        column:
-          minimum: 0
-          type: integer
-        label:
-          type: string
-        row:
-          minimum: 0
-          type: integer
+        column: {minimum: 0, type: integer}
+        label: {type: string}
+        row: {minimum: 0, type: integer}
       type: object
     disk_status:
-      enum:
-      - ok
-      - failed
-      - failing
-      - rebuilding
-      - missing
-      - invalid
-      - new
+      enum: [ok, failed, failing, rebuilding, missing, invalid, new]
       type: string
     disks:
       additionalProperties: false
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/disk'
+          items: {$ref: '#/components/schemas/disk'}
           type: array
       type: object
     exhaust_air_sensor:
       additionalProperties: false
       properties:
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-        temperature:
-          $ref: '#/components/schemas/sensor_temperature'
-      required:
-      - status
-      - name
-      - status_msg
-      - temperature
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+        temperature: {$ref: '#/components/schemas/sensor_temperature'}
+      required: [status, name, status_msg, temperature]
       type: object
     hardware_change_event:
       additionalProperties: false
@@ -234,70 +154,50 @@ components:
       - additionalProperties: false
         properties:
           device_type:
-            enum:
-            - disk
+            enum: [disk]
             type: string
-          previous_status:
-            $ref: '#/types/disk_status'
-          status:
-            $ref: '#/types/disk_status'
+          previous_status: {$ref: '#/types/disk_status'}
+          status: {$ref: '#/types/disk_status'}
         type: object
       - additionalProperties: false
         properties:
-          availability:
-            $ref: '#/types/chassis_availability'
+          availability: {$ref: '#/types/chassis_availability'}
           device_type:
-            enum:
-            - chassis
+            enum: [chassis]
             type: string
-          previous_status:
-            $ref: '#/types/disk_status'
+          previous_status: {$ref: '#/types/disk_status'}
         type: object
       properties:
         action:
           description: Type of object change the event is describing.
-          enum:
-          - new
-          - removed
-          - changed
+          enum: [new, removed, changed]
           type: string
-        device_id:
-          description: Identifying unique attribute of the device
-          type: string
+        device_id: {description: Identifying unique attribute of the device, type: string}
         device_type:
           allOf:
-          - $ref: '#/components/schemas/device_type'
-        hdr:
-          $ref: /apis/mgmt.types.events/1.0#/components/schemas/event_header
+          - {$ref: '#/components/schemas/device_type'}
+        hdr: {$ref: /apis/mgmt.types.events/1.0#/components/schemas/event_header}
         jobs:
           description: A list of jobs created in response to this event (future use).
           items:
             additionalProperties: false
             description: A job record with name and job id
             properties:
-              job_id:
-                type: string
-              name:
-                type: string
+              job_id: {type: string}
+              name: {type: string}
             type: object
           type: array
-        previous_status:
-          description: The previous status, if status changed.
-          type: string
-        status:
-          description: The current status of the device. Not included if device was
-            removed.
-          type: string
-      required:
-      - device_type
-      - device_id
+        previous_status: {description: 'The previous status, if status changed.',
+          type: string}
+        status: {description: The current status of the device. Not included if device
+            was removed., type: string}
+      required: [device_type, device_id]
       type: object
     hardware_change_events:
       additionalProperties: false
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/hardware_change_event'
+          items: {$ref: '#/components/schemas/hardware_change_event'}
           type: array
       type: object
     hardware_health:
@@ -305,133 +205,70 @@ components:
       properties:
         status:
           allOf:
-          - $ref: '#/components/schemas/health_status'
+          - {$ref: '#/components/schemas/health_status'}
       type: object
     health_status:
-      enum:
-      - ok
-      - notice
-      - failing
-      - failed
+      enum: [ok, notice, failing, failed]
       type: string
     intake_air_sensor:
       additionalProperties: false
       properties:
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-        temperature:
-          $ref: '#/components/schemas/sensor_temperature'
-      required:
-      - status
-      - name
-      - status_msg
-      - temperature
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+        temperature: {$ref: '#/components/schemas/sensor_temperature'}
+      required: [status, name, status_msg, temperature]
       type: object
     power_supply:
       additionalProperties: false
       properties:
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-        temperature:
-          $ref: '#/components/schemas/sensor_temperature'
-      required:
-      - status
-      - name
-      - status_msg
-      - temperature
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+        temperature: {$ref: '#/components/schemas/sensor_temperature'}
+      required: [status, name, status_msg, temperature]
       type: object
     raid_controller:
       additionalProperties: false
       properties:
-        battery:
-          $ref: '#/components/schemas/sensor_status'
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-        temperature:
-          $ref: '#/components/schemas/sensor_temperature'
-      required:
-      - status
-      - name
-      - status_msg
-      - battery
-      - temperature
+        battery: {$ref: '#/components/schemas/sensor_status'}
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+        temperature: {$ref: '#/components/schemas/sensor_temperature'}
+      required: [status, name, status_msg, battery, temperature]
       type: object
     raid_mode:
-      enum:
-      - ''
-      - RAID0
-      - RAID5
-      - RAID6
+      enum: ['', RAID0, RAID5, RAID6]
       type: string
-    rpm:
-      description: Revolutions per minute
-      type: integer
+    rpm: {description: Revolutions per minute, type: integer}
     sensor_status:
-      enum:
-      - ok
-      - missing
-      - unknown
-      - failing
-      - failed
+      enum: [ok, missing, unknown, failing, failed]
       type: string
     sensor_temperature:
       additionalProperties: false
       properties:
-        current_temperature:
-          description: Current temperature in celsius
-          type: integer
-        threshold:
-          description: Threshold temperature in celsius
-          type: integer
-      required:
-      - current_temperature
-      - threshold
+        current_temperature: {description: Current temperature in celsius, type: integer}
+        threshold: {description: Threshold temperature in celsius, type: integer}
+      required: [current_temperature, threshold]
       type: object
     storage_unit_controller:
       additionalProperties: false
       properties:
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-        temperature:
-          $ref: '#/components/schemas/sensor_temperature'
-      required:
-      - status
-      - name
-      - status_msg
-      - temperature
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+        temperature: {$ref: '#/components/schemas/sensor_temperature'}
+      required: [status, name, status_msg, temperature]
       type: object
     system_fan:
       additionalProperties: false
       properties:
-        fan_speed:
-          $ref: '#/components/schemas/rpm'
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/sensor_status'
-        status_msg:
-          type: string
-      required:
-      - status
-      - name
-      - status_msg
-      - fan_speed
+        fan_speed: {$ref: '#/components/schemas/rpm'}
+        name: {type: string}
+        status: {$ref: '#/components/schemas/sensor_status'}
+        status_msg: {type: string}
+      required: [status, name, status_msg, fan_speed]
       type: object
     volume:
       additionalProperties: false
@@ -439,62 +276,39 @@ components:
       properties:
         chassis:
           allOf:
-          - $ref: '#/components/schemas/device_id'
+          - {$ref: '#/components/schemas/device_id'}
         health:
           allOf:
-          - $ref: '#/components/schemas/health_status'
-        id:
-          readOnly: true
-          type: string
+          - {$ref: '#/components/schemas/health_status'}
+        id: {readOnly: true, type: string}
         mode:
           allOf:
-          - $ref: '#/components/schemas/raid_mode'
+          - {$ref: '#/components/schemas/raid_mode'}
         roles:
           items:
-            enum:
-            - os
-            - data
-            - capture
+            enum: [os, data, capture]
             type: string
           type: array
         status:
           allOf:
-          - $ref: '#/components/schemas/volume_status'
-      required:
-      - id
-      - mode
-      - status
-      - health
-      - chassis
-      - roles
+          - {$ref: '#/components/schemas/volume_status'}
+      required: [id, mode, status, health, chassis, roles]
       type: object
     volume_status:
-      enum:
-      - ok
-      - degraded
-      - rebuilding
-      - uninitialized
-      - failed
-      - missing
-      - invalid
+      enum: [ok, degraded, rebuilding, uninitialized, failed, missing, invalid]
       type: string
     volumes:
       additionalProperties: false
       description: Data Volumes
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/volumes'
+          items: {$ref: '#/components/schemas/volumes'}
           type: array
-      required:
-      - items
+      required: [items]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -503,12 +317,9 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: 'REST API for hardware monitor service.
+info: {description: 'REST API for hardware monitor service.
 
-    '
-  title: Hardware Monitor
-  version: '1.2'
+    ', title: Hardware Monitor, version: '1.2'}
 openapi: 3.0.2
 paths:
   /npm.hardware_monitor/1.2/chassis:
@@ -518,13 +329,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/chassis_list'
+                items: {$ref: '#/components/schemas/chassis_list'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - chassis
+      tags: [chassis]
   /npm.hardware_monitor/1.2/chassis/items/{serial_number}:
     get:
       parameters:
@@ -532,20 +341,17 @@ paths:
         in: path
         name: serial_number
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/chassis'
+                items: {$ref: '#/components/schemas/chassis'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - chassis
+      tags: [chassis]
   /npm.hardware_monitor/1.2/disks:
     get:
       responses:
@@ -553,13 +359,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/disks'
+                items: {$ref: '#/components/schemas/disks'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - disks
+      tags: [disks]
   /npm.hardware_monitor/1.2/disks/items/{id}:
     get:
       parameters:
@@ -569,20 +373,17 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/disk'
+                items: {$ref: '#/components/schemas/disk'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - disks
+      tags: [disks]
     put:
       parameters:
       - description: 'A unique identifier for this disk''s slot on this system.
@@ -591,16 +392,14 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       requestBody:
         content:
           application/json:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/disk'
+                  items: {$ref: '#/components/schemas/disk'}
                   type: array
               type: object
         required: true
@@ -609,13 +408,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/disk'
+                items: {$ref: '#/components/schemas/disk'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - disks
+      tags: [disks]
   /npm.hardware_monitor/1.2/event_queues/hardware_change_event:
     get:
       responses:
@@ -623,13 +420,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/hardware_change_events'
+                items: {$ref: '#/components/schemas/hardware_change_events'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - event_queues
+      tags: [event_queues]
     post:
       requestBody:
         content:
@@ -637,8 +432,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/hardware_change_event'
+                  items: {$ref: '#/components/schemas/hardware_change_event'}
                   type: array
               type: object
         required: true
@@ -647,13 +441,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/hardware_change_event'
+                items: {$ref: '#/components/schemas/hardware_change_event'}
                 type: array
           description: ''
       summary: create
-      tags:
-      - event_queues
+      tags: [event_queues]
   /npm.hardware_monitor/1.2/event_queues/hardware_change_events/{id}:
     get:
       parameters:
@@ -661,20 +453,17 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/hardware_change_event'
+                items: {$ref: '#/components/schemas/hardware_change_event'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - event_queues
+      tags: [event_queues]
   /npm.hardware_monitor/1.2/status:
     get:
       responses:
@@ -682,21 +471,18 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/hardware_health'
+                items: {$ref: '#/components/schemas/hardware_health'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - status
+      tags: [status]
   /npm.hardware_monitor/1.2/status/refresh:
     post:
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: refresh
-      tags:
-      - status
+      tags: [status]
   /npm.hardware_monitor/1.2/volumes:
     get:
       responses:
@@ -704,13 +490,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/volumes'
+                items: {$ref: '#/components/schemas/volumes'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - volumes
+      tags: [volumes]
   /npm.hardware_monitor/1.2/volumes/items/{id}:
     get:
       parameters:
@@ -718,20 +502,17 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/volumes'
+                items: {$ref: '#/components/schemas/volumes'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - volumes
+      tags: [volumes]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -741,7 +522,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

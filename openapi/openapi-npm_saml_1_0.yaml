@@ -4,153 +4,82 @@ components:
       additionalProperties: false
       description: Distinguished name information
       properties:
-        common_name:
-          description: Common name (CN)
-          maxLength: 64
-          minLength: 0
-          type: string
-        country:
-          description: Country code (C)
-          maxLength: 2
-          minLength: 2
-          type: string
-        email:
-          description: Email address
-          maxLength: 255
-          minLength: 0
-          type: string
-        locality:
-          description: Locality (L)
-          maxLength: 128
-          minLength: 0
-          type: string
-        organization:
-          description: Organization name (O)
-          maxLength: 64
-          minLength: 0
-          type: string
-        organizational_unit:
-          description: Organization unit name (OU)
-          maxLength: 64
-          minLength: 0
-          type: string
-        state:
-          description: State or province name (ST)
-          maxLength: 128
-          minLength: 0
-          type: string
+        common_name: {description: Common name (CN), maxLength: 64, minLength: 0,
+          type: string}
+        country: {description: Country code (C), maxLength: 2, minLength: 2, type: string}
+        email: {description: Email address, maxLength: 255, minLength: 0, type: string}
+        locality: {description: Locality (L), maxLength: 128, minLength: 0, type: string}
+        organization: {description: Organization name (O), maxLength: 64, minLength: 0,
+          type: string}
+        organizational_unit: {description: Organization unit name (OU), maxLength: 64,
+          minLength: 0, type: string}
+        state: {description: State or province name (ST), maxLength: 128, minLength: 0,
+          type: string}
       type: object
     saml_settings:
       additionalProperties: false
       description: SAML configuration
       properties:
-        enabled:
-          description: Whether SAML logins are enabled
-          type: boolean
-        fqdn:
-          description: 'Override the detected fully-qualified domain name of this
-            SP
+        enabled: {description: Whether SAML logins are enabled, type: boolean}
+        fqdn: {description: 'Override the detected fully-qualified domain name of
+            this SP
 
-            '
-          type: string
-        idp_metadata:
-          description: XML metadata of the Identity Provider
-          type: string
-        require_signed_assertions:
-          description: Whether assertions from the IdP must be signed
-          type: boolean
-        roles_attr:
-          description: SAML attribute containing the user's roles
-          type: string
-        sign_auth_requests:
-          description: Whether requests from the SP should be signed
-          type: boolean
-        username_attr:
-          description: 'SAML attribute containing the username.  Leave blank to use
-            SAML NameID.
+            ', type: string}
+        idp_metadata: {description: XML metadata of the Identity Provider, type: string}
+        require_signed_assertions: {description: Whether assertions from the IdP must
+            be signed, type: boolean}
+        roles_attr: {description: SAML attribute containing the user's roles, type: string}
+        sign_auth_requests: {description: Whether requests from the SP should be signed,
+          type: boolean}
+        username_attr: {description: 'SAML attribute containing the username.  Leave
+            blank to use SAML NameID.
 
-            '
-          type: string
-      required:
-      - enabled
-      - idp_metadata
-      - fqdn
-      - username_attr
-      - roles_attr
-      - sign_auth_requests
-      - require_signed_assertions
+            ', type: string}
+      required: [enabled, idp_metadata, fqdn, username_attr, roles_attr, sign_auth_requests,
+        require_signed_assertions]
       type: object
     sp_certificate:
       additionalProperties: false
       description: The SSL certificate used to sign SP requests to the IdP
       properties:
-        expires_at:
-          description: 'Time at which the certificate expires, in Unix epoch seconds
+        expires_at: {description: 'Time at which the certificate expires, in Unix
+            epoch seconds
 
-            '
-          type: integer
+            ', type: integer}
         fingerprint:
           additionalProperties: false
           description: Certificate fingerprint information
           properties:
-            algorithm:
-              description: 'The algorithm used to calculate the fingerprint
+            algorithm: {description: 'The algorithm used to calculate the fingerprint
 
-                '
-              type: string
-            value:
-              description: Fingerprint value
-              type: string
-          required:
-          - algorithm
-          - value
+                ', type: string}
+            value: {description: Fingerprint value, type: string}
+          required: [algorithm, value]
           type: object
-        issuer:
-          $ref: '#/components/schemas/distinguished_name'
+        issuer: {$ref: '#/components/schemas/distinguished_name'}
         key:
           additionalProperties: false
           description: Certificate key information
           properties:
-            algorithm:
-              description: 'The algorithm used to generate the key
+            algorithm: {description: 'The algorithm used to generate the key
 
-                '
-              type: string
-            size:
-              description: 'The size (number of bits) of the key
+                ', type: string}
+            size: {description: 'The size (number of bits) of the key
 
-                '
-              type: integer
-          required:
-          - algorithm
-          - size
+                ', type: integer}
+          required: [algorithm, size]
           type: object
-        pem:
-          description: The certificate, in PEM format
-          type: string
-        subject:
-          $ref: '#/components/schemas/distinguished_name'
-        valid_at:
-          description: 'Time at which the certificate becomes valid, in Unix epoch
-            seconds
+        pem: {description: 'The certificate, in PEM format', type: string}
+        subject: {$ref: '#/components/schemas/distinguished_name'}
+        valid_at: {description: 'Time at which the certificate becomes valid, in Unix
+            epoch seconds
 
-            '
-          type: integer
-      required:
-      - issuer
-      - subject
-      - valid_at
-      - expires_at
-      - fingerprint
-      - key
-      - pem
+            ', type: integer}
+      required: [issuer, subject, valid_at, expires_at, fingerprint, key, pem]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -159,10 +88,7 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: Allows configuration of SAML
-  title: SAML Configuration
-  version: '1.0'
+info: {description: Allows configuration of SAML, title: SAML Configuration, version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.saml/1.0/settings:
@@ -172,13 +98,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/saml_settings'
+                items: {$ref: '#/components/schemas/saml_settings'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - settings
+      tags: [settings]
     put:
       requestBody:
         content:
@@ -186,8 +110,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/components/schemas/saml_settings'
+                  items: {$ref: '#/components/schemas/saml_settings'}
                   type: array
               type: object
         required: true
@@ -196,13 +119,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/saml_settings'
+                items: {$ref: '#/components/schemas/saml_settings'}
                 type: array
           description: ''
       summary: set
-      tags:
-      - settings
+      tags: [settings]
   /npm.saml/1.0/sp_certificate:
     get:
       responses:
@@ -210,13 +131,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/sp_certificate'
+                items: {$ref: '#/components/schemas/sp_certificate'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - sp_certificate
+      tags: [sp_certificate]
   /npm.saml/1.0/sp_certificate/generate:
     post:
       requestBody:
@@ -225,8 +144,7 @@ paths:
             schema:
               properties:
                 items:
-                  items:
-                    $ref: '#/types/distinguished_name'
+                  items: {$ref: '#/components/schemas/distinguished_name'}
                   type: array
               type: object
         required: true
@@ -235,13 +153,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/sp_certificate'
+                items: {$ref: '#/components/schemas/sp_certificate'}
                 type: array
           description: ''
       summary: generate
-      tags:
-      - sp_certificate
+      tags: [sp_certificate]
   /npm.saml/1.0/sp_certificate/import:
     post:
       requestBody:
@@ -251,17 +167,15 @@ paths:
               additionalProperties: false
               description: Import request format
               properties:
-                passphrase:
-                  description: 'Optional passphrase to decrypt private key
+                passphrase: {description: 'Optional passphrase to decrypt private
+                    key
 
-                    '
-                  type: string
-                pem:
-                  description: 'Certificate and private key to import, in PEM format
+                    ', type: string}
+                pem: {description: 'Certificate and private key to import, in PEM
+                    format
 
-                    '
-              required:
-              - pem
+                    '}
+              required: [pem]
               type: object
         required: true
       responses:
@@ -269,13 +183,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/sp_certificate'
+                items: {$ref: '#/components/schemas/sp_certificate'}
                 type: array
           description: ''
       summary: import
-      tags:
-      - sp_certificate
+      tags: [sp_certificate]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -285,7 +197,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}

@@ -4,43 +4,27 @@ components:
       additionalProperties: false
       description: A single SSL key
       properties:
-        description:
-          description: A brief description of the key
-          type: string
-        id:
-          description: Key ID
-          readOnly: true
-          type: integer
-        name:
-          description: The name of the key
-          type: string
-        timestamp:
-          description: 'The time when this key was added, in Unix epoch seconds
+        description: {description: A brief description of the key, type: string}
+        id: {description: Key ID, readOnly: true, type: integer}
+        name: {description: The name of the key, type: string}
+        timestamp: {description: 'The time when this key was added, in Unix epoch
+            seconds
 
-            '
-          readOnly: true
-          type: integer
-      required:
-      - id
-      - name
+            ', readOnly: true, type: integer}
+      required: [id, name]
       type: object
     keys:
       additionalProperties: false
       description: The SSL keys being stored
       properties:
         items:
-          items:
-            $ref: '#/components/schemas/key'
+          items: {$ref: '#/components/schemas/key'}
           type: array
-      required:
-      - items
+      required: [items]
       type: object
   securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: Access token approach to reaching appliance
-      scheme: bearer
-      type: http
+    bearerAuth: {bearerFormat: JWT, description: Access token approach to reaching
+        appliance, scheme: bearer, type: http}
     oAuth2NoScopes:
       description: Credential approach to retrieving token
       flows:
@@ -49,10 +33,8 @@ components:
           scopes: {}
           tokenUrl: /mgmt.aaa/1.0/token
       type: oauth2
-info:
-  description: Service which securely stores SSL keys
-  title: NPM SSL Key Store
-  version: '1.0'
+info: {description: Service which securely stores SSL keys, title: NPM SSL Key Store,
+  version: '1.0'}
 openapi: 3.0.2
 paths:
   /npm.ssl_key_store/1.0/keys:
@@ -62,13 +44,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/keys'
+                items: {$ref: '#/components/schemas/keys'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - keys
+      tags: [keys]
   /npm.ssl_key_store/1.0/keys/import:
     post:
       requestBody:
@@ -77,23 +57,13 @@ paths:
             schema:
               additionalProperties: false
               properties:
-                description:
-                  description: A brief description of the key
-                  type: string
-                key:
-                  description: The key to import, in PEM format
-                  type: string
-                name:
-                  description: The name of the key
-                  type: string
-                passphrase:
-                  description: 'The passphrase to decode the key, if required
+                description: {description: A brief description of the key, type: string}
+                key: {description: 'The key to import, in PEM format', type: string}
+                name: {description: The name of the key, type: string}
+                passphrase: {description: 'The passphrase to decode the key, if required
 
-                    '
-                  type: string
-              required:
-              - name
-              - key
+                    ', type: string}
+              required: [name, key]
               type: object
         required: true
       responses:
@@ -101,13 +71,11 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/key'
+                items: {$ref: '#/components/schemas/key'}
                 type: array
           description: ''
       summary: import
-      tags:
-      - keys
+      tags: [keys]
   /npm.ssl_key_store/1.0/keys/items/{id}:
     delete:
       parameters:
@@ -115,34 +83,29 @@ paths:
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
-        '200':
-          description: On success, the server does not provide any body in the response.
+        '200': {description: 'On success, the server does not provide any body in
+            the response.'}
       summary: delete
-      tags:
-      - keys
+      tags: [keys]
     get:
       parameters:
       - description: Key ID
         in: path
         name: id
         required: true
-        schema:
-          type: string
+        schema: {type: string}
       responses:
         '200':
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/key'
+                items: {$ref: '#/components/schemas/key'}
                 type: array
           description: ''
       summary: get
-      tags:
-      - keys
+      tags: [keys]
 security:
 - oAuth2NoScopes: []
 - bearerAuth: []
@@ -152,7 +115,5 @@ servers:
   variables:
     Port:
       default: '443'
-      enum:
-      - '443'
-    URL:
-      default: abc.example.com
+      enum: ['443']
+    URL: {default: abc.example.com}
